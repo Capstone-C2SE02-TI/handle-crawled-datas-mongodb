@@ -290,10 +290,16 @@ const handleDetailChartTransaction = async () => {
 
             investor.TXs.forEach((TX) => {
                 if (TX.tokenSymbol === symbol) {
+                    const n1 = BigInt(TX.value);
+                    const n2 = BigInt(
+                        Number(Math.pow(10, Number(TX.tokenDecimal))),
+                    );
+
                     historyData.push({
                         timeStamp: TX.timeStamp,
-                        value: TX.value,
-                        isBuy: sharkWallet === TX.from ? false : true,
+                        value: "" + Number(BigInt(n1 / n2)),
+                        status:
+                            sharkWallet === TX.from ? "withdraw" : "deposit",
                     });
                 }
             });
@@ -315,6 +321,29 @@ const handleDetailChartTransaction = async () => {
     return sharks;
 };
 
+const updateSharkHistoryDatas = async () => {
+    const sharksDB = require("./sharks.json");
+
+    for (let i = 0; i <= 9; i++) {
+        try {
+            await SharkModel.findOneAndUpdate(
+                { id: i + 1 },
+                { historyDatas: sharksDB[i].historyDatas },
+            )
+                .then((data) => {
+                    if (!data) throw new Error();
+                })
+                .catch((error) => {
+                    throw new Error(error);
+                });
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+};
+
 module.exports = {
     writeCoinsInDB,
     writeUsersInDB,
@@ -332,4 +361,5 @@ module.exports = {
     updateTokensPrices,
     handleTokensPrices,
     handleDetailChartTransaction,
+    updateSharkHistoryDatas,
 };

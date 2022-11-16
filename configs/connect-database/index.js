@@ -1,12 +1,35 @@
-const { initializeApp, cert } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-const serviceAccountMain = require("./service-account-Capstone-C1SE04-TI-Main.json");
+const { MONGODB_MAIN_URI, MONGODB_CRAWL_URI } = process.env;
 
-initializeApp({
-    credential: cert(serviceAccountMain),
-});
+const connectDatabase = () => {
+    try {
+        mongoose.connect(MONGODB_CRAWL_URI, { useNewUrlParser: true });
 
-const database = getFirestore();
+        mongoose.connection.on("error", (error) => {
+            console.log("Connect to database failed with error:", error);
+            throw new Error(error);
+        });
 
-module.exports = database;
+        mongoose.connection.on("open", () => {
+            console.log("Connect to database successfully");
+        });
+    } catch (error) {
+        console.log("Connect to database failed with error:", error);
+        throw new Error(error);
+    }
+};
+
+module.exports = { connectDatabase };
+
+// var connection1 = mongoose.createConnection("");
+// var connection2 = mongoose.createConnection("");
+
+// var ModelA = connection1.model(
+//     "Model", ModelSchema
+// );
+
+// var ModelB = connection2.model(
+//     "Model", ModelSchema
+// );
