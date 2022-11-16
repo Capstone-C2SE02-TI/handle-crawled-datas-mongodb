@@ -1,4 +1,4 @@
-const database = require("../configs/connect-database");
+const database = "";
 const { convertUnixTimestampToNumber } = require("../helpers");
 
 const getListOfCoins = async () => {

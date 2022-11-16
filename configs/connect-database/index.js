@@ -5,7 +5,7 @@ const { MONGODB_MAIN_URI, MONGODB_CRAWL_URI } = process.env;
 
 const connectDatabase = () => {
     try {
-        mongoose.connect(MONGODB_CRAWL_URI, { useNewUrlParser: true });
+        mongoose.connect(MONGODB_MAIN_URI, { useNewUrlParser: true });
 
         mongoose.connection.on("error", (error) => {
             console.log("Connect to database failed with error:", error);

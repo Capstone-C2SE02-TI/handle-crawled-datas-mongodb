@@ -1,30 +1,27 @@
 {
-    "name": "handle-crawled-datas",
+    "name": "handle-crawled-datas-mongodb",
     "version": "1.0.0",
-    "description": "Capstone Project 1 - Source Handle Crawled Datas",
+    "description": "Capstone Project 1 - Source Handle Crawled Datas MongoDB",
     "main": "src/index.js",
     "scripts": {
         "start": "nodemon src/index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
-        "capstone-project",
-        "handle-crawled-datas"
+        "capstone1-project",
+        "handle-crawled-datas",
+        "handle-crawled-datas-mongodb"
     ],
-    "author": "hdttuan",
+    "author": "huynhducthanhtuan",
     "license": "MIT",
-    "homepage": "https://github.com/Capstone-C1SE04-TI/handle-crawled-datas#readme",
+    "homepage": "https://github.com/Capstone-C1SE04-TI/handle-crawled-datas-mongodb#readme",
     "dependencies": {
-        "@firebase/app": "^0.7.32",
-        "@firebase/firestore": "^3.4.15",
+        "dotenv": "^16.0.3",
         "express": "^4.18.1",
-        "firebase": "^9.9.4",
-        "firebase-admin": "^11.0.1",
         "lodash": "^4.17.21",
+        "mongoose": "^6.7.2",
         "node-cron": "^3.0.2",
-        "node-fetch": "^2.6.7",
-        "nodemon": "^2.0.19",
-        "underscore": "^1.13.6"
+        "nodemon": "^2.0.19"
     },
     "engines": {
         "node": "v16.17.0"

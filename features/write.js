@@ -1,4 +1,4 @@
-const database = require("../configs/connect-database");
+const database = "";
 
 const DB1 = require("../db1.json");
 const DB2 = [];
@@ -11,12 +11,7 @@ const tagsDatas = require("../db/db_tags.json");
 const sharksDB = require("../sharks.json");
 const investors = require("../investors.json");
 
-const { FieldValue } = require("firebase-admin/firestore");
-const {
-    randomFirestoreDocumentId,
-    convertUnixTimestampToNumber,
-} = require("../helpers");
-const _ = require("underscore");
+const { convertUnixTimestampToNumber } = require("../helpers");
 
 const updateTokensPrices = async () => {
     const tokens = await database
@@ -175,17 +170,17 @@ const removeDocumentField = async () => {
         .orderBy("id", "asc")
         .get();
 
-    tokens.forEach((doc) => {
-        doc.ref.update({
-            tagGroups: FieldValue.delete(),
-            tags: FieldValue.delete(),
-            category: FieldValue.delete(),
-            selfReportedCirculatingSupply: FieldValue.delete(),
-            selfReportedMarketCap: FieldValue.delete(),
-            selfReportedTags: FieldValue.delete(),
-            description: FieldValue.delete(),
-        });
-    });
+    // tokens.forEach((doc) => {
+    //     doc.ref.update({
+    //         tagGroups: FieldValue.delete(),
+    //         tags: FieldValue.delete(),
+    //         category: FieldValue.delete(),
+    //         selfReportedCirculatingSupply: FieldValue.delete(),
+    //         selfReportedMarketCap: FieldValue.delete(),
+    //         selfReportedTags: FieldValue.delete(),
+    //         description: FieldValue.delete(),
+    //     });
+    // });
 };
 
 const updateTagNames = async () => {

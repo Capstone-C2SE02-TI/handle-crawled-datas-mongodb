@@ -40,7 +40,7 @@ const runScript = async () => {
     // const data1 = await exportCollection("users");
     // const data2 = await exportCollection("tokens");
     // const data3 = await exportCollection("tags");
-    const data4 = await exportCollection("sharks");
+    // const data4 = await exportCollection("sharks");
     // const data5 = await exportCollection("admins");
     // const data6 = await exportCollection("transactions");
     // Step 2: Save above datas in temp file
@@ -69,11 +69,11 @@ const runScript = async () => {
     //         console.error(err);
     //     }
     // });
-    require("fs").writeFile("./db6.json", JSON.stringify(data6), (err) => {
-        if (err) {
-            console.error(err);
-        }
-    });
+    // require("fs").writeFile("./db6.json", JSON.stringify(data6), (err) => {
+    //     if (err) {
+    //         console.error(err);
+    //     }
+    // });
     // await updateSharksFields();
 };
 
