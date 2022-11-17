@@ -1,24 +1,4 @@
 /node_modules
-/db
+/databases
 .env
 
-db.json
-db1.json
-db2.json
-db3.json
-db4.json
-db5.json
-db6.json
-db_coins.json
-db_coins_price.json
-db_coins_prices.json
-db_sharks.json
-db_tags.json
-metadata.json
-metadatas.json
-metadata_copy.json
-test.json
-schemas.json
-investors.json
-sharks.json
-metadatas_lastest.json
