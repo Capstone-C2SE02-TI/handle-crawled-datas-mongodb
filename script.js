@@ -3,6 +3,7 @@ const {
     getListOfCoins,
     getListOfTokens,
     exportCollection,
+    exportCollectionDatas,
 } = require("./features/read-and-handle");
 const {
     writeCoinsInDB,
@@ -22,6 +23,14 @@ const {
     updateTokensPriceLast1Day,
     handleDetailChartTransaction,
 } = require("./features/write");
+const {
+    AdminModel,
+    SharkModel,
+    TagModel,
+    TokenModel,
+    TransactionModel,
+    UserModel,
+} = require("./models/DB_Main");
 
 const scriptsRunEvery10Minutes = () => {};
 
@@ -68,7 +77,9 @@ const runScript = async () => {
     //         console.error(err);
     //     }
     // });
-    // await updateSharksFields();
+    // => Test function exportCollectionDatas
+    // const data = await exportCollectionDatas(TokenModel);
+    // console.log(data);
 };
 
 /* --- AUTOMATION EXECUTING --- */

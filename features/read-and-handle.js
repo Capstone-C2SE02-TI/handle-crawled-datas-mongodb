@@ -88,4 +88,13 @@ const exportCollection = async (collectionName) => {
     return datasList;
 };
 
-module.exports = { getListOfCoins, getListOfTokens, exportCollection };
+const exportCollectionDatas = async (CollectionModel) => {
+    return await CollectionModel.find({});
+};
+
+module.exports = {
+    getListOfCoins,
+    getListOfTokens,
+    exportCollection,
+    exportCollectionDatas,
+};

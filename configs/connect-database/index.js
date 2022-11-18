@@ -3,33 +3,7 @@ require("dotenv").config();
 
 const { MONGODB_MAIN_URI, MONGODB_CRAWL_URI } = process.env;
 
-const connectDatabase = () => {
-    try {
-        mongoose.connect(MONGODB_CRAWL_URI, { useNewUrlParser: true });
+const dbCrawlConnection = mongoose.createConnection(MONGODB_CRAWL_URI);
+const dbMainConnection = mongoose.createConnection(MONGODB_MAIN_URI);
 
-        mongoose.connection.on("error", (error) => {
-            console.log("Connect to database failed with error:", error);
-            throw new Error(error);
-        });
-
-        mongoose.connection.on("open", () => {
-            console.log("Connect to database successfully");
-        });
-    } catch (error) {
-        console.log("Connect to database failed with error:", error);
-        throw new Error(error);
-    }
-};
-
-module.exports = { connectDatabase };
-
-// var connection1 = mongoose.createConnection("");
-// var connection2 = mongoose.createConnection("");
-
-// var ModelA = connection1.model(
-//     "Model", ModelSchema
-// );
-
-// var ModelB = connection2.model(
-//     "Model", ModelSchema
-// );
+module.exports = { dbCrawlConnection, dbMainConnection };
