@@ -1,9 +1,10 @@
-const { connectDatabase } = require("./configs/connect-database");
+require("dotenv").config();
 require("./script.js");
 
 const express = require("express");
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
+const { connectDatabase } = require("./configs/connect-database");
 
 connectDatabase();
 

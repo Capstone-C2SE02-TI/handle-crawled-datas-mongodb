@@ -1,15 +1,15 @@
 const database = "";
 
-const DB1 = require("../db1.json");
+const DB1 = []; // require("../db1.json");
 const DB2 = [];
 const DB3 = [];
-const datas = require("../db/db.json");
-const metadata = require("../db/metadata.json");
-const sharksDatas = require("../db/db_sharks.json");
-const tokensDatas = require("../db/db_tokens.json");
-const tagsDatas = require("../db/db_tags.json");
-const sharksDB = require("../sharks.json");
-const investors = require("../investors.json");
+const datas = []; // require("../db/db.json");
+const metadata = []; // require("../db/metadata.json");
+const sharksDatas = []; // require("../db/db_sharks.json");
+const tokensDatas = []; // require("../db/db_tokens.json");
+const tagsDatas = []; // require("../db/db_tags.json");
+const sharksDB = []; // require("../sharks.json");
+const investors = []; // require("../investors.json");
 
 const { convertUnixTimestampToNumber } = require("../helpers");
 
