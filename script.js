@@ -23,17 +23,11 @@ const {
     handleDetailChartTransaction,
 } = require("./features/write");
 
-const getDatasEvery10Minutes = () => {};
+const scriptsRunEvery10Minutes = () => {};
 
-const updateDatasEvery10Minutes = () => {};
+const scriptsRunEveryHour = () => {};
 
-const getDatasEveryHour = () => {};
-
-const updateDatasEveryHour = () => {};
-
-const getDatasEveryDay = () => {};
-
-const updateDatasEveryDay = () => {};
+const scriptsRunEveryDay = () => {};
 
 const runScript = async () => {
     // Step 1: Read & Handle datas
@@ -81,20 +75,17 @@ const runScript = async () => {
 
 // Every 10 minutes
 cron.schedule("*/10 * * * *", () => {
-    getDatasEvery10Minutes();
-    updateDatasEvery10Minutes();
+    scriptsRunEvery10Minutes();
 });
 
 // Every hour at 0th minute
 cron.schedule("0 * * * *", () => {
-    getDatasEveryHour();
-    updateDatasEveryHour();
+    scriptsRunEveryHour();
 });
 
 // Every day at 00:00:00
 cron.schedule("0 0 * * *", () => {
-    getDatasEveryDay();
-    updateDatasEveryDay();
+    scriptsRunEveryDay();
 });
 
 runScript();
