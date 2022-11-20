@@ -12,6 +12,20 @@ const sharksDB = []; // require("../sharks.json");
 const investors = []; // require("../investors.json");
 
 const { convertUnixTimestampToNumber } = require("../helpers");
+const { generateSchemaFromJsonData } = require("./handle");
+const {
+    DBCrawlCoinModel,
+    DBCrawlInvestorModel,
+    DBCrawlMetadataModel,
+    DBCrawlTagModel,
+    DBCrawlTokenModel,
+    DBMainAdminModel,
+    DBMainSharkModel,
+    DBMainTagModel,
+    DBMainTokenModel,
+    DBMainTransactionModel,
+    DBMainUserModel
+} = require("../models");
 
 const updateTokensPrices = async () => {
     const tokens = await database
@@ -337,6 +351,21 @@ const updateSharkHistoryDatas = async () => {
     }
 };
 
+const generateAndWriteSchemaInFile = async () => {
+    const schemas = await generateSchemaFromJsonData(DBCrawlTokensDatas[0]);
+
+    fs.writeFileAsync(
+        `./schemas/index.json`,
+        JSON.stringify(schemas),
+        (error) => {
+            if (error) {
+                log(`Write file index.js error`);
+                throw new Error(error);
+            }
+        }
+    );
+};
+
 module.exports = {
     writeCoinsInDB,
     writeUsersInDB,
@@ -354,5 +383,6 @@ module.exports = {
     updateTokensPrices,
     handleTokensPrices,
     handleDetailChartTransaction,
-    updateSharkHistoryDatas
+    updateSharkHistoryDatas,
+    generateAndWriteSchemaInFile
 };
