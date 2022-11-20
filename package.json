@@ -19,6 +19,7 @@
         "bluebird": "^3.7.2",
         "dotenv": "^16.0.3",
         "express": "^4.18.1",
+        "generate-schema": "^2.6.0",
         "lodash": "^4.17.21",
         "mongoose": "^6.7.2",
         "node-cron": "^3.0.2"

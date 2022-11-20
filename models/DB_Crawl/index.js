@@ -1,13 +1,13 @@
-const CoinModel = require("./Coin");
-const InvestorModel = require("./Investor");
-const MetadataModel = require("./Metadata");
-const TagModel = require("./Tag");
-const TokenModel = require("./Token");
+const DBCrawlCoinModel = require("./Coin");
+const DBCrawlInvestorModel = require("./Investor");
+const DBCrawlMetadataModel = require("./Metadata");
+const DBCrawlTagModel = require("./Tag");
+const DBCrawlTokenModel = require("./Token");
 
 module.exports = {
-    CoinModel,
-    InvestorModel,
-    MetadataModel,
-    TagModel,
-    TokenModel
+    DBCrawlCoinModel,
+    DBCrawlInvestorModel,
+    DBCrawlMetadataModel,
+    DBCrawlTagModel,
+    DBCrawlTokenModel
 };

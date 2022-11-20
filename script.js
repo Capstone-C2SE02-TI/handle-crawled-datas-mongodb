@@ -3,6 +3,7 @@ const Promise = require("bluebird");
 const fs = Promise.promisifyAll(require("fs"));
 const { log } = require("console");
 const { setTimeout } = require("timers/promises");
+const generateSchema = require("generate-schema");
 
 const { exportCollection } = require("./features/read");
 const {
@@ -23,22 +24,41 @@ const {
     updateTokensPriceLast1Day,
     handleDetailChartTransaction
 } = require("./features/write");
+
 const {
-    AdminModel,
-    SharkModel,
-    TagModel,
-    TokenModel,
-    TransactionModel,
-    UserModel
-} = require("./models/DB_Main");
+    DBCrawlCoinModel,
+    DBCrawlInvestorModel,
+    DBCrawlMetadataModel,
+    DBCrawlTagModel,
+    DBCrawlTokenModel,
+    DBMainAdminModel,
+    DBMainSharkModel,
+    DBMainTagModel,
+    DBMainTokenModel,
+    DBMainTransactionModel,
+    DBMainUserModel
+} = require("./models");
+const {
+    DBCrawlCoinsDatas,
+    DBCrawlInvestorsDatas,
+    DBCrawlMetadatasDatas,
+    DBCrawlTagsDatas,
+    DBCrawlTokensDatas,
+    DBMainAdminsDatas,
+    DBMainSharksDatas,
+    DBMainTagsDatas,
+    DBMainTokensDatas,
+    DBMainTransactionsDatas,
+    DBMainUsersDatas
+} = require("./databases");
 
 const backupDatas = async () => {
-    const admins = await exportCollection(AdminModel);
-    const sharks = await exportCollection(SharkModel);
-    const tags = await exportCollection(TagModel);
-    const tokens = await exportCollection(TokenModel);
-    const transactions = await exportCollection(TransactionModel);
-    const users = await exportCollection(UserModel);
+    const admins = await exportCollection(DBMainAdminModel);
+    const sharks = await exportCollection(DBMainSharkModel);
+    const tags = await exportCollection(DBMainTagModel);
+    const tokens = await exportCollection(DBMainTokenModel);
+    const transactions = await exportCollection(DBMainTransactionModel);
+    const users = await exportCollection(DBMainUserModel);
 
     const collectionDatas = [admins, sharks, tags, tokens, transactions, users];
     const collectionNames = [
@@ -73,20 +93,26 @@ const backupDatas = async () => {
         });
 };
 
+const generateSchemaFromJsonData = async (jsonData) => {
+    const Schema = generateSchema.mongoose(jsonData);
+    return Schema;
+};
+
+//#region scripts
 const scriptsRunEvery10Minutes = async () => {};
-
 const scriptsRunEveryHour = async () => {};
-
 const scriptsRunEveryDay = async () => {
     // await backupDatas();
 };
+//#endregion
 
 const runScript = async () => {
-    // await backupDatas();
+    log(await generateSchemaFromJsonData());
 };
 
 runScript();
 
+//#region Cronjob
 // Every 10 minutes
 cron.schedule("*/10 * * * *", async () => {
     await scriptsRunEvery10Minutes();
@@ -101,3 +127,4 @@ cron.schedule("0 * * * *", async () => {
 cron.schedule("0 0 * * *", async () => {
     await scriptsRunEveryDay();
 });
+//#endregion
