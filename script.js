@@ -1,5 +1,7 @@
 const cron = require("node-cron");
-const { writeFile } = require("fs");
+const { log } = require("console");
+const { setTimeout } = require("timers/promises");
+const { writeFileSync } = require("fs");
 const { exportCollection } = require("./features/read");
 const {
     writeCoinsInDB,
@@ -44,47 +46,35 @@ const backupDatas = async () => {
     const transactions = await exportCollection(TransactionModel);
     const users = await exportCollection(UserModel);
 
-    writeFile(
+    writeFileSync(
         "./databases/DB_Main/admins.json",
         JSON.stringify(admins),
-        (error) => {
-            console.error(error);
-        },
+        (error) => console.error(error),
     );
-    writeFile(
+    writeFileSync(
         "./databases/DB_Main/sharks.json",
         JSON.stringify(sharks),
-        (error) => {
-            console.error(error);
-        },
+        (error) => console.error(error),
     );
-    writeFile(
+    writeFileSync(
         "./databases/DB_Main/tags.json",
         JSON.stringify(tags),
-        (error) => {
-            console.error(error);
-        },
+        (error) => console.error(error),
     );
-    writeFile(
+    writeFileSync(
         "./databases/DB_Main/tokens.json",
         JSON.stringify(tokens),
-        (error) => {
-            console.error(error);
-        },
+        (error) => console.error(error),
     );
-    writeFile(
+    writeFileSync(
         "./databases/DB_Main/transactions.json",
         JSON.stringify(transactions),
-        (error) => {
-            console.error(error);
-        },
+        (error) => console.error(error),
     );
-    writeFile(
+    writeFileSync(
         "./databases/DB_Main/users.json",
         JSON.stringify(users),
-        (error) => {
-            console.error(error);
-        },
+        (error) => console.error(error),
     );
 };
 
