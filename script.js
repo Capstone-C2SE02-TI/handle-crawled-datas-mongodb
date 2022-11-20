@@ -5,21 +5,10 @@ const { log } = require("console");
 const { exportCollection, getDBMainTags } = require("./features/read");
 const { generateSchemaFromJsonData } = require("./features/handle");
 const {
-    writeCoinsInDB,
-    writeUsersInDB,
-    writeSharksInDB,
-    writeTagsInDB,
-    reduceTokensInDB,
-    updateTokensID,
-    updateTokensDailyPrice,
-    updateSharksFields,
     removeDocumentField,
-    updateCoinId,
     updateTagNames,
     updateMetadata,
-    updateTokensPrices,
     handleTokensPrices,
-    updateTokensPriceLast1Day,
     handleDetailChartTransaction
 } = require("./features/write");
 const {
