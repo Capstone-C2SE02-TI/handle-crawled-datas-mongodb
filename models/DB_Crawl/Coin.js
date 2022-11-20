@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
-const { dbMainConnection } = require("../../configs/connect-database");
+const { dbCrawlConnection } = require("../../configs/connect-database");
 
-const TokenSchema = new mongoose.Schema({
+const CoinSchema = new mongoose.Schema({
     _id: { type: ObjectId },
     id: {
         type: Number,
@@ -87,6 +87,6 @@ const TokenSchema = new mongoose.Schema({
     }
 });
 
-const TokenModel = dbMainConnection.model("Token", TokenSchema);
+const CoinModel = dbCrawlConnection.model("Coin", CoinSchema);
 
-module.exports = TokenModel;
+module.exports = CoinModel;

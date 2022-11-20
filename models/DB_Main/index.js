@@ -11,5 +11,5 @@ module.exports = {
     TagModel,
     TokenModel,
     TransactionModel,
-    UserModel,
+    UserModel
 };

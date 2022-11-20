@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
-const { dbMainConnection } = require("../../configs/connect-database");
+const { dbCrawlConnection } = require("../../configs/connect-database");
 
 const TokenSchema = new mongoose.Schema({
     _id: { type: ObjectId },
@@ -87,6 +87,6 @@ const TokenSchema = new mongoose.Schema({
     }
 });
 
-const TokenModel = dbMainConnection.model("Token", TokenSchema);
+const TokenModel = dbCrawlConnection.model("Token", TokenSchema);
 
 module.exports = TokenModel;

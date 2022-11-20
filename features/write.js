@@ -53,7 +53,7 @@ const updateMetadata = async () => {
             prices.push({
                 id: data.id,
                 name: data.name,
-                prices: data.prices,
+                prices: data.prices
             });
         }
     });
@@ -135,7 +135,7 @@ const updateSharksFields = async () => {
 
     sharks.forEach((doc) => {
         doc.ref.update({
-            historyDatas: sharksDB[id++].historyDatas,
+            historyDatas: sharksDB[id++].historyDatas
         });
     });
 };
@@ -219,8 +219,7 @@ const handleTokensPrices = async () => {
 
         // [Need Handle] Thay mảng dates bằng giá trị 7 ngày gần nhất
         let dates = [
-            20221009, 20221008, 20221007, 20221006, 20221005, 20221004,
-            20221003,
+            20221009, 20221008, 20221007, 20221006, 20221005, 20221004, 20221003
         ];
 
         Object.keys(metadata[i].prices.daily).forEach((key) => {
@@ -247,7 +246,7 @@ const handleTokensPrices = async () => {
         // [Need Handle] Thay monthYears bằng giá trị 12 gần nhất kể cả trừ tháng hiện tại
         const monthYears = [
             202110, 202111, 202112, 202201, 202202, 202203, 202204, 202205,
-            202206, 202207, 202208, 202209,
+            202206, 202207, 202208, 202209
         ];
 
         Object.keys(metadata[i].prices.daily).forEach((key) => {
@@ -263,8 +262,8 @@ const handleTokensPrices = async () => {
                 day: days,
                 week: weeks,
                 month: months,
-                year: years,
-            },
+                year: years
+            }
         });
     }
 
@@ -287,27 +286,26 @@ const handleDetailChartTransaction = async () => {
                 if (TX.tokenSymbol === symbol) {
                     const n1 = BigInt(TX.value);
                     const n2 = BigInt(
-                        Number(Math.pow(10, Number(TX.tokenDecimal))),
+                        Number(Math.pow(10, Number(TX.tokenDecimal)))
                     );
 
                     historyData.push({
                         timeStamp: TX.timeStamp,
                         value: "" + Number(BigInt(n1 / n2)),
-                        status:
-                            sharkWallet === TX.from ? "withdraw" : "deposit",
+                        status: sharkWallet === TX.from ? "withdraw" : "deposit"
                     });
                 }
             });
 
             historyDatas.push({
                 coinSymbol: symbol,
-                historyData: historyData,
+                historyData: historyData
             });
         });
 
         shark = {
             walletAddress: sharkWallet,
-            historyDatas: historyDatas,
+            historyDatas: historyDatas
         };
 
         sharks.push(shark);
@@ -323,7 +321,7 @@ const updateSharkHistoryDatas = async () => {
         try {
             await SharkModel.findOneAndUpdate(
                 { id: i + 1 },
-                { historyDatas: sharksDB[i].historyDatas },
+                { historyDatas: sharksDB[i].historyDatas }
             )
                 .then((data) => {
                     if (!data) throw new Error();
@@ -356,5 +354,5 @@ module.exports = {
     updateTokensPrices,
     handleTokensPrices,
     handleDetailChartTransaction,
-    updateSharkHistoryDatas,
+    updateSharkHistoryDatas
 };

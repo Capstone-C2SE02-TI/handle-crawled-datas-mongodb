@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
-const { dbMainConnection } = require("../../configs/connect-database");
+const { dbCrawlConnection } = require("../../configs/connect-database");
 
-const SharkSchema = new mongoose.Schema({
+const InvestorSchema = new mongoose.Schema({
     _id: { type: ObjectId },
     id: {
         type: Number,
@@ -41,6 +41,6 @@ const SharkSchema = new mongoose.Schema({
     }
 });
 
-const SharkModel = dbMainConnection.model("Shark", SharkSchema);
+const InvestorModel = dbCrawlConnection.model("Investor", InvestorSchema);
 
-module.exports = SharkModel;
+module.exports = InvestorModel;

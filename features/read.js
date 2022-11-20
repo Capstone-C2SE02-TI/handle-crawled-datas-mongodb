@@ -3,5 +3,5 @@ const exportCollection = async (CollectionModel) => {
 };
 
 module.exports = {
-    exportCollection,
+    exportCollection
 };

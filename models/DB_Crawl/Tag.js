@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
-const { dbMainConnection } = require("../../configs/connect-database");
+const { dbCrawlConnection } = require("../../configs/connect-database");
 
 const TagSchema = new mongoose.Schema({
     _id: { type: ObjectId },
@@ -17,6 +17,6 @@ const TagSchema = new mongoose.Schema({
     }
 });
 
-const TagModel = dbMainConnection.model("Tag", TagSchema);
+const TagModel = dbCrawlConnection.model("Tag", TagSchema);
 
 module.exports = TagModel;

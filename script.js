@@ -21,7 +21,7 @@ const {
     updateTokensPrices,
     handleTokensPrices,
     updateTokensPriceLast1Day,
-    handleDetailChartTransaction,
+    handleDetailChartTransaction
 } = require("./features/write");
 const {
     AdminModel,
@@ -29,7 +29,7 @@ const {
     TagModel,
     TokenModel,
     TransactionModel,
-    UserModel,
+    UserModel
 } = require("./models/DB_Main");
 
 const backupDatas = async () => {
@@ -47,7 +47,7 @@ const backupDatas = async () => {
         "tags",
         "tokens",
         "transactions",
-        "users",
+        "users"
     ];
 
     const promises = collectionNames.map((collectionName, index) => {
@@ -59,7 +59,7 @@ const backupDatas = async () => {
                     log(`Write file ${collectionName}.json error`);
                     throw new Error(error);
                 }
-            },
+            }
         );
     });
 

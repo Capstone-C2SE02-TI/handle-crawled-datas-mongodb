@@ -7,7 +7,7 @@ const AdminSchema = new mongoose.Schema({
     id: {
         type: Number,
         required: true,
-        unique: true,
+        unique: true
     },
     email: {
         type: String,
@@ -15,7 +15,7 @@ const AdminSchema = new mongoose.Schema({
         required: true,
         unique: true,
         minlength: 16,
-        maxlength: 40,
+        maxlength: 40
     },
     username: {
         type: String,
@@ -23,13 +23,13 @@ const AdminSchema = new mongoose.Schema({
         required: true,
         unique: true,
         minLength: 5,
-        maxlength: 16,
+        maxlength: 16
     },
     password: {
         type: String,
         trim: true,
-        required: true,
-    },
+        required: true
+    }
 });
 
 const AdminModel = dbMainConnection.model("Admin", AdminSchema);

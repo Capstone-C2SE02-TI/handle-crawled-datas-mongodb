@@ -49,5 +49,5 @@ const scientificNotationEToLongStringNumber = (x) => {
 
 module.exports = {
     convertUnixTimestampToNumber,
-    scientificNotationEToLongStringNumber,
+    scientificNotationEToLongStringNumber
 };
