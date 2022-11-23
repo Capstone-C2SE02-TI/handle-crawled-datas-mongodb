@@ -1,15 +1,14 @@
 const cron = require("node-cron");
-const Promise = require("bluebird");
-const fs = Promise.promisifyAll(require("fs"));
 const { log } = require("console");
+const { fs } = require("./constants");
+const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 const { exportCollection, getDBMainTags } = require("./features/read");
 const { generateSchemaFromJsonData } = require("./features/handle");
 const {
-    removeDocumentField,
-    updateTagNames,
-    updateMetadata,
     handleTokensPrices,
-    handleDetailChartTransaction
+    handleDetailChartTransaction,
+    updateSharkHistoryDatas,
+    generateAndWriteSchemaInFile
 } = require("./features/write");
 const {
     DBCrawlCoinModel,

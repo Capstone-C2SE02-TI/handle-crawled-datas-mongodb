@@ -1,5 +1,4 @@
-const Promise = require("bluebird");
-const fs = Promise.promisifyAll(require("fs"));
+const { fs } = require("../constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
@@ -12,7 +11,7 @@ const {
     DBMainTokenModel,
     DBMainTransactionModel,
     DBMainUserModel
-} = require("./models");
+} = require("../models");
 
 const backupDBMainDatas = async () => {
     const admins = await exportCollection(DBMainAdminModel);

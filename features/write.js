@@ -17,28 +17,6 @@ const {
     DBMainUserModel
 } = require("../models");
 
-const updateMetadata = async () => {
-    let prices = [];
-
-    metadata.forEach(async (data) => {
-        if (Object.entries(data.prices).length !== 0) {
-            prices.push({
-                id: data.id,
-                name: data.name,
-                prices: data.prices
-            });
-        }
-    });
-
-    return prices;
-};
-
-const reduceDBDocuments = async () => {};
-
-const removeDocumentField = async () => {};
-
-const updateTagNames = async () => {};
-
 const handleTokensPrices = async () => {
     let prices = [];
 
@@ -194,10 +172,6 @@ const generateAndWriteSchemaInFile = async () => {
 };
 
 module.exports = {
-    reduceDBDocuments,
-    removeDocumentField,
-    updateTagNames,
-    updateMetadata,
     handleTokensPrices,
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
