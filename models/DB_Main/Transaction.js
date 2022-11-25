@@ -1,119 +1,111 @@
 const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema.Types;
-const { dbMainConnection } = require("../../configs/connect-database");
 
 const TransactionSchema = new mongoose.Schema(
-    {
-        _id: { type: ObjectId },
-        sharkId: {
-            type: Number,
-            required: true,
-            unique: true
-        },
-        timeStamp: {
-            type: Number,
-            required: true,
-            unique: true
-        },
-        pastPrice: {
-            type: Number,
-            required: true
-        },
-        presentPrice: {
-            type: Number,
-            required: true
-        },
-        numberOfTokens: {
-            type: Number,
-            required: true
-        },
-        contractAddress: {
-            type: String,
-            trim: true
-        },
-        tokenName: {
-            type: String,
-            trim: true
-        },
-        tokenSymbol: {
-            type: String,
-            trim: true
-        },
-        value: {
-            type: String,
-            trim: true
-        },
-        from: {
-            type: String,
-            trim: true
-        },
-        to: {
-            type: String,
-            trim: true
-        },
-        gas: {
-            type: String,
-            trim: true
-        },
-        hash: {
-            type: String,
-            trim: true
-        },
-        blockHash: {
-            type: String,
-            trim: true
-        },
-        cumulativeGasUsed: {
-            type: String,
-            trim: true
-        },
-        blockNumber: {
-            type: String,
-            trim: true
-        },
-        nonce: {
-            type: String,
-            trim: true
-        },
-        gasPrice: {
-            type: String,
-            trim: true
-        },
-        transactionIndex: {
-            type: String,
-            trim: true
-        },
-        input: {
-            type: String,
-            trim: true
-        },
-        gasUsed: {
-            type: String,
-            trim: true
-        },
-        confirmations: {
-            type: String,
-            trim: true
-        },
-        tokenDecimal: {
-            type: String,
-            trim: true
-        },
-        presentDate: {
-            type: String,
-            trim: true
-        },
-        pastDate: {
-            type: String,
-            trim: true
-        }
-    },
-    { timestamps: true }
+	{
+		sharkId: {
+			type: Number,
+			required: true,
+			unique: true
+		},
+		timeStamp: {
+			type: Number,
+			required: true,
+			unique: true
+		},
+		pastPrice: {
+			type: Number,
+			required: true
+		},
+		presentPrice: {
+			type: Number,
+			required: true
+		},
+		numberOfTokens: {
+			type: Number,
+			required: true
+		},
+		contractAddress: {
+			type: String,
+			trim: true
+		},
+		tokenName: {
+			type: String,
+			trim: true
+		},
+		tokenSymbol: {
+			type: String,
+			trim: true
+		},
+		value: {
+			type: String,
+			trim: true
+		},
+		from: {
+			type: String,
+			trim: true
+		},
+		to: {
+			type: String,
+			trim: true
+		},
+		gas: {
+			type: String,
+			trim: true
+		},
+		hash: {
+			type: String,
+			trim: true
+		},
+		blockHash: {
+			type: String,
+			trim: true
+		},
+		cumulativeGasUsed: {
+			type: String,
+			trim: true
+		},
+		blockNumber: {
+			type: String,
+			trim: true
+		},
+		nonce: {
+			type: String,
+			trim: true
+		},
+		gasPrice: {
+			type: String,
+			trim: true
+		},
+		transactionIndex: {
+			type: String,
+			trim: true
+		},
+		input: {
+			type: String,
+			trim: true
+		},
+		gasUsed: {
+			type: String,
+			trim: true
+		},
+		confirmations: {
+			type: String,
+			trim: true
+		},
+		tokenDecimal: {
+			type: String,
+			trim: true
+		},
+		presentDate: {
+			type: String,
+			trim: true
+		},
+		pastDate: {
+			type: String,
+			trim: true
+		}
+	},
+	{ timestamps: true, versionKey: false }
 );
 
-const TransactionModel = dbMainConnection.model(
-    "Transaction",
-    TransactionSchema
-);
-
-module.exports = TransactionModel;
+module.exports = mongoose.model("Transaction", TransactionSchema);
