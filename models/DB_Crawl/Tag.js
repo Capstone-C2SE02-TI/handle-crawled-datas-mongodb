@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema.Types;
 const { dbCrawlConnection } = require("../../configs/connect-database");
 
 const TagSchema = new mongoose.Schema({

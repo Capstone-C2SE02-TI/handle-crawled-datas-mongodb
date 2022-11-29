@@ -1,9 +1,7 @@
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlMetadataModel,
-    DBCrawlTagModel,
-    DBCrawlTokenModel
+    DBCrawlTagModel
 } = require("./DB_Crawl");
 
 const {
@@ -18,9 +16,7 @@ const {
 module.exports = {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlMetadataModel,
     DBCrawlTagModel,
-    DBCrawlTokenModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,

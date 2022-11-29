@@ -1,9 +1,7 @@
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlMetadataModel,
     DBCrawlTagModel,
-    DBCrawlTokenModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,

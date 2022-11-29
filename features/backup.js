@@ -1,10 +1,9 @@
+const { log } = require("console");
 const { fs } = require("../constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlMetadataModel,
     DBCrawlTagModel,
-    DBCrawlTokenModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,
@@ -12,6 +11,7 @@ const {
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");
+const { exportCollection } = require("./read");
 
 const backupDBMainDatas = async () => {
     const admins = await exportCollection(DBMainAdminModel);
@@ -57,18 +57,10 @@ const backupDBMainDatas = async () => {
 const backupDBCrawlDatas = async () => {
     const coins = await exportCollection(DBCrawlCoinModel);
     const investors = await exportCollection(DBCrawlInvestorModel);
-    const metadatas = await exportCollection(DBCrawlMetadataModel);
     const tags = await exportCollection(DBCrawlTagModel);
-    const tokens = await exportCollection(DBCrawlTokenModel);
 
-    const collectionDatas = [coins, investors, metadatas, tags, tokens];
-    const collectionNames = [
-        "coins",
-        "investors",
-        "metadatas",
-        "tags",
-        "tokens"
-    ];
+    const collectionDatas = [coins, investors, tags];
+    const collectionNames = ["coins", "investors", "tags"];
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(

@@ -6,9 +6,7 @@ const { generateSchemaFromJsonData } = require("./handle");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlMetadataModel,
     DBCrawlTagModel,
-    DBCrawlTokenModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,

@@ -13,9 +13,7 @@ const {
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlMetadataModel,
     DBCrawlTagModel,
-    DBCrawlTokenModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,
@@ -37,7 +35,9 @@ const {
     DBMainUsersDatas
 } = require("./databases");
 
-const runScript = async () => {};
+const runScript = async () => {
+    // await backupDBCrawlDatas();
+};
 
 runScript();
 
