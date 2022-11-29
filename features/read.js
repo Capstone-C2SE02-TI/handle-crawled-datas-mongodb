@@ -14,20 +14,18 @@ const exportCollection = async (CollectionModel) => {
     return await CollectionModel.find({});
 };
 
-const getDBMainTags = async () => {
-    const tags = await DBCrawlTagModel.find({
-        name: "Internet Computer Ecosystem"
-    })
-        // .sort("id")
-        // .select(
-        //     "name title description num_tokens avg_price_change market_cap market_cap_change volume volume_change -_id"
-        // );
-        .select("name title volume_change -_id");
+const getDBCrawlCollection = async () => {
+    const coins = await DBCrawlInvestorModel.find({});
+    // .sort("id")
+    // .select(
+    //     "name title description num_tokens avg_price_change market_cap market_cap_change volume volume_change -_id"
+    // );
+    // .select("name title volume_change -_id");
 
-    return tags;
+    return coins;
 };
 
 module.exports = {
     exportCollection,
-    getDBMainTags
+    getDBCrawlCollection
 };

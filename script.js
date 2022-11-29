@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const { log } = require("console");
 const { fs } = require("./constants");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
-const { exportCollection, getDBMainTags } = require("./features/read");
+const { exportCollection, getDBCrawlCollection } = require("./features/read");
 const { generateSchemaFromJsonData } = require("./features/handle");
 const {
     handleTokensPrices,
@@ -36,7 +36,7 @@ const {
 } = require("./databases");
 
 const runScript = async () => {
-    // await backupDBCrawlDatas();
+    await backupDBCrawlDatas();
 };
 
 runScript();

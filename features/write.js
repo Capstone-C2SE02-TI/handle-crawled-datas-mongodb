@@ -22,11 +22,11 @@ const handleTokensPrices = async () => {
         // 1. DAY
         let days = {};
 
-        // [Need Handle] Thay 20221009 bằng ngày hiện tại
+        // [Need Handle] Thay 20221120 bằng ngày hiện tại
         Object.keys(metadata[i].prices.hourly).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
 
-            if (Math.floor(cv / 1000000) == 20221009) {
+            if (Math.floor(cv / 1000000) == 20221120) {
                 days[key] = metadata[i].prices.hourly[`${key}`];
             }
         });
@@ -36,7 +36,7 @@ const handleTokensPrices = async () => {
 
         // [Need Handle] Thay mảng dates bằng giá trị 7 ngày gần nhất
         let dates = [
-            20221009, 20221008, 20221007, 20221006, 20221005, 20221004, 20221003
+            20221114, 20221115, 20221116, 20221117, 20221118, 20221119, 20221120
         ];
 
         Object.keys(metadata[i].prices.daily).forEach((key) => {
@@ -49,10 +49,10 @@ const handleTokensPrices = async () => {
         // 3. MONTH
         let months = {};
 
-        // [Need Handle] Thay 202209 bằng giá trị tháng hiện tại (YYYYmm)
+        // [Need Handle] Thay 202210 bằng giá trị tháng hiện tại (YYYYmm)
         Object.keys(metadata[i].prices.daily).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-            if (Math.floor(cv / 100000000) == 202209) {
+            if (Math.floor(cv / 100000000) == 202210) {
                 months[key] = metadata[i].prices.daily[`${key}`];
             }
         });
@@ -62,8 +62,8 @@ const handleTokensPrices = async () => {
 
         // [Need Handle] Thay monthYears bằng giá trị 12 gần nhất kể cả trừ tháng hiện tại
         const monthYears = [
-            202110, 202111, 202112, 202201, 202202, 202203, 202204, 202205,
-            202206, 202207, 202208, 202209
+            202111, 202112, 202201, 202202, 202203, 202204, 202205, 202206,
+            202207, 202208, 202209, 202210
         ];
 
         Object.keys(metadata[i].prices.daily).forEach((key) => {
