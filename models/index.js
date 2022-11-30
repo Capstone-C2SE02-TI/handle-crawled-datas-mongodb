@@ -9,6 +9,7 @@ const {
     DBMainSharkModel,
     DBMainTagModel,
     DBMainTokenModel,
+    DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel
 } = require("./DB_Main");
@@ -21,6 +22,7 @@ module.exports = {
     DBMainSharkModel,
     DBMainTagModel,
     DBMainTokenModel,
+    DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel
 };

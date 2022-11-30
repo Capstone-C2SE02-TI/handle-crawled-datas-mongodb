@@ -8,6 +8,7 @@ const {
     DBMainSharkModel,
     DBMainTagModel,
     DBMainTokenModel,
+    DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");
@@ -59,8 +60,8 @@ const backupDBCrawlDatas = async () => {
     const investors = await exportCollection(DBCrawlInvestorModel);
     const tags = await exportCollection(DBCrawlTagModel);
 
-    const collectionDatas = [ coins, investors, tags ];
-    const collectionNames = [ "coins", "investors", "tags" ];
+    const collectionDatas = [coins, investors, tags];
+    const collectionNames = ["coins", "investors", "tags"];
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(

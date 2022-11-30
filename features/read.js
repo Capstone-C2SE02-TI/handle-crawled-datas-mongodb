@@ -6,6 +6,7 @@ const {
     DBMainSharkModel,
     DBMainTagModel,
     DBMainTokenModel,
+    DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");

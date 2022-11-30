@@ -6,6 +6,7 @@ const { exportCollection, getDBCrawlCollection } = require("./features/read");
 const { generateSchemaFromJsonData } = require("./features/handle");
 const {
     handleTokensPrices,
+    convertCoinsCollection,
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
     generateAndWriteSchemaInFile
@@ -18,6 +19,7 @@ const {
     DBMainSharkModel,
     DBMainTagModel,
     DBMainTokenModel,
+    DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel
 } = require("./models");
@@ -35,9 +37,7 @@ const {
     DBMainUsersDatas
 } = require("./databases");
 
-const runScript = async () => {
-    await backupDBCrawlDatas();
-};
+const runScript = async () => {};
 
 runScript();
 

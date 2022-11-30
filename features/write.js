@@ -1,4 +1,3 @@
-const metadata = [];
 const investors = [];
 
 const { convertUnixTimestampToNumber } = require("../helpers");
@@ -15,76 +14,152 @@ const {
     DBMainUserModel
 } = require("../models");
 
-const handleTokensPrices = async () => {
-    let prices = [];
+const handleTokensPrices = (coinsPrices) => {
+    const { hourly, daily } = coinsPrices;
 
-    for (let i = 0; i < 10; i++) {
-        // 1. DAY
-        let days = {};
-
-        // [Need Handle] Thay 20221120 bằng ngày hiện tại
-        Object.keys(metadata[i].prices.hourly).forEach((key) => {
+    // 1. DAY => Thay 20221125 bằng ngày hiện tại
+    let days = {};
+    if (hourly) {
+        Object.keys(hourly).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
 
-            if (Math.floor(cv / 1000000) == 20221120) {
-                days[key] = metadata[i].prices.hourly[`${key}`];
+            if (Math.floor(cv / 1000000) == 20221125) {
+                days[key] = hourly[`${key}`];
             }
         });
+    } else {
+        days = null;
+    }
 
-        // 2. WEEK
-        let weeks = {};
+    // 2. WEEK => Thay mảng dates bằng giá trị 7 ngày gần nhất
+    let weeks = {};
+    let dates = [
+        20221119, 20221120, 20221121, 20221122, 20221123, 20221124, 20221125
+    ];
 
-        // [Need Handle] Thay mảng dates bằng giá trị 7 ngày gần nhất
-        let dates = [
-            20221114, 20221115, 20221116, 20221117, 20221118, 20221119, 20221120
-        ];
-
-        Object.keys(metadata[i].prices.daily).forEach((key) => {
+    if (daily) {
+        Object.keys(daily).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
             if (dates.includes(Math.floor(cv / 1000000))) {
-                weeks[key] = metadata[i].prices.daily[`${key}`];
+                weeks[key] = daily[`${key}`];
             }
         });
+    } else {
+        weeks = null;
+    }
 
-        // 3. MONTH
-        let months = {};
-
-        // [Need Handle] Thay 202210 bằng giá trị tháng hiện tại (YYYYmm)
-        Object.keys(metadata[i].prices.daily).forEach((key) => {
+    // 3. MONTH => Thay 202210 bằng giá trị tháng hiện tại (YYYYmm)
+    let months = {};
+    if (daily) {
+        Object.keys(daily).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-            if (Math.floor(cv / 100000000) == 202210) {
-                months[key] = metadata[i].prices.daily[`${key}`];
+            if (Math.floor(cv / 100000000) == 202211) {
+                months[key] = daily[`${key}`];
             }
         });
+    } else {
+        months = null;
+    }
 
-        // 4. YEAR
-        let years = {};
+    // 4. YEAR => Thay monthYears bằng giá trị 12 gần nhất kể cả trừ tháng hiện tại
+    let years = {};
+    const monthYears = [
+        202112, 202201, 202202, 202203, 202204, 202205, 202206, 202207, 202208,
+        202209, 202210, 202211
+    ];
 
-        // [Need Handle] Thay monthYears bằng giá trị 12 gần nhất kể cả trừ tháng hiện tại
-        const monthYears = [
-            202111, 202112, 202201, 202202, 202203, 202204, 202205, 202206,
-            202207, 202208, 202209, 202210
-        ];
-
-        Object.keys(metadata[i].prices.daily).forEach((key) => {
+    if (daily) {
+        Object.keys(daily).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
             if (monthYears.includes(Math.floor(cv / 100000000))) {
-                years[key] = metadata[i].prices.daily[`${key}`];
+                years[key] = daily[`${key}`];
             }
         });
+    } else {
+        years = null;
+    }
 
-        // UPDATE DATA
-        prices.push({
-            prices: {
-                day: days,
-                week: weeks,
-                month: months,
-                year: years
-            }
+    return {
+        day: days,
+        week: weeks,
+        month: months,
+        year: years
+    };
+};
+
+const convertCoinsCollection = () => {
+    const coins = require("../databases/DB_Crawl/coins.json");
+
+    let coinsList = [];
+
+    for (let i = 0; i < coins.length; i++) {
+        coinsList.push({
+            originalPrices: {
+                hourly: coins[i].prices.hourly || null,
+                daily: coins[i].prices.daily || null
+            },
+            circulatingSupply: coins[i].market_data?.circulating_supply || null,
+            coingeckoId: coins[i]._id,
+            ethId: coins[i]._id,
+            iconURL: coins[i].image?.thumb || "",
+            type: coins[i].asset_platform_id === null ? "coin" : "token",
+            urls: {
+                homepage: coins[i].links?.homepage[0] || "",
+                sourceCode: coins[i].links?.repos_url?.github[0] || ""
+            },
+            cmcRank: coins[i].market_data?.market_cap_rank || null,
+            totalSupply: coins[i].market_data?.total_supply || null,
+            contractAddress: coins[i].contract_address || "",
+            usd: {
+                volume24h: coins[i].market_data?.total_volume?.usd,
+                price: {
+                    usd: coins[i].market_data?.current_price?.usd || null,
+                    ath: coins[i].market_data?.current_price?.ath || null,
+                    alt: coins[i].market_data?.current_price?.alt || null
+                },
+                percentChange7d:
+                    coins[i].market_data?.price_change_percentage_7d_in_currency
+                        ?.usd || null,
+                percentChange24h:
+                    coins[i].market_data
+                        ?.price_change_percentage_24h_in_currency?.usd || null,
+                _24hHigh: coins[i].market_data?.high_24h?.usd || null,
+                _24hLow: coins[i].market_data?.low_24h?.usd || null,
+                allTimeHigh: coins[i].market_data?.ath?.usd || null,
+                allTimeLow: coins[i].market_data?.atl?.usd || null,
+                fullyDilutedValuation:
+                    coins[i].market_data?.fully_diluted_valuation?.usd || null
+            },
+            symbol: coins[i].symbol,
+            tagNames: coins[i].categories,
+            maxSupply: coins[i].market_data?.max_supply || null,
+            name: coins[i].name,
+            prices: handleTokensPrices(coins[i].prices) || null,
+            marketCap: coins[i].market_data?.market_cap?.usd || null,
+            pricesLast1Day: handleTokensPrices(coins[i].prices).day || null
         });
     }
 
-    return prices;
+    return coinsList;
+};
+
+const saveConvertedCoinCollectionToFile = async () => {
+    const data = await convertCoinsCollection();
+
+    fs.writeFileAsync(
+        `./databases/DB_Crawl/coins-converted.json`,
+        JSON.stringify(data),
+        (error) => {
+            if (error) {
+                log(`Backup file coins-converted.json error`);
+                throw new Error(error);
+            }
+        }
+    );
+};
+
+const saveConvertedCoinCollectionToDB = async () => {
+    const coins = require("./databases/DB_Crawl/coins-converted.json");
 };
 
 const handleDetailChartTransaction = async () => {
@@ -171,6 +246,9 @@ const generateAndWriteSchemaInFile = async () => {
 
 module.exports = {
     handleTokensPrices,
+    convertCoinsCollection,
+    saveConvertedCoinCollectionToFile,
+    saveConvertedCoinCollectionToDB,
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
     generateAndWriteSchemaInFile
