@@ -1,5 +1,6 @@
 const investors = [];
 
+const { log } = require("console");
 const { convertUnixTimestampToNumber } = require("../helpers");
 const { generateSchemaFromJsonData } = require("./handle");
 const {
@@ -10,6 +11,7 @@ const {
     DBMainSharkModel,
     DBMainTagModel,
     DBMainTokenModel,
+    DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");
@@ -159,7 +161,23 @@ const saveConvertedCoinCollectionToFile = async () => {
 };
 
 const saveConvertedCoinCollectionToDB = async () => {
-    const coins = require("./databases/DB_Crawl/coins-converted.json");
+    const coins = require("../databases/DB_Crawl/coins-converted.json");
+
+    for (let i = 0; i < coins.length; i++) {
+        try {
+            await DBMainCoinModel.create({ coinId: i + 1, ...coins[i] })
+                .then((data) => {})
+                .catch((error) => {
+                    log("Write coin in DB failed");
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log("Write coin in DB failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Write coins in DB successfully");
 };
 
 const handleDetailChartTransaction = async () => {
@@ -211,7 +229,7 @@ const updateSharkHistoryDatas = async () => {
 
     for (let i = 0; i <= 9; i++) {
         try {
-            await SharkModel.findOneAndUpdate(
+            await DBMainSharkModel.findOneAndUpdate(
                 { id: i + 1 },
                 { historyDatas: sharksDB[i].historyDatas }
             )
