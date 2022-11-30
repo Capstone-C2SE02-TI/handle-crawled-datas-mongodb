@@ -4,15 +4,11 @@ const { dbMainConnection } = require("../../configs/connect-database");
 const TagSchema = new mongoose.Schema(
     {
         id: {
-            type: Number,
-            required: true,
-            unique: true
+            type: Number
         },
         name: {
             type: String,
-            trim: true,
-            required: true,
-            unique: true
+            trim: true
         }
     },
     { versionKey: false }

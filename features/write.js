@@ -180,6 +180,30 @@ const saveConvertedCoinCollectionToDB = async () => {
     log("Write coins in DB successfully");
 };
 
+const saveTagCollectionToDB = async () => {
+    const tags = require("../databases/DB_Crawl/tags.json");
+
+    for (let i = 0; i < tags.length; i++) {
+        try {
+            await DBMainTagModel.create({
+                id: i + 1,
+                tagId: i + 1,
+                name: tags[i].name
+            })
+                .then((data) => {})
+                .catch((error) => {
+                    log("Write tag in DB failed");
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log("Write tag in DB failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Write tags in DB successfully");
+};
+
 const handleDetailChartTransaction = async () => {
     let sharks = [];
     let shark = {};
@@ -267,6 +291,7 @@ module.exports = {
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
+    saveTagCollectionToDB,
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
     generateAndWriteSchemaInFile
