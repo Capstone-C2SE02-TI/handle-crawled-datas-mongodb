@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
 const { dbMainConnection } = require("../../configs/connect-database");
 
 const CoinSchema = new mongoose.Schema(
@@ -85,14 +84,12 @@ const CoinSchema = new mongoose.Schema(
             default: {}
         },
         pricesLast1Day: {
-            type: Array,
+            type: Object,
             default: {}
         }
     },
     { versionKey: false }
 );
-
-// CoinSchema.plugin(AutoIncrement, { inc_field: "coinId" });
 
 const CoinModel = dbMainConnection.model("Coin", CoinSchema);
 

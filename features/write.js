@@ -1,5 +1,6 @@
 const investors = [];
 
+const { fs } = require("../constants");
 const { log } = require("console");
 const { convertUnixTimestampToNumber } = require("../helpers");
 const { generateSchemaFromJsonData } = require("./handle");
@@ -91,6 +92,7 @@ const handleTokensPrices = (coinsPrices) => {
 
 const convertCoinsCollection = () => {
     const coins = require("../databases/DB_Crawl/coins.json");
+    const ids = require("../databases/DB_Crawl/ids.json");
 
     let coinsList = [];
 
@@ -101,24 +103,17 @@ const convertCoinsCollection = () => {
                 daily: coins[i].prices.daily || null
             },
             circulatingSupply: coins[i].market_data?.circulating_supply || null,
-            coingeckoId: coins[i]._id,
-            ethId: coins[i]._id,
+            coingeckoId: ids[i]._id,
+            ethId: ids[i]._id,
             iconURL: coins[i].image?.thumb || "",
             type: coins[i].asset_platform_id === null ? "coin" : "token",
-            urls: {
-                homepage: coins[i].links?.homepage[0] || "",
-                sourceCode: coins[i].links?.repos_url?.github[0] || ""
-            },
+            urls: coins[i].links,
             cmcRank: coins[i].market_data?.market_cap_rank || null,
             totalSupply: coins[i].market_data?.total_supply || null,
             contractAddress: coins[i].contract_address || "",
             usd: {
                 volume24h: coins[i].market_data?.total_volume?.usd,
-                price: {
-                    usd: coins[i].market_data?.current_price?.usd || null,
-                    ath: coins[i].market_data?.current_price?.ath || null,
-                    alt: coins[i].market_data?.current_price?.alt || null
-                },
+                price: coins[i].market_data?.current_price?.usd || null,
                 percentChange7d:
                     coins[i].market_data?.price_change_percentage_7d_in_currency
                         ?.usd || null,
@@ -146,11 +141,11 @@ const convertCoinsCollection = () => {
 };
 
 const saveConvertedCoinCollectionToFile = async () => {
-    const data = await convertCoinsCollection();
+    const datas = await convertCoinsCollection();
 
-    fs.writeFileAsync(
+    await fs.writeFileAsync(
         `./databases/DB_Crawl/coins-converted.json`,
-        JSON.stringify(data),
+        JSON.stringify(datas),
         (error) => {
             if (error) {
                 log(`Backup file coins-converted.json error`);
@@ -158,6 +153,8 @@ const saveConvertedCoinCollectionToFile = async () => {
             }
         }
     );
+
+    log("Write coins into file successfully");
 };
 
 const saveConvertedCoinCollectionToDB = async () => {

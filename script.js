@@ -29,6 +29,7 @@ const {
 const {
     handleTokensPrices,
     convertCoinsCollection,
+    saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
     saveTagCollectionToDB,
     handleDetailChartTransaction,
@@ -40,7 +41,8 @@ const { exportCollection, getDBCrawlCollection } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
-    await saveTagCollectionToDB();
+    // await saveConvertedCoinCollectionToFile();
+    await saveConvertedCoinCollectionToDB();
 };
 
 runScript();
