@@ -177,6 +177,62 @@ const saveConvertedCoinCollectionToDB = async () => {
     log("Write coins in DB successfully");
 };
 
+const convertInvestorsCollection = () => {
+    const investors = require("../databases/DB_Crawl/investors.json");
+
+    let investorList = [];
+
+    for (let i = 0; i < investors.length; i++) {
+        investorList.push({
+            isShark: investors[i].is_shark,
+            coins: investors[i].coins,
+            contractAddress: investors[i]._id || ""
+        });
+    }
+
+    return investorList;
+};
+
+const saveConvertedInvestorCollectionToFile = async () => {
+    const datas = await convertInvestorsCollection();
+
+    await fs.writeFileAsync(
+        `./databases/DB_Crawl/investors.json`,
+        JSON.stringify(datas),
+        (error) => {
+            if (error) {
+                log(`Backup file investors.json error`);
+                throw new Error(error);
+            }
+        }
+    );
+
+    log("Write investors into file successfully");
+};
+
+const saveConvertedInvestorCollectionToDB = async () => {
+    const investors = require("../databases/DB_Crawl/investors.json");
+
+    for (let i = 0; i < investors.length; i++) {
+        try {
+            await DBMainInvestorModel.create({
+                investorId: i + 1,
+                ...investors[i]
+            })
+                .then((data) => {})
+                .catch((error) => {
+                    log("Write investor in DB failed");
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log("Write investor in DB failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Write investors in DB successfully");
+};
+
 const saveTagCollectionToDB = async () => {
     const tags = require("../databases/DB_Crawl/tags.json");
 
@@ -288,6 +344,9 @@ module.exports = {
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
+    convertInvestorsCollection,
+    saveConvertedInvestorCollectionToFile,
+    saveConvertedInvestorCollectionToDB,
     saveTagCollectionToDB,
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
