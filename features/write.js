@@ -177,6 +177,141 @@ const saveConvertedCoinCollectionToDB = async () => {
     log("Write coins in DB successfully");
 };
 
+const getValueFromPromise = async (promiseValue) => {
+    const value = await Promise.all(promiseValue);
+    return value;
+};
+
+const getDateNearTransaction = (dateList, dateTransaction) => {
+    let datePricesTokenCut = dateList.map((date) => {
+        return date["date"].slice(0, 10);
+    });
+    let dateTransactionCut = dateTransaction.slice(0, 10);
+    let positionDate = null;
+    // Cut hour
+    let dateCutByHours = datePricesTokenCut.filter((date, index) => {
+        if (Number(date) === Number(dateTransactionCut)) positionDate = index;
+        return Number(date) === Number(dateTransactionCut);
+    });
+
+    if (dateCutByHours.length > 0) {
+        // date transaction before date change price
+        if (Number(dateTransaction) < Number(dateList[positionDate]))
+            return positionDate === dateList.length - 1
+                ? dateList[dateList.length - 1]
+                : dateList[positionDate + 1];
+        else return dateList[positionDate];
+    }
+
+    // cut date
+    let dateCutByDates = datePricesTokenCut.filter((date, index) => {
+        date = date.slice(0, 8);
+        if (Number(date) === Number(dateTransactionCut.slice(0, 8)))
+            positionDate = index;
+        return Number(date) === Number(dateTransactionCut.slice(0, 8));
+    });
+
+    let hourTrade = dateTransactionCut.slice(8);
+    let datesCutLength = dateCutByDates.length;
+    for (let i = 0; i < datesCutLength; i++) {
+        if (Number(hourTrade) > Number(dateCutByDates[i].slice(8)))
+            return dateList[positionDate - datesCutLength + i + 1];
+    }
+
+    return positionDate === null
+        ? {
+              date: "none",
+              value: 0
+          }
+        : positionDate === dateList.length - 1
+        ? dateList[dateList.length - 1]
+        : dateList[positionDate + 1];
+};
+
+const getListTransactionsOfShark = async (sharkId) => {
+    if (!_.isNumber(sharkId)) return -1;
+
+    const rawData = await database
+        .collection("sharks")
+        .where("id", "==", sharkId)
+        .get();
+
+    let transactions = -1;
+
+    rawData.forEach((doc) => {
+        transactions = doc
+            .data()
+            ["transactionsHistory"].map(async (transaction) => {
+                let numberOfTokens =
+                    transaction["value"] /
+                    Math.pow(10, transaction["tokenDecimal"]);
+                let hoursPrice = await getHoursPriceOfToken(
+                    transaction["tokenSymbol"]
+                );
+
+                // found hourly price
+                if (typeof hoursPrice !== "undefined") {
+                    hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
+                        let date = convertUnixTimestampToNumber(
+                            unixDate / 1000
+                        );
+                        date = date.toString();
+                        return {
+                            date: date,
+                            value: hoursPrice[unixDate]
+                        };
+                    });
+
+                    hoursPrice.sort(
+                        (firstObj, secondObj) =>
+                            secondObj["date"] - firstObj["date"]
+                    );
+                }
+
+                let presentData =
+                    typeof hoursPrice !== "undefined"
+                        ? hoursPrice[0]
+                        : undefined;
+
+                const dateNearTransaction =
+                    typeof hoursPrice !== "undefined"
+                        ? getDateNearTransaction(
+                              hoursPrice,
+                              transaction["timeStamp"]
+                          )
+                        : { date: "none", value: 0 };
+
+                let presentPrice =
+                    typeof presentData === "undefined"
+                        ? 0
+                        : presentData["value"];
+
+                let presentDate =
+                    typeof presentData === "undefined"
+                        ? 0
+                        : presentData["date"];
+
+                Object.assign(transaction, {
+                    numberOfTokens: numberOfTokens,
+                    pastDate: dateNearTransaction["date"],
+                    pastPrice: dateNearTransaction["value"],
+                    presentDate: presentDate,
+                    presentPrice: presentPrice
+                });
+
+                return transaction;
+            });
+    });
+
+    transactions = await getValueFromPromise(transactions);
+
+    rawData.forEach((doc) => {
+        doc.ref.update({ transactionsHistory: transactions });
+    });
+
+    return transactions;
+};
+
 const convertInvestorsCollection = () => {
     const investors = require("../databases/DB_Crawl/investors.json");
 
@@ -186,7 +321,8 @@ const convertInvestorsCollection = () => {
         investorList.push({
             isShark: investors[i].is_shark,
             coins: investors[i].coins,
-            contractAddress: investors[i]._id || ""
+            contractAddress: investors[i]._id || "",
+            followers: []
         });
     }
 
@@ -344,6 +480,7 @@ module.exports = {
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
+    getListTransactionsOfShark,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,

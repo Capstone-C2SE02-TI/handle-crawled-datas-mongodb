@@ -50,7 +50,7 @@ const runScript = async () => {
 
 runScript();
 
-//#region CLOSE
+// #region CLOSE
 // //#region Automation Scripts
 // const scriptsRunEvery10Minutes = async () => {};
 // const scriptsRunEveryHour = async () => {};
@@ -76,4 +76,4 @@ runScript();
 //     await scriptsRunEveryDay();
 // });
 // //#endregion
-//#endregion
+// #endregion
