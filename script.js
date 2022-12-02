@@ -36,10 +36,8 @@ const {
     saveConvertedInvestorCollectionToDB,
     saveTagCollectionToDB,
     handleDetailChartTransaction,
-    updateSharkHistoryDatas,
-    generateAndWriteSchemaInFile
+    updateSharkHistoryDatas
 } = require("./features/write");
-const { generateSchemaFromJsonData } = require("./features/handle");
 const { exportCollection, getDBCrawlCollection } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 

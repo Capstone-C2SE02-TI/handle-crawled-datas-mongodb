@@ -3,7 +3,6 @@ const investors = [];
 const { fs } = require("../constants");
 const { log } = require("console");
 const { convertUnixTimestampToNumber } = require("../helpers");
-const { generateSchemaFromJsonData } = require("./handle");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
@@ -462,21 +461,6 @@ const updateSharkHistoryDatas = async () => {
     }
 };
 
-const generateAndWriteSchemaInFile = async () => {
-    const schemas = await generateSchemaFromJsonData(DBCrawlTokensDatas[0]);
-
-    fs.writeFileAsync(
-        `./schemas/index.json`,
-        JSON.stringify(schemas),
-        (error) => {
-            if (error) {
-                log(`Write file index.js error`);
-                throw new Error(error);
-            }
-        }
-    );
-};
-
 module.exports = {
     handleTokensPrices,
     convertCoinsCollection,
@@ -488,6 +472,5 @@ module.exports = {
     saveConvertedInvestorCollectionToDB,
     saveTagCollectionToDB,
     handleDetailChartTransaction,
-    updateSharkHistoryDatas,
-    generateAndWriteSchemaInFile
+    updateSharkHistoryDatas
 };
