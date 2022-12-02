@@ -319,6 +319,8 @@ const convertInvestorsCollection = () => {
 
     for (let i = 0; i < investors.length; i++) {
         investorList.push({
+            sharkId: i + 1,
+            investorId: i + 1,
             isShark: investors[i].is_shark,
             coins: investors[i].coins,
             contractAddress: investors[i]._id || "",
@@ -351,10 +353,7 @@ const saveConvertedInvestorCollectionToDB = async () => {
 
     for (let i = 0; i < investors.length; i++) {
         try {
-            await DBMainInvestorModel.create({
-                investorId: i + 1,
-                ...investors[i]
-            })
+            await DBMainInvestorModel.create(investors[i])
                 .then((data) => {})
                 .catch((error) => {
                     log("Write investor in DB failed");
