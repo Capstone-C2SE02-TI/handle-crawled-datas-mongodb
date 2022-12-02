@@ -3,7 +3,7 @@ const { dbMainConnection } = require("../../configs/connect-database");
 
 const TransactionSchema = new mongoose.Schema(
     {
-        sharkId: {
+        investorId: {
             type: Number,
             required: true,
             unique: true

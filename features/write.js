@@ -314,19 +314,73 @@ const getListTransactionsOfShark = async (sharkId) => {
     return transactions;
 };
 
-const convertInvestorsCollection = () => {
-    const investors = require("../databases/DB_Crawl/investors.json");
+const getCoinOrTokenDetails = async (coinSymbol) => {
+    const coinOrToken = await DBMainCoinModel.findOne({
+        symbol: coinSymbol.toLowerCase()
+    }).select("coinId name type symbol iconURL cmcRank tagNames usd -_id");
 
+    return coinOrToken || {};
+};
+
+const getListCryptosOfShark = async (coins) => {
+    let cryptosList = Object.keys(coins).map(async (coinSymbol) => {
+        const coinDetails = await getCoinOrTokenDetails(
+            coinSymbol.toLowerCase()
+        );
+
+        let quantity = coins[coinSymbol];
+        if (typeof quantity === "object")
+            quantity = Number(quantity["$numberLong"]);
+
+        if (Object.keys(coinDetails).length === 0)
+            return {
+                symbol: coinSymbol,
+                quantity: quantity
+            };
+        else {
+            return {
+                symbol: coinSymbol,
+                quantity: quantity,
+                coinId: coinDetails["coinId"],
+                name: coinDetails["name"],
+                symbol: coinDetails["symbol"],
+                type: coinDetails["type"],
+                tagNames: coinDetails["tagNames"],
+                cmcRank: coinDetails["cmcRank"],
+                iconURL: coinDetails["iconURL"],
+                price: coinDetails["usd"]["price"],
+                total: Math.floor(coinDetails["usd"]["price"] * quantity)
+            };
+        }
+    });
+
+    const cryptos = await getValueFromPromise(cryptosList);
+
+    const totalAssets = cryptos.reduce((current, crypto) => {
+        return current + BigInt(crypto.total);
+    }, 0n);
+
+    return { cryptos: cryptos, totalAssets: totalAssets.toString() };
+};
+
+const convertInvestorsCollection = async () => {
+    const investors = require("../databases/DB_Crawl/investors.json");
     let investorList = [];
 
     for (let i = 0; i < investors.length; i++) {
+        const { cryptos, totalAssets } = await getListCryptosOfShark(
+            investors[i].coins
+        );
+
         investorList.push({
-            sharkId: i + 1,
             investorId: i + 1,
             isShark: investors[i].is_shark,
             coins: investors[i].coins,
+            transactionsHistory: investors[i].TXs,
             contractAddress: investors[i]._id || "",
-            followers: []
+            followers: [],
+            cryptos: cryptos,
+            totalAssets: totalAssets
         });
     }
 
@@ -337,11 +391,11 @@ const saveConvertedInvestorCollectionToFile = async () => {
     const datas = await convertInvestorsCollection();
 
     await fs.writeFileAsync(
-        `./databases/DB_Crawl/investors.json`,
+        `./databases/DB_Crawl/investors-converted.json`,
         JSON.stringify(datas),
         (error) => {
             if (error) {
-                log(`Backup file investors.json error`);
+                log(`Backup file investors-converted.json error`);
                 throw new Error(error);
             }
         }
@@ -467,6 +521,7 @@ module.exports = {
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
     getListTransactionsOfShark,
+    getListCryptosOfShark,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,

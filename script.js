@@ -42,8 +42,8 @@ const { exportCollection, getDBCrawlCollection } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
-    // await saveConvertedCoinCollectionToFile();
-    // await saveConvertedCoinCollectionToDB();
+    await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedInvestorCollectionToDB();
 };
 
 runScript();
