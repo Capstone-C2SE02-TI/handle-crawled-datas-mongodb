@@ -97,7 +97,10 @@ const convertCoinsCollection = () => {
     let coinsList = [];
 
     for (let i = 0; i < coins.length; i++) {
+        const prices = handleTokensPrices(coins[i].prices);
+
         coinsList.push({
+            coinId: i + 1,
             originalPrices: {
                 hourly: coins[i].prices.hourly || null,
                 daily: coins[i].prices.daily || null
@@ -131,9 +134,9 @@ const convertCoinsCollection = () => {
             tagNames: coins[i].categories,
             maxSupply: coins[i].market_data?.max_supply || null,
             name: coins[i].name,
-            prices: handleTokensPrices(coins[i].prices) || null,
-            marketCap: coins[i].market_data?.market_cap?.usd || null,
-            pricesLast1Day: handleTokensPrices(coins[i].prices).day || null
+            prices: prices || null,
+            pricesLast1Month: prices.month || null,
+            marketCap: coins[i].market_data?.market_cap?.usd || null
         });
     }
 
@@ -162,7 +165,7 @@ const saveConvertedCoinCollectionToDB = async () => {
 
     for (let i = 0; i < coins.length; i++) {
         try {
-            await DBMainCoinModel.create({ coinId: i + 1, ...coins[i] })
+            await DBMainCoinModel.create(coins[i])
                 .then((data) => {})
                 .catch((error) => {
                     log("Write coin in DB failed");
