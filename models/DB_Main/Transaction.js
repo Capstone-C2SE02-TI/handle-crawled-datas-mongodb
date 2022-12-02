@@ -3,27 +3,23 @@ const { dbMainConnection } = require("../../configs/connect-database");
 
 const TransactionSchema = new mongoose.Schema(
     {
+        transactionId: {
+            type: Number
+        },
         investorId: {
-            type: Number,
-            required: true,
-            unique: true
+            type: Number
         },
         timeStamp: {
-            type: Number,
-            required: true,
-            unique: true
+            type: Number
         },
         pastPrice: {
-            type: Number,
-            required: true
+            type: Number
         },
         presentPrice: {
-            type: Number,
-            required: true
+            type: Number
         },
         numberOfTokens: {
-            type: Number,
-            required: true
+            type: Number
         },
         contractAddress: {
             type: String,

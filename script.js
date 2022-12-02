@@ -35,6 +35,8 @@ const {
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
     saveTagCollectionToDB,
+    saveConvertedTransactionsToFile,
+    saveConvertedTransactionsToDB,
     handleDetailChartTransaction,
     updateSharkHistoryDatas
 } = require("./features/write");
@@ -42,7 +44,9 @@ const { exportCollection, getDBCrawlCollection } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
-    await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedTransactionsToFile();
+    await saveConvertedTransactionsToDB();
+    // await saveConvertedInvestorCollectionToFile();
     // await saveConvertedInvestorCollectionToDB();
 };
 

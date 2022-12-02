@@ -448,6 +448,58 @@ const saveTagCollectionToDB = async () => {
     log("Write tags in DB successfully");
 };
 
+const convertTransactions = async () => {
+    const investors = require("../databases/DB_Crawl/investors.json");
+    let transactions = [], id = 1;
+
+    for (let i = 0; i < investors.length; i++) {
+        investors[i].TXs.map((TX) => {
+            transactions.push({ ...TX, investorId: i + 1, transactionId:  id++});
+        });
+    }
+
+    // Sort descending follow timestamp
+
+    return transactions;
+};
+
+const saveConvertedTransactionsToFile = async () => {
+    const datas = await convertTransactions();
+
+    await fs.writeFileAsync(
+        `./databases/DB_Crawl/transactions-converted.json`,
+        JSON.stringify(datas),
+        (error) => {
+            if (error) {
+                log(`Backup file transactions-converted.json error`);
+                throw new Error(error);
+            }
+        }
+    );
+
+    log("Write transactions into file successfully");
+};
+
+const saveConvertedTransactionsToDB = async () => {
+    const transactions = require("../databases/DB_Crawl/transactions-converted.json");
+
+    for (let i = 0; i < transactions.length; i++) {
+        try {
+            await DBMainTransactionModel.create(transactions[i])
+                .then((data) => {})
+                .catch((error) => {
+                    log("Write transaction in DB failed");
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log("Write transaction in DB failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Write transactions in DB successfully");
+};
+
 const handleDetailChartTransaction = async () => {
     let sharks = [];
     let shark = {};
@@ -527,5 +579,7 @@ module.exports = {
     saveConvertedInvestorCollectionToDB,
     saveTagCollectionToDB,
     handleDetailChartTransaction,
+    saveConvertedTransactionsToFile,
+    saveConvertedTransactionsToDB,
     updateSharkHistoryDatas
 };
