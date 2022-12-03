@@ -46,17 +46,7 @@ const { exportCollection, getCollectionDatas } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
-    // await calculateInvestorPercent24h();
-    // await saveConvertedInvestorCollectionToFile();
-    // await saveConvertedInvestorCollectionToDB();
-    // await saveCategoriesToFile();
-    // await saveCategoriesToDB();
-
-    // await saveConvertedCoinCollectionToDB();
-
-    // await saveConvertedCoinCollectionToFile();
-    // await saveConvertedCoinCollectionToDB();
-    // await addTransactionCollectionId();
+    await saveConvertedInvestorCollectionToDB();
 };
 
 runScript();

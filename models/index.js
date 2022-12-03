@@ -7,6 +7,7 @@ const {
 const {
     DBMainAdminModel,
     DBMainSharkModel,
+    DBMainInvestorModel,
     DBMainTagModel,
     DBMainTokenModel,
     DBMainCoinModel,
@@ -20,6 +21,7 @@ module.exports = {
     DBCrawlCategoryModel,
     DBMainAdminModel,
     DBMainSharkModel,
+    DBMainInvestorModel,
     DBMainTagModel,
     DBMainTokenModel,
     DBMainCoinModel,

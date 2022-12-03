@@ -7,6 +7,7 @@ const {
     DBCrawlCategoryModel,
     DBMainAdminModel,
     DBMainSharkModel,
+    DBMainInvestorModel,
     DBMainTagModel,
     DBMainTokenModel,
     DBMainCoinModel,
@@ -376,27 +377,22 @@ const getListCryptosOfShark = async (coins) => {
 };
 
 const calculateInvestorPercent24h = (snapshots) => {
-    const investors = require("../databases/DB_Crawl/investors.json");
+    const snapshotsArr1 = Object.entries(snapshots).map((element) => [
+        Number(element[0].slice(0, 10)),
+        Number(element[1])
+    ]);
 
-    const snapshotsArr = Object.entries(investors[0].snapshots).map((element) =>
-        element[0].slice(0, 10)
+    const snapshotsArr2 = Object.entries(snapshots).map((element) =>
+        Number(element[0].slice(0, 10))
     );
 
-    const intArray = snapshotsArr.map(Number);
-    const max1 = intArray.sort((a, b) => b - a)[0];
-    const max2 = intArray.sort((a, b) => b - a)[1];
+    const max1 = snapshotsArr2.sort((a, b) => b - a)[0];
+    const max2 = snapshotsArr2.sort((a, b) => b - a)[1];
 
-    const max1Value =
-        investors[0].snapshots[max1] || investors[0].snapshots[max1 + "000"];
+    const max1Value = snapshotsArr1.find((a) => a[0] === max1)[1];
+    const max2Value = snapshotsArr1.find((a) => a[0] === max2)[1];
 
-    const max2Value =
-        investors[0].snapshots[max2] || investors[0].snapshots[max2 + "000"];
-
-    const result = (max2Value / max2Value) * 100;
-
-    log(max1, max1Value);
-    log(max2, max2Value);
-    log(result);
+    const result = (max1Value / max2Value) * 100;
 
     return result || 0;
 };
@@ -445,7 +441,7 @@ const saveConvertedInvestorCollectionToFile = async () => {
 };
 
 const saveConvertedInvestorCollectionToDB = async () => {
-    const investors = require("../databases/DB_Crawl/investors.json");
+    const investors = require("../databases/DB_Crawl/investors-converted.json");
 
     for (let i = 0; i < investors.length; i++) {
         try {
