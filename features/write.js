@@ -1,7 +1,6 @@
 const investors = [];
 
-const { fs } = require("../constants");
-const { log } = require("console");
+const { fs, log } = require("../constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,

@@ -15,8 +15,8 @@ const exportCollection = async (CollectionModel) => {
     return await CollectionModel.find({});
 };
 
-const getDBCrawlCollection = async () => {
-    return await DBCrawlCategoryModel.find({});
+const getCollectionDatas = async (CollectionModel) => {
+    return await CollectionModel.find({});
 };
 
 const getCollectionLength = async (CollectionModel) => {
@@ -25,6 +25,6 @@ const getCollectionLength = async (CollectionModel) => {
 
 module.exports = {
     exportCollection,
-    getDBCrawlCollection,
+    getCollectionDatas,
     getCollectionLength
 };

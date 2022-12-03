@@ -1,6 +1,5 @@
 const cron = require("node-cron");
-const { log } = require("console");
-const { fs } = require("./constants");
+const { fs, log } = require("./constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
@@ -43,7 +42,7 @@ const {
     updateSharkHistoryDatas,
     addTransactionCollectionId
 } = require("./features/write");
-const { exportCollection, getDBCrawlCollection } = require("./features/read");
+const { exportCollection, getCollectionDatas } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
@@ -57,7 +56,7 @@ const runScript = async () => {
 
     // await saveConvertedCoinCollectionToFile();
     // await saveConvertedCoinCollectionToDB();
-    await addTransactionCollectionId();
+    // await addTransactionCollectionId();
 };
 
 runScript();

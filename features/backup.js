@@ -1,5 +1,4 @@
-const { log } = require("console");
-const { fs } = require("../constants");
+const { fs, log } = require("../constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
