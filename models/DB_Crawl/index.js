@@ -1,9 +1,9 @@
 const DBCrawlCoinModel = require("./Coin");
 const DBCrawlInvestorModel = require("./Investor");
-const DBCrawlTagModel = require("./Tag");
+const DBCrawlCategoryModel = require("./Category");
 
 module.exports = {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlTagModel
+    DBCrawlCategoryModel
 };

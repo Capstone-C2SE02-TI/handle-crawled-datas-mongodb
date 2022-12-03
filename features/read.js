@@ -1,7 +1,7 @@
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlTagModel,
+    DBCrawlCategoryModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,
@@ -16,14 +16,7 @@ const exportCollection = async (CollectionModel) => {
 };
 
 const getDBCrawlCollection = async () => {
-    const coins = await DBCrawlInvestorModel.find({});
-    // .sort("id")
-    // .select(
-    //     "name title description num_tokens avg_price_change market_cap market_cap_change volume volume_change -_id"
-    // );
-    // .select("name title volume_change -_id");
-
-    return coins;
+    return await DBCrawlCategoryModel.find({});
 };
 
 module.exports = {

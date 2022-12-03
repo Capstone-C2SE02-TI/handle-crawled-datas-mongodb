@@ -6,7 +6,7 @@ const { convertUnixTimestampToNumber } = require("../helpers");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlTagModel,
+    DBCrawlCategoryModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,
@@ -424,41 +424,59 @@ const saveConvertedInvestorCollectionToDB = async () => {
     log("Write investors in DB successfully");
 };
 
-const saveTagCollectionToDB = async () => {
-    const tags = require("../databases/DB_Crawl/tags.json");
+const saveCategoriesToFile = async () => {
+    const datas = await DBCrawlCategoryModel.find({});
 
-    for (let i = 0; i < tags.length; i++) {
+    await fs.writeFileAsync(
+        `./databases/DB_Crawl/categories-converted.json`,
+        JSON.stringify(datas),
+        (error) => {
+            if (error) {
+                log(`Write file categories-converted.json error`);
+                throw new Error(error);
+            }
+        }
+    );
+
+    log("Write categories into file successfully");
+};
+
+const saveCategoriesToDB = async () => {
+    const categories = require("../databases/DB_Crawl/categories-converted.json");
+
+    for (let i = 0; i < categories.length; i++) {
         try {
-            await DBMainTagModel.create({
-                id: i + 1,
-                tagId: i + 1,
-                name: tags[i].name
-            })
+            await DBMainTagModel.create({ id: i + 1, ...categories[i] })
                 .then((data) => {})
                 .catch((error) => {
-                    log("Write tag in DB failed");
+                    log("Write category in DB failed");
                     throw new Error(error);
                 });
         } catch (error) {
-            log("Write tag in DB failed");
+            log("Write category in DB failed");
             throw new Error(error);
         }
     }
 
-    log("Write tags in DB successfully");
+    log("Write categories in DB successfully");
 };
 
 const convertTransactions = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
-    let transactions = [], id = 1;
+    let transactions = [],
+        id = 1;
 
     for (let i = 0; i < investors.length; i++) {
         investors[i].TXs.map((TX) => {
-            transactions.push({ ...TX, investorId: i + 1, transactionId:  id++});
+            transactions.push({
+                ...TX,
+                investorId: i + 1,
+                transactionId: id++
+            });
         });
     }
 
-    // Sort descending follow timestamp
+    // Sort descending follow timestamp ?
 
     return transactions;
 };
@@ -498,6 +516,34 @@ const saveConvertedTransactionsToDB = async () => {
     }
 
     log("Write transactions in DB successfully");
+};
+
+const calculateInvestorPercent24h = async (snapshots) => {
+    const investors = require("../databases/DB_Crawl/investors.json");
+
+    const snapshotsArr = Object.entries(investors[0].snapshots).map((element) =>
+        element[0].slice(0, 10)
+    );
+
+    const intArray = snapshotsArr.map(Number);
+    // const max1 = intArray.sort((a, b) => b - a)[0];
+    // const max2 = intArray.sort((a, b) => b - a)[1];
+
+    const max1 = "1669726484";
+    const max2 = "1669654322";
+
+    const max1Value =
+        investors[0].snapshots[max1] || investors[0].snapshots[max1 + "000"];
+
+    const max2Value =
+        investors[0].snapshots[max2] || investors[0].snapshots[max2 + "000"];
+
+    const result = (max2Value / max2Value) * 100;
+    log(max1, max1Value);
+    log(max2, max2Value);
+    log(result);
+
+    return result || null;
 };
 
 const handleDetailChartTransaction = async () => {
@@ -577,9 +623,11 @@ module.exports = {
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
-    saveTagCollectionToDB,
-    handleDetailChartTransaction,
+    saveCategoriesToFile,
+    saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
+    calculateInvestorPercent24h,
+    handleDetailChartTransaction,
     updateSharkHistoryDatas
 };

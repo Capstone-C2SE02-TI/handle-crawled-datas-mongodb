@@ -3,7 +3,7 @@ const { fs } = require("../constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlTagModel,
+    DBCrawlCategoryModel,
     DBMainAdminModel,
     DBMainSharkModel,
     DBMainTagModel,
@@ -58,10 +58,10 @@ const backupDBMainDatas = async () => {
 const backupDBCrawlDatas = async () => {
     const coins = await exportCollection(DBCrawlCoinModel);
     const investors = await exportCollection(DBCrawlInvestorModel);
-    const tags = await exportCollection(DBCrawlTagModel);
+    const categories = await exportCollection(DBCrawlCategoryModel);
 
-    const collectionDatas = [coins, investors, tags];
-    const collectionNames = ["coins", "investors", "tags"];
+    const collectionDatas = [coins, investors, categories];
+    const collectionNames = ["coins", "investors", "categories"];
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(
