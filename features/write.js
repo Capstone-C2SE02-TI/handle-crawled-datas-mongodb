@@ -375,6 +375,32 @@ const getListCryptosOfShark = async (coins) => {
     return { cryptos: cryptos, totalAssets: totalAssets.toString() };
 };
 
+const calculateInvestorPercent24h = (snapshots) => {
+    const investors = require("../databases/DB_Crawl/investors.json");
+
+    const snapshotsArr = Object.entries(investors[0].snapshots).map((element) =>
+        element[0].slice(0, 10)
+    );
+
+    const intArray = snapshotsArr.map(Number);
+    const max1 = intArray.sort((a, b) => b - a)[0];
+    const max2 = intArray.sort((a, b) => b - a)[1];
+
+    const max1Value =
+        investors[0].snapshots[max1] || investors[0].snapshots[max1 + "000"];
+
+    const max2Value =
+        investors[0].snapshots[max2] || investors[0].snapshots[max2 + "000"];
+
+    const result = (max2Value / max2Value) * 100;
+
+    log(max1, max1Value);
+    log(max2, max2Value);
+    log(result);
+
+    return result || 0;
+};
+
 const convertInvestorsCollection = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
     let investorList = [];
@@ -383,16 +409,18 @@ const convertInvestorsCollection = async () => {
         const { cryptos, totalAssets } = await getListCryptosOfShark(
             investors[i].coins
         );
+        const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
 
         investorList.push({
-            investorId: i + 1,
+            sharkId: i + 1,
             isShark: investors[i].is_shark,
             coins: investors[i].coins,
             transactionsHistory: investors[i].TXs,
-            contractAddress: investors[i]._id || "",
+            walletAddress: investors[i]._id || "",
             followers: [],
             cryptos: cryptos,
-            totalAssets: totalAssets
+            totalAssets: totalAssets,
+            percent24h: percent24h || 0
         });
     }
 
@@ -528,34 +556,6 @@ const saveConvertedTransactionsToDB = async () => {
     }
 
     log("Write transactions in DB successfully");
-};
-
-const calculateInvestorPercent24h = async (snapshots) => {
-    const investors = require("../databases/DB_Crawl/investors.json");
-
-    const snapshotsArr = Object.entries(investors[0].snapshots).map((element) =>
-        element[0].slice(0, 10)
-    );
-
-    const intArray = snapshotsArr.map(Number);
-    // const max1 = intArray.sort((a, b) => b - a)[0];
-    // const max2 = intArray.sort((a, b) => b - a)[1];
-
-    const max1 = "1669726484";
-    const max2 = "1669654322";
-
-    const max1Value =
-        investors[0].snapshots[max1] || investors[0].snapshots[max1 + "000"];
-
-    const max2Value =
-        investors[0].snapshots[max2] || investors[0].snapshots[max2 + "000"];
-
-    const result = (max2Value / max2Value) * 100;
-    log(max1, max1Value);
-    log(max2, max2Value);
-    log(result);
-
-    return result || null;
 };
 
 const handleDetailChartTransaction = async () => {
