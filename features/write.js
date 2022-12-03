@@ -1,4 +1,4 @@
-const investors = [];
+// const investors = [];
 
 const { fs, log } = require("../constants");
 const {
@@ -95,6 +95,92 @@ const handleTokensPrices = (coinsPrices) => {
         week: weeks,
         month: months,
         year: years
+    };
+};
+
+const handleFormatTradeTransaction = async (investors) => {
+    let investorsList = [];
+
+    investors.forEach((investor) => {
+        let historyDatas = [];
+        const sharkWallet = investor.walletAddress;
+        const symbols = [...new Set(investor.TXs.map((TX) => TX.tokenSymbol))];
+
+        symbols.map((symbol) => {
+            let historyData = [];
+
+            investor.TXs.forEach((TX) => {
+                if (TX.tokenSymbol === symbol) {
+                    const n1 = BigInt(TX.value);
+                    const n2 = BigInt(
+                        Number(Math.pow(10, Number(TX.tokenDecimal)))
+                    );
+
+                    historyData.push({
+                        timeStamp: TX.timeStamp,
+                        value: "" + Number(BigInt(n1 / n2)),
+                        status: sharkWallet === TX.from ? "withdraw" : "deposit"
+                    });
+                }
+            });
+
+            historyDatas.push({
+                coinSymbol: symbol,
+                historyData: historyData
+            });
+        });
+
+        investorsList.push({
+            walletAddress: sharkWallet,
+            historyDatas: historyDatas
+        });
+    });
+
+    return investorsList;
+};
+
+const handleTradeTransaction = (transactions) => {
+    if (!transactions)
+        return {
+            week: null,
+            month: null
+        };
+
+    const datas = transactions;
+
+    // 1. WEEK => Thay mảng dates bằng giá trị 7 ngày gần nhất
+    let weeks = {};
+    let dates = [
+        20221119, 20221120, 20221121, 20221122, 20221123, 20221124, 20221125
+    ];
+
+    if (datas) {
+        Object.keys(datas).forEach((key) => {
+            const cv = convertUnixTimestampToNumber(key.slice(0, 10));
+            if (dates.includes(Math.floor(cv / 1000000))) {
+                weeks[key] = datas[`${key}`];
+            }
+        });
+    } else {
+        weeks = null;
+    }
+
+    // 2. MONTH => Thay 202210 bằng giá trị tháng hiện tại (YYYYmm)
+    let months = {};
+    if (datas) {
+        Object.keys(datas).forEach((key) => {
+            const cv = convertUnixTimestampToNumber(key.slice(0, 10));
+            if (Math.floor(cv / 100000000) == 202211) {
+                months[key] = datas[`${key}`];
+            }
+        });
+    } else {
+        months = null;
+    }
+
+    return {
+        week: weeks,
+        month: months
     };
 };
 
@@ -674,6 +760,8 @@ const renameTransactionCollectionField = async () => {
 
 module.exports = {
     handleTokensPrices,
+    handleFormatTradeTransaction,
+    handleTradeTransaction,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
