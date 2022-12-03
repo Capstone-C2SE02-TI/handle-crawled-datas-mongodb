@@ -646,6 +646,32 @@ const addTransactionCollectionId = async () => {
     log("Update Transactions id successfully");
 };
 
+const renameTransactionCollectionField = async () => {
+    const transactionLength = await getCollectionLength(DBMainTransactionModel);
+
+    for (let i = 0; i < transactionLength; i++) {
+        try {
+            await DBMainTransactionModel.updateMany(
+                {},
+                { $rename: { investorId: "sharkId" } },
+                { multi: true }
+            )
+                .then((data) => {
+                    if (!data) throw new Error();
+                })
+                .catch((error) => {
+                    log("Rename Transaction field failed");
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log("Rename Transaction field failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Rename Transactions field successfully");
+};
+
 module.exports = {
     handleTokensPrices,
     convertCoinsCollection,
@@ -663,5 +689,6 @@ module.exports = {
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
-    addTransactionCollectionId
+    addTransactionCollectionId,
+    renameTransactionCollectionField
 };

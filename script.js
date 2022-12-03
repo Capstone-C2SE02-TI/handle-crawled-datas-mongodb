@@ -40,13 +40,14 @@ const {
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
-    addTransactionCollectionId
+    addTransactionCollectionId,
+    renameTransactionCollectionField
 } = require("./features/write");
 const { exportCollection, getCollectionDatas } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
-    await saveConvertedInvestorCollectionToDB();
+    await renameTransactionCollectionField();
 };
 
 runScript();
