@@ -2,7 +2,6 @@ const investors = [];
 
 const { fs } = require("../constants");
 const { log } = require("console");
-const { convertUnixTimestampToNumber } = require("../helpers");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
@@ -15,8 +14,18 @@ const {
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");
+const { getCollectionLength } = require("./read");
+const { convertUnixTimestampToNumber } = require("../helpers");
 
 const handleTokensPrices = (coinsPrices) => {
+    if (!coinsPrices)
+        return {
+            day: null,
+            week: null,
+            month: null,
+            year: null
+        };
+
     const { hourly, daily } = coinsPrices;
 
     // 1. DAY => Thay 20221125 bằng ngày hiện tại
@@ -89,8 +98,11 @@ const handleTokensPrices = (coinsPrices) => {
     };
 };
 
-const convertCoinsCollection = () => {
-    const coins = require("../databases/DB_Crawl/coins.json");
+const convertCoinsCollection = async () => {
+    const coins = await DBCrawlCoinModel.find({});
+    // const ids = await DBCrawlCoinModel.find({}).select("_id");
+
+    // const coins = require("../databases/DB_Crawl/coins.json");
     const ids = require("../databases/DB_Crawl/ids.json");
 
     let coinsList = [];
@@ -135,7 +147,8 @@ const convertCoinsCollection = () => {
             name: coins[i].name,
             prices: prices || null,
             pricesLast1Month: prices.month || null,
-            marketCap: coins[i].market_data?.market_cap?.usd || null
+            marketCap: coins[i].market_data?.market_cap?.usd || null,
+            totalInvestment: coins[i].sumInvest || 0
         });
     }
 
@@ -613,6 +626,31 @@ const updateSharkHistoryDatas = async () => {
     }
 };
 
+const addTransactionCollectionId = async () => {
+    const transactionLength = await getCollectionLength(DBMainTransactionModel);
+
+    for (let i = 0; i < transactionLength; i++) {
+        try {
+            await DBMainTransactionModel.findOneAndUpdate(
+                { transactionId: i + 1 },
+                { id: i + 1 }
+            )
+                .then((data) => {
+                    if (!data) throw new Error();
+                })
+                .catch((error) => {
+                    log("Update Transaction id failed");
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log("Update Transaction id failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Update Transactions id successfully");
+};
+
 module.exports = {
     handleTokensPrices,
     convertCoinsCollection,
@@ -629,5 +667,6 @@ module.exports = {
     saveConvertedTransactionsToDB,
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
-    updateSharkHistoryDatas
+    updateSharkHistoryDatas,
+    addTransactionCollectionId
 };

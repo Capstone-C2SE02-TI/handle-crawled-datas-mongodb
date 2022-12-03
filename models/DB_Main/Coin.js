@@ -86,6 +86,10 @@ const CoinSchema = new mongoose.Schema(
         pricesLast1Month: {
             type: Object,
             default: {}
+        },
+        totalInvestment: {
+            type: Number,
+            default: 0
         }
     },
     { versionKey: false }

@@ -3,6 +3,9 @@ const { dbMainConnection } = require("../../configs/connect-database");
 
 const TransactionSchema = new mongoose.Schema(
     {
+        id: {
+            type: Number
+        },
         transactionId: {
             type: Number
         },
