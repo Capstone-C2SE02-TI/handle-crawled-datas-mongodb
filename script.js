@@ -31,6 +31,7 @@ const {
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
+    getListTransactionsOfInvestor,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
@@ -61,6 +62,13 @@ const runScript = async () => {
     // );
     // await saveConvertedInvestorCollectionToFile();
     // await saveConvertedInvestorCollectionToDB();
+
+    // Test dữ liệu 
+    const data = require(`./databases/DB_Crawl/investors-converted.json`);
+    const LTS = await getListTransactionsOfInvestor(
+        data[2].transactionsHistory
+    );
+    log(LTS);
 };
 
 runScript();

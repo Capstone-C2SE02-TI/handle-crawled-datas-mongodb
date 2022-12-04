@@ -250,46 +250,63 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
         : dateList[positionDate + 1];
 };
 
-const getListTransactionsOfShark = async (transactionsHistory) => {
+// Hàm ni đang viết Hiếu nghe, chỉ xử lí cho 1 shark thôi. Chứ ko all shark
+const getListTransactionsOfInvestor = async (transactionsHistory) => {
     let transactions = transactionsHistory.map(async (transaction) => {
         let numberOfTokens =
             transaction["value"] / Math.pow(10, transaction["tokenDecimal"]);
         let hoursPrice = await getHoursPriceOfToken(transaction["tokenSymbol"]);
 
-        if (hoursPrice) {
+        if (
+            typeof hoursPrice !== "undefined" &&
+            Boolean(hoursPrice) !== false
+        ) {
             hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
-                let date = unixDate.slice(0, 10);
+                let date = convertUnixTimestampToNumber(unixDate / 1000);
+                date = date.toString();
                 return {
                     date: date,
                     value: hoursPrice[unixDate]
                 };
             });
-            hoursPrice.sort((a, b) => b["date"] - a["date"]);
+
+            hoursPrice.sort(
+                (firstObj, secondObj) => secondObj["date"] - firstObj["date"]
+            );
+        } else {
+            return {
+                numberOfTokens: numberOfTokens,
+                pastDate: null,
+                pastPrice: null,
+                presentDate: null,
+                presentPrice: null
+            };
         }
 
-        let presentData = hoursPrice ? hoursPrice[0] : null;
+        let presentData =
+            typeof hoursPrice !== "undefined" ? hoursPrice[0] : undefined;
 
-        const dateNearTransaction = hoursPrice
-            ? getDateNearTransaction(hoursPrice, transaction["timeStamp"])
-            : { date: null, value: 0 };
+        const dateNearTransaction =
+            typeof hoursPrice !== "undefined"
+                ? getDateNearTransaction(hoursPrice, transaction["timeStamp"])
+                : { date: "none", value: 0 };
 
-        let presentPrice = !presentData ? 0 : presentData["value"];
-        let presentDate = !presentData ? 0 : presentData["date"];
+        let presentPrice =
+            typeof presentData === "undefined" ? 0 : presentData["value"];
 
-        Object.assign(transaction, {
+        let presentDate =
+            typeof presentData === "undefined" ? 0 : presentData["date"];
+
+        return {
             numberOfTokens: numberOfTokens,
             pastDate: dateNearTransaction["date"],
             pastPrice: dateNearTransaction["value"],
             presentDate: presentDate,
             presentPrice: presentPrice
-        });
-
-        return transaction;
+        };
     });
 
-    transactions = await getValueFromPromise(transactions);
-
-    return transactions;
+    return await getValueFromPromise(transactions);
 };
 
 const getCoinOrTokenDetails = async (coinSymbol) => {
@@ -752,7 +769,7 @@ module.exports = {
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
-    getListTransactionsOfShark,
+    getListTransactionsOfInvestor,
     getListCryptosOfShark,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
