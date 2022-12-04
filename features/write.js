@@ -193,8 +193,15 @@ const saveConvertedCoinCollectionToDB = async () => {
 };
 
 const getValueFromPromise = async (promiseValue) => {
-    const value = await Promise.all(promiseValue);
-    return value;
+    return await Promise.all(promiseValue);
+};
+
+const getHoursPriceOfToken = async (tokenSymbol) => {
+    const token = await DBMainCoinModel.findOne({
+        symbol: tokenSymbol.toLowerCase()
+    }).select("originalPrices -_id");
+
+    return token?.originalPrices?.hourly || null;
 };
 
 const getDateNearTransaction = (dateList, dateTransaction) => {
@@ -243,86 +250,44 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
         : dateList[positionDate + 1];
 };
 
-const getListTransactionsOfShark = async (sharkId) => {
-    if (!_.isNumber(sharkId)) return -1;
+const getListTransactionsOfShark = async (transactionsHistory) => {
+    let transactions = transactionsHistory.map(async (transaction) => {
+        let numberOfTokens =
+            transaction["value"] / Math.pow(10, transaction["tokenDecimal"]);
+        let hoursPrice = await getHoursPriceOfToken(transaction["tokenSymbol"]);
 
-    const rawData = await database
-        .collection("sharks")
-        .where("id", "==", sharkId)
-        .get();
-
-    let transactions = -1;
-
-    rawData.forEach((doc) => {
-        transactions = doc
-            .data()
-            ["transactionsHistory"].map(async (transaction) => {
-                let numberOfTokens =
-                    transaction["value"] /
-                    Math.pow(10, transaction["tokenDecimal"]);
-                let hoursPrice = await getHoursPriceOfToken(
-                    transaction["tokenSymbol"]
-                );
-
-                // found hourly price
-                if (typeof hoursPrice !== "undefined") {
-                    hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
-                        let date = convertUnixTimestampToNumber(
-                            unixDate / 1000
-                        );
-                        date = date.toString();
-                        return {
-                            date: date,
-                            value: hoursPrice[unixDate]
-                        };
-                    });
-
-                    hoursPrice.sort(
-                        (firstObj, secondObj) =>
-                            secondObj["date"] - firstObj["date"]
-                    );
-                }
-
-                let presentData =
-                    typeof hoursPrice !== "undefined"
-                        ? hoursPrice[0]
-                        : undefined;
-
-                const dateNearTransaction =
-                    typeof hoursPrice !== "undefined"
-                        ? getDateNearTransaction(
-                              hoursPrice,
-                              transaction["timeStamp"]
-                          )
-                        : { date: "none", value: 0 };
-
-                let presentPrice =
-                    typeof presentData === "undefined"
-                        ? 0
-                        : presentData["value"];
-
-                let presentDate =
-                    typeof presentData === "undefined"
-                        ? 0
-                        : presentData["date"];
-
-                Object.assign(transaction, {
-                    numberOfTokens: numberOfTokens,
-                    pastDate: dateNearTransaction["date"],
-                    pastPrice: dateNearTransaction["value"],
-                    presentDate: presentDate,
-                    presentPrice: presentPrice
-                });
-
-                return transaction;
+        if (hoursPrice) {
+            hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
+                let date = unixDate.slice(0, 10);
+                return {
+                    date: date,
+                    value: hoursPrice[unixDate]
+                };
             });
+            hoursPrice.sort((a, b) => b["date"] - a["date"]);
+        }
+
+        let presentData = hoursPrice ? hoursPrice[0] : null;
+
+        const dateNearTransaction = hoursPrice
+            ? getDateNearTransaction(hoursPrice, transaction["timeStamp"])
+            : { date: null, value: 0 };
+
+        let presentPrice = !presentData ? 0 : presentData["value"];
+        let presentDate = !presentData ? 0 : presentData["date"];
+
+        Object.assign(transaction, {
+            numberOfTokens: numberOfTokens,
+            pastDate: dateNearTransaction["date"],
+            pastPrice: dateNearTransaction["value"],
+            presentDate: presentDate,
+            presentPrice: presentPrice
+        });
+
+        return transaction;
     });
 
     transactions = await getValueFromPromise(transactions);
-
-    rawData.forEach((doc) => {
-        doc.ref.update({ transactionsHistory: transactions });
-    });
 
     return transactions;
 };
