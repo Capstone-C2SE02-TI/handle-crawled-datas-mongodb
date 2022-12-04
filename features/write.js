@@ -1,5 +1,3 @@
-// const investors = [];
-
 const { fs, log } = require("../constants");
 const {
     DBCrawlCoinModel,
