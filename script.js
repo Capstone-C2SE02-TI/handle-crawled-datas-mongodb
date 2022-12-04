@@ -27,6 +27,7 @@ const {
 } = require("./databases");
 const {
     handleTokensPrices,
+    handleFormatTradeTransaction,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
@@ -47,7 +48,19 @@ const { exportCollection, getCollectionDatas } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
-    await renameTransactionCollectionField();
+    // const datas = await handleFormatTradeTransaction();
+    // await fs.writeFileAsync(
+    //     `./databases/DB_Crawl/temp.json`,
+    //     JSON.stringify(datas),
+    //     (error) => {
+    //         if (error) {
+    //             log(`Backup file temp.json error`);
+    //             throw new Error(error);
+    //         }
+    //     }
+    // );
+    // await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedInvestorCollectionToDB();
 };
 
 runScript();
