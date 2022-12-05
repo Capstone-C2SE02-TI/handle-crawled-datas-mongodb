@@ -60,6 +60,14 @@ const UserSchema = new mongoose.Schema(
         sharksFollowed: {
             type: Array,
             default: []
+        },
+        accessToken: {
+            type: String,
+            default: ""
+        },
+        refreshAccessToken: {
+            type: String,
+            default: ""
         }
     },
     { timestamps: true, versionKey: false }

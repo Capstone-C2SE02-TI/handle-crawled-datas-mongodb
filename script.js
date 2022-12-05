@@ -43,7 +43,8 @@ const {
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
     addTransactionCollectionId,
-    renameTransactionCollectionField
+    renameTransactionCollectionField,
+    removeFieldInMultipleCollection
 } = require("./features/write");
 const { exportCollection, getCollectionDatas } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
@@ -63,12 +64,14 @@ const runScript = async () => {
     // await saveConvertedInvestorCollectionToFile();
     // await saveConvertedInvestorCollectionToDB();
 
-    // Test dữ liệu 
-    const data = require(`./databases/DB_Crawl/investors-converted.json`);
-    const LTS = await getListTransactionsOfInvestor(
-        data[2].transactionsHistory
-    );
-    log(LTS);
+    // // Test dữ liệu
+    // const data = require(`./databases/DB_Crawl/investors-converted.json`);
+    // const LTS = await getListTransactionsOfInvestor(
+    //     data[2].transactionsHistory
+    // );
+    // log(LTS);
+
+    await removeFieldInMultipleCollection();
 };
 
 runScript();

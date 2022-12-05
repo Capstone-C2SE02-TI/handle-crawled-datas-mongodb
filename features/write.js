@@ -760,10 +760,30 @@ const renameTransactionCollectionField = async () => {
     log("Rename Transactions field successfully");
 };
 
+const removeFieldInMultipleCollection = async () => {
+    try {
+        await DBMainUserModel.updateMany(
+            {},
+            { $unset: { accessToken: "", refreshAccessToken: "" } }
+        );
+
+        await DBMainAdminModel.updateMany(
+            {},
+            { $unset: { accessToken: "", refreshAccessToken: "" } }
+        );
+
+        log("Remove field in multiple collection successfully");
+    } catch (error) {
+        log("Remove field in multiple collection failed");
+        throw new Error(error);
+    }
+};
+
 module.exports = {
     handleTokensPrices,
     handleFormatTradeTransaction,
     handleTradeTransaction,
+    saveInvestorsToFile,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
@@ -780,5 +800,6 @@ module.exports = {
     handleDetailChartTransaction,
     updateSharkHistoryDatas,
     addTransactionCollectionId,
-    renameTransactionCollectionField
+    renameTransactionCollectionField,
+    removeFieldInMultipleCollection
 };
