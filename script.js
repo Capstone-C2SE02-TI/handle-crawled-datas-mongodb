@@ -10,7 +10,8 @@ const {
     DBMainTokenModel,
     DBMainCoinModel,
     DBMainTransactionModel,
-    DBMainUserModel
+    DBMainUserModel,
+    DBMainInvestorModel
 } = require("./models");
 const {
     DBCrawlCoinsDatas,
@@ -31,6 +32,9 @@ const {
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
+    handleFormatTradeTransactionDataCrawl,
+    handleFormatTradeTransactionDataMain,
+    updateInvestorHistoryDatasTest,
     getListTransactionsOfInvestor,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
@@ -63,15 +67,14 @@ const runScript = async () => {
     // );
     // await saveConvertedInvestorCollectionToFile();
     // await saveConvertedInvestorCollectionToDB();
-
     // // Test dữ liệu
     // const data = require(`./databases/DB_Crawl/investors-converted.json`);
     // const LTS = await getListTransactionsOfInvestor(
-    //     data[2].transactionsHistory
+    //     data[5].transactionsHistory
     // );
     // log(LTS);
 
-    await removeFieldInMultipleCollection();
+    await updateInvestorHistoryDatasTest();
 };
 
 runScript();

@@ -38,6 +38,10 @@ const InvestorSchema = new mongoose.Schema(
             type: Array,
             default: []
         },
+        historyDatasTest: {
+            type: Array,
+            default: []
+        },
         followers: {
             type: Array,
             default: []

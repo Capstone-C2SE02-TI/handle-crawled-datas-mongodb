@@ -379,11 +379,7 @@ const calculateInvestorPercent24h = (snapshots) => {
     return result || 0;
 };
 
-const handleFormatTradeTransaction = async (investor) => {
-    // let investorsList = [];
-    // const investors = require("../databases/DB_Crawl/investors-tmp.json");
-
-    // investors.forEach((investor) => {
+const handleFormatTradeTransactionDataCrawl = async (investor) => {
     let historyDatas = [];
     const sharkWallet = investor._id;
     const symbols = [
@@ -414,11 +410,46 @@ const handleFormatTradeTransaction = async (investor) => {
         });
     });
 
-    // investorsList.push({
-    //     walletAddress: sharkWallet,
-    //     historyDatas: historyDatas
-    // });
-    // });
+    return historyDatas;
+};
+
+const handleFormatTradeTransactionDataMain = async (investor) => {
+    let historyDatas = [];
+    const sharkWallet = investor.walletAddress;
+    const symbols = [
+        ...new Set(
+            investor.transactionsHistory.map((transaction) =>
+                transaction.tokenSymbol.toLowerCase()
+            )
+        )
+    ];
+
+    symbols.map((symbol) => {
+        let historyData = [];
+
+        investor.transactionsHistory.forEach((transaction) => {
+            if (transaction.tokenSymbol.toLowerCase() === symbol) {
+                const n1 = BigInt(transaction.value);
+                const n2 = BigInt(
+                    Number(Math.pow(10, Number(transaction.tokenDecimal)))
+                );
+
+                historyData.push({
+                    timeStamp: transaction.timeStamp,
+                    value: "" + Number(BigInt(n1 / n2)),
+                    status:
+                        sharkWallet === transaction.from
+                            ? "withdraw"
+                            : "deposit"
+                });
+            }
+        });
+
+        historyDatas.push({
+            coinSymbol: symbol,
+            historyData: historyData
+        });
+    });
 
     return historyDatas;
 };
@@ -466,6 +497,39 @@ const handleTradeTransaction = (transactions) => {
         week: weeks,
         month: months
     };
+};
+
+const updateInvestorTradeTransaction = async (coinSymbol) => {
+    const coin = await DBMainCoinModel.findOne({
+        symbol: coinSymbol.toLowerCase()
+    }).select("prices -_id");
+
+    const { week, month, year } = coin.prices;
+    log(week, month, year);
+};
+
+const updateInvestorHistoryDatasTest = async () => {
+    // const investors = await DBMainInvestorModel.find({}).select(
+    //     "transactionsHistory -_id"
+    // );
+    const investors = require("../databases/DB_Crawl/investors.json");
+
+    for (let i = 0; i < investors.length; i++) {
+        const historyDatasTest = await handleFormatTradeTransactionDataCrawl(
+            investors[i]
+        );
+
+        await DBMainInvestorModel.findOneAndUpdate(
+            { sharkId: i + 1 },
+            { historyDatasTest: historyDatasTest }
+        )
+            .then((data) => {
+                if (!data) throw new Error();
+            })
+            .catch((error) => {
+                throw new Error(error);
+            });
+    }
 };
 
 const saveInvestorsToFile = async () => {
@@ -781,8 +845,11 @@ const removeFieldInMultipleCollection = async () => {
 
 module.exports = {
     handleTokensPrices,
-    handleFormatTradeTransaction,
+    handleFormatTradeTransactionDataCrawl,
+    handleFormatTradeTransactionDataMain,
     handleTradeTransaction,
+    updateInvestorTradeTransaction,
+    updateInvestorHistoryDatasTest,
     saveInvestorsToFile,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
