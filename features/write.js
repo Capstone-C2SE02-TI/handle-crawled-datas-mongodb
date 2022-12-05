@@ -530,6 +530,8 @@ const updateInvestorHistoryDatasTest = async () => {
                 throw new Error(error);
             });
     }
+
+    log("Update succesfully");
 };
 
 const saveInvestorsToFile = async () => {
