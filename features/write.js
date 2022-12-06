@@ -537,6 +537,25 @@ const updateInvestorHistoryDatasTest = async () => {
     log("Update succesfully");
 };
 
+const updateInvestorWalletAddress = async () => {
+    const _ids = require("../databases/DB_Crawl/investors_ids.json");
+
+    for (let i = 0; i < _ids.length; i++) {
+        await DBMainInvestorModel.findOneAndUpdate(
+            { sharkId: i + 1 },
+            { walletAddress: _ids[i]._id }
+        )
+            .then((data) => {
+                if (!data) throw new Error();
+            })
+            .catch((error) => {
+                throw new Error(error);
+            });
+    }
+
+    log("Update succesfully");
+};
+
 const saveInvestorsToFile = async () => {
     const datas = await DBCrawlInvestorModel.find({});
 
@@ -855,6 +874,7 @@ module.exports = {
     handleTradeTransaction,
     updateInvestorTradeTransaction,
     updateInvestorHistoryDatasTest,
+    updateInvestorWalletAddress,
     saveInvestorsToFile,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,

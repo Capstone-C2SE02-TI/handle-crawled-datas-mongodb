@@ -75,7 +75,9 @@ const runScript = async () => {
     // );
     // log(LTS);
 
-    await updateInvestorTradeTransaction("eth");
+    // await updateInvestorTradeTransaction("eth");
+
+    await updateInvestorWalletAddress();
 };
 
 runScript();
