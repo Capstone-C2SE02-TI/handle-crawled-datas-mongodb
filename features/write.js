@@ -503,15 +503,18 @@ const updateInvestorTradeTransaction = async (coinSymbol) => {
     const coin = await DBMainCoinModel.findOne({
         symbol: coinSymbol.toLowerCase()
     }).select("prices -_id");
+    const investors = await DBMainInvestorModel.findOne({ sharkId: 1 }).select(
+        "historyDatasTest -_id"
+    );
 
     const { week, month, year } = coin.prices;
+    const { historyDatasTest } = investors;
+
     log(week, month, year);
+    log(historyDatasTest);
 };
 
 const updateInvestorHistoryDatasTest = async () => {
-    // const investors = await DBMainInvestorModel.find({}).select(
-    //     "transactionsHistory -_id"
-    // );
     const investors = require("../databases/DB_Crawl/investors.json");
 
     for (let i = 0; i < investors.length; i++) {

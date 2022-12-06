@@ -28,10 +28,11 @@ const {
 } = require("./databases");
 const {
     handleTokensPrices,
-    handleFormatTradeTransaction,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
+    handleTradeTransaction,
+    updateInvestorTradeTransaction,
     handleFormatTradeTransactionDataCrawl,
     handleFormatTradeTransactionDataMain,
     updateInvestorHistoryDatasTest,
@@ -74,7 +75,7 @@ const runScript = async () => {
     // );
     // log(LTS);
 
-    await updateInvestorHistoryDatasTest();
+    await updateInvestorTradeTransaction("eth");
 };
 
 runScript();
