@@ -563,7 +563,7 @@ const saveInvestorsToFile = async () => {
         JSON.stringify(datas),
         (error) => {
             if (error) {
-                log(`Backup file investors.json error`);
+                log(`Write file investors.json error`);
                 throw new Error(error);
             }
         }
@@ -606,7 +606,7 @@ const saveConvertedInvestorCollectionToFile = async () => {
         JSON.stringify(datas),
         (error) => {
             if (error) {
-                log(`Backup file investors-converted.json error`);
+                log(`Write file investors-converted.json error`);
                 throw new Error(error);
             }
         }
