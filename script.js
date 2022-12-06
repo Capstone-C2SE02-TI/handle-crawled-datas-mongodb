@@ -66,46 +66,24 @@ const runScript = async () => {
     //         }
     //     }
     // );
-    // await saveConvertedInvestorCollectionToFile();
-    // await saveConvertedInvestorCollectionToDB();
-    // // Test dữ liệu
-    // const data = require(`./databases/DB_Crawl/investors-converted.json`);
-    // const LTS = await getListTransactionsOfInvestor(
-    //     data[5].transactionsHistory
-    // );
-    // log(LTS);
-
-    // await updateInvestorTradeTransaction("eth");
-
-    await updateInvestorWalletAddress();
 };
 
 runScript();
 
-// #region CLOSE
-// //#region Automation Scripts
-// const scriptsRunEvery10Minutes = async () => {};
-// const scriptsRunEveryHour = async () => {};
-// const scriptsRunEveryDay = async () => {
-//     // await backupDBCrawlDatas();
-//     // await backupDBMainDatas();
-// };
-// //#endregion
+//#region Cronjob - Automation Scripts
+// Run every 10 minutes
+cron.schedule("*/10 * * * *", async () => {
+    await scriptsRunEvery10Minutes();
+});
 
-// //#region Cronjob
-// // Every 10 minutes
-// cron.schedule("*/10 * * * *", async () => {
-//     await scriptsRunEvery10Minutes();
-// });
+// Run every hour at 0th minute
+cron.schedule("0 * * * *", async () => {
+    await scriptsRunEveryHour();
+});
 
-// // Every hour at 0th minute
-// cron.schedule("0 * * * *", async () => {
-//     await scriptsRunEveryHour();
-// });
-
-// // Every day at 00:00:00
-// cron.schedule("0 0 * * *", async () => {
-//     await scriptsRunEveryDay();
-// });
-// //#endregion
-// #endregion
+// Run every day at 00:00:00
+cron.schedule("0 0 * * *", async () => {
+    // await backupDBCrawlDatas();
+    // await backupDBMainDatas();
+});
+//#endregion
