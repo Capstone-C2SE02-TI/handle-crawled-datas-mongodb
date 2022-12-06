@@ -248,7 +248,6 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
         : dateList[positionDate + 1];
 };
 
-// Hàm ni đang viết Hiếu nghe, chỉ xử lí cho 1 shark thôi. Chứ ko all shark
 const getListTransactionsOfInvestor = async (transactionsHistory) => {
     let transactions = transactionsHistory.map(async (transaction) => {
         let numberOfTokens =
