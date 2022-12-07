@@ -3,11 +3,9 @@ const { fs, log } = require("./constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
-    DBCrawlTagModel,
+    DBCrawlCategoryModel,
     DBMainAdminModel,
-    DBMainSharkModel,
     DBMainTagModel,
-    DBMainTokenModel,
     DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel,
@@ -54,36 +52,17 @@ const {
 const { exportCollection, getCollectionDatas } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
-const runScript = async () => {
-    // const datas = await handleFormatTradeTransaction();
-    // await fs.writeFileAsync(
-    //     `./databases/DB_Crawl/temp.json`,
-    //     JSON.stringify(datas),
-    //     (error) => {
-    //         if (error) {
-    //             log(`Backup file temp.json error`);
-    //             throw new Error(error);
-    //         }
-    //     }
-    // );
-};
+// -- Automation Scripts --
 
-runScript();
-
-//#region Cronjob - Automation Scripts
 // Run every 10 minutes
-cron.schedule("*/10 * * * *", async () => {
-    await scriptsRunEvery10Minutes();
-});
+cron.schedule("*/10 * * * *", async () => {});
 
-// Run every hour at 0th minute
-cron.schedule("0 * * * *", async () => {
-    await scriptsRunEveryHour();
-});
-
-// Run every day at 00:00:00
+// Run every day at 00:00
 cron.schedule("0 0 * * *", async () => {
     // await backupDBCrawlDatas();
     // await backupDBMainDatas();
 });
-//#endregion
+
+const runScript = async () => {};
+
+runScript();

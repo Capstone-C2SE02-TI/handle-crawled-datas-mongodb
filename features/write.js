@@ -4,10 +4,8 @@ const {
     DBCrawlInvestorModel,
     DBCrawlCategoryModel,
     DBMainAdminModel,
-    DBMainSharkModel,
     DBMainInvestorModel,
     DBMainTagModel,
-    DBMainTokenModel,
     DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel

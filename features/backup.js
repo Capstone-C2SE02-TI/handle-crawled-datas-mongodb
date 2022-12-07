@@ -4,36 +4,25 @@ const {
     DBCrawlInvestorModel,
     DBCrawlCategoryModel,
     DBMainAdminModel,
-    DBMainSharkModel,
     DBMainTagModel,
-    DBMainTokenModel,
     DBMainCoinModel,
+    DBMainInvestorModel,
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");
 const { exportCollection } = require("./read");
 
-const backupDBMainDatas = async () => {
-    const admins = await exportCollection(DBMainAdminModel);
-    const sharks = await exportCollection(DBMainSharkModel);
-    const tags = await exportCollection(DBMainTagModel);
-    const tokens = await exportCollection(DBMainTokenModel);
-    const transactions = await exportCollection(DBMainTransactionModel);
-    const users = await exportCollection(DBMainUserModel);
+const backupDBCrawlDatas = async () => {
+    const coins = await exportCollection(DBCrawlCoinModel);
+    const investors = await exportCollection(DBCrawlInvestorModel);
+    const categories = await exportCollection(DBCrawlCategoryModel);
 
-    const collectionDatas = [admins, sharks, tags, tokens, transactions, users];
-    const collectionNames = [
-        "admins",
-        "sharks",
-        "tags",
-        "tokens",
-        "transactions",
-        "users"
-    ];
+    const collectionDatas = [coins, investors, categories];
+    const collectionNames = ["coins", "investors", "categories"];
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(
-            `./databases/DB_Main/${collectionName}.json`,
+            `./databases/DB_Crawl/${collectionName}.json`,
             JSON.stringify(collectionDatas[index]),
             (error) => {
                 if (error) {
@@ -54,17 +43,34 @@ const backupDBMainDatas = async () => {
         });
 };
 
-const backupDBCrawlDatas = async () => {
-    const coins = await exportCollection(DBCrawlCoinModel);
-    const investors = await exportCollection(DBCrawlInvestorModel);
-    const categories = await exportCollection(DBCrawlCategoryModel);
+const backupDBMainDatas = async () => {
+    const admins = await exportCollection(DBMainAdminModel);
+    const users = await exportCollection(DBMainUserModel);
+    const tags = await exportCollection(DBMainTagModel);
+    const coins = await exportCollection(DBMainCoinModel);
+    const investors = await exportCollection(DBMainInvestorModel);
+    const transactions = await exportCollection(DBMainTransactionModel);
 
-    const collectionDatas = [coins, investors, categories];
-    const collectionNames = ["coins", "investors", "categories"];
+    const collectionDatas = [
+        admins,
+        users,
+        tags,
+        coins,
+        investors,
+        transactions
+    ];
+    const collectionNames = [
+        "admins",
+        "users",
+        "tags",
+        "coins",
+        "investors",
+        "transactions"
+    ];
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(
-            `./databases/DB_Crawl/${collectionName}.json`,
+            `./databases/DB_Main/${collectionName}.json`,
             JSON.stringify(collectionDatas[index]),
             (error) => {
                 if (error) {

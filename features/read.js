@@ -1,16 +1,3 @@
-const {
-    DBCrawlCoinModel,
-    DBCrawlInvestorModel,
-    DBCrawlCategoryModel,
-    DBMainAdminModel,
-    DBMainSharkModel,
-    DBMainTagModel,
-    DBMainTokenModel,
-    DBMainCoinModel,
-    DBMainTransactionModel,
-    DBMainUserModel
-} = require("../models");
-
 const exportCollection = async (CollectionModel) => {
     return await CollectionModel.find({});
 };
