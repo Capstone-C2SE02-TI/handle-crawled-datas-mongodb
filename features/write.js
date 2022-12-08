@@ -10,8 +10,37 @@ const {
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");
+const {
+    dbMainConnection,
+    dbCrawlConnection
+} = require("../configs/connect-database");
 const { getCollectionLength } = require("./read");
 const { convertUnixTimestampToNumber } = require("../helpers");
+
+const dropDBMainCollection = async (collectionName) => {
+    await dbMainConnection.dropCollection(collectionName, (error, result) => {
+        if (error) {
+            log("Drop collection failed");
+            throw new Error(error);
+        } else {
+            log("Drop collection successfully");
+        }
+    });
+};
+
+const dropDBCrawlCollection = async (collectionName) => {
+    await dbCrawlConnection.db.dropCollection(
+        collectionName,
+        (error, result) => {
+            if (error) {
+                log("Drop collection failed");
+                throw new Error(error);
+            } else {
+                log("Drop collection successfully");
+            }
+        }
+    );
+};
 
 const handleTokensPrices = (coinsPrices) => {
     if (!coinsPrices)
@@ -94,11 +123,25 @@ const handleTokensPrices = (coinsPrices) => {
     };
 };
 
-const convertCoinsCollection = async () => {
-    const coins = await DBCrawlCoinModel.find({});
-    // const ids = await DBCrawlCoinModel.find({}).select("_id");
+const saveCoinsToFile = async () => {
+    const datas = await DBCrawlCoinModel.find({});
 
-    // const coins = require("../databases/DB_Crawl/coins.json");
+    await fs.writeFileAsync(
+        `./databases/DB_Crawl/coins.json`,
+        JSON.stringify(datas),
+        (error) => {
+            if (error) {
+                log(`Write file coins.json error`);
+                throw new Error(error);
+            }
+        }
+    );
+
+    log("Write coins into file successfully");
+};
+
+const convertCoinsCollection = async () => {
+    const coins = require("../databases/DB_Crawl/coins.json");
     const ids = require("../databases/DB_Crawl/ids.json");
 
     let coinsList = [];
@@ -376,6 +419,7 @@ const calculateInvestorPercent24h = (snapshots) => {
     return result || 0;
 };
 
+// Not done yet
 const handleFormatTradeTransactionDataCrawl = async (investor) => {
     let historyDatas = [];
     const sharkWallet = investor._id;
@@ -410,6 +454,7 @@ const handleFormatTradeTransactionDataCrawl = async (investor) => {
     return historyDatas;
 };
 
+// Not done yet
 const handleFormatTradeTransactionDataMain = async (investor) => {
     let historyDatas = [];
     const sharkWallet = investor.walletAddress;
@@ -451,6 +496,7 @@ const handleFormatTradeTransactionDataMain = async (investor) => {
     return historyDatas;
 };
 
+// Not done yet
 const handleTradeTransaction = (transactions) => {
     if (!transactions)
         return {
@@ -496,6 +542,7 @@ const handleTradeTransaction = (transactions) => {
     };
 };
 
+// Not done yet
 const updateInvestorTradeTransaction = async (coinSymbol) => {
     const coin = await DBMainCoinModel.findOne({
         symbol: coinSymbol.toLowerCase()
@@ -511,6 +558,7 @@ const updateInvestorTradeTransaction = async (coinSymbol) => {
     log(historyDatasTest);
 };
 
+// Not done yet
 const updateInvestorHistoryDatasTest = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
 
@@ -534,7 +582,7 @@ const updateInvestorHistoryDatasTest = async () => {
     log("Update succesfully");
 };
 
-const updateInvestorWalletAddress = async () => {
+const updateInvestorsWalletAddress = async () => {
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
 
     for (let i = 0; i < _ids.length; i++) {
@@ -554,11 +602,11 @@ const updateInvestorWalletAddress = async () => {
 };
 
 const saveInvestorsToFile = async () => {
-    const datas = await DBCrawlInvestorModel.find({});
+    const investors = await DBCrawlInvestorModel.find({});
 
     await fs.writeFileAsync(
         `./databases/DB_Crawl/investors.json`,
-        JSON.stringify(datas),
+        JSON.stringify(investors),
         (error) => {
             if (error) {
                 log(`Write file investors.json error`);
@@ -680,12 +728,11 @@ const convertTransactions = async () => {
             transactions.push({
                 ...TX,
                 investorId: i + 1,
+                id: id,
                 transactionId: id++
             });
         });
     }
-
-    // Sort descending follow timestamp ?
 
     return transactions;
 };
@@ -771,54 +818,6 @@ const handleDetailChartTransaction = async () => {
     return sharks;
 };
 
-const updateSharkHistoryDatas = async () => {
-    const sharksDB = require("./sharks.json");
-
-    for (let i = 0; i <= 9; i++) {
-        try {
-            await DBMainSharkModel.findOneAndUpdate(
-                { id: i + 1 },
-                { historyDatas: sharksDB[i].historyDatas }
-            )
-                .then((data) => {
-                    if (!data) throw new Error();
-                })
-                .catch((error) => {
-                    throw new Error(error);
-                });
-
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-};
-
-const addTransactionCollectionId = async () => {
-    const transactionLength = await getCollectionLength(DBMainTransactionModel);
-
-    for (let i = 0; i < transactionLength; i++) {
-        try {
-            await DBMainTransactionModel.findOneAndUpdate(
-                { transactionId: i + 1 },
-                { id: i + 1 }
-            )
-                .then((data) => {
-                    if (!data) throw new Error();
-                })
-                .catch((error) => {
-                    log("Update Transaction id failed");
-                    throw new Error(error);
-                });
-        } catch (error) {
-            log("Update Transaction id failed");
-            throw new Error(error);
-        }
-    }
-
-    log("Update Transactions id successfully");
-};
-
 const renameTransactionCollectionField = async () => {
     const transactionLength = await getCollectionLength(DBMainTransactionModel);
 
@@ -833,16 +832,16 @@ const renameTransactionCollectionField = async () => {
                     if (!data) throw new Error();
                 })
                 .catch((error) => {
-                    log("Rename Transaction field failed");
+                    log("Rename transaction field failed");
                     throw new Error(error);
                 });
         } catch (error) {
-            log("Rename Transaction field failed");
+            log("Rename transaction field failed");
             throw new Error(error);
         }
     }
 
-    log("Rename Transactions field successfully");
+    log("Rename transactions field successfully");
 };
 
 const removeFieldInMultipleCollection = async () => {
@@ -865,14 +864,17 @@ const removeFieldInMultipleCollection = async () => {
 };
 
 module.exports = {
+    dropDBMainCollection,
+    dropDBCrawlCollection,
     handleTokensPrices,
     handleFormatTradeTransactionDataCrawl,
     handleFormatTradeTransactionDataMain,
     handleTradeTransaction,
     updateInvestorTradeTransaction,
     updateInvestorHistoryDatasTest,
-    updateInvestorWalletAddress,
+    updateInvestorsWalletAddress,
     saveInvestorsToFile,
+    saveCoinsToFile,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
@@ -887,8 +889,6 @@ module.exports = {
     saveConvertedTransactionsToDB,
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
-    updateSharkHistoryDatas,
-    addTransactionCollectionId,
     renameTransactionCollectionField,
     removeFieldInMultipleCollection
 };

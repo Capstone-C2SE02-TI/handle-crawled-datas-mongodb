@@ -23,7 +23,10 @@ const {
     DBMainUsersDatas
 } = require("./databases");
 const {
+    dropDBMainCollection,
+    dropDBCrawlCollection,
     handleTokensPrices,
+    saveCoinsToFile,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
@@ -36,31 +39,51 @@ const {
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
+    updateInvestorsWalletAddress,
     saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
-    updateSharkHistoryDatas,
-    addTransactionCollectionId,
     renameTransactionCollectionField,
     removeFieldInMultipleCollection
 } = require("./features/write");
-const { exportCollection, getCollectionDatas } = require("./features/read");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
-// -- Automation Scripts --
+// Run every 10 minutes: Update all collection datas
+cron.schedule("*/10 * * * *", async () => {
+    // Tags
+    await dropDBMainCollection("tags");
+    await saveCategoriesToFile();
+    await saveCategoriesToDB();
 
-// Run every 10 minutes
-cron.schedule("*/10 * * * *", async () => {});
+    // Coins
+    await dropDBMainCollection("coins");
+    await saveCoinsToFile();
+    await saveConvertedCoinCollectionToFile();
+    await saveConvertedCoinCollectionToDB();
 
-// Run every day at 00:00
-cron.schedule("0 0 * * *", async () => {
-    // await backupDBCrawlDatas();
-    // await backupDBMainDatas();
+    // Investors
+    await dropDBMainCollection("investors");
+    await saveInvestorsToFile();
+    await saveConvertedInvestorCollectionToFile();
+    await saveConvertedInvestorCollectionToDB();
+    await updateInvestorsWalletAddress();
+
+    // Transactions
+    await dropDBMainCollection("transactions");
+    await saveConvertedTransactionsToFile();
+    await saveConvertedTransactionsToDB();
 });
 
+// Run every day at 00:00: Backup all collection datas
+cron.schedule("0 0 * * *", async () => {
+    await backupDBCrawlDatas();
+    await backupDBMainDatas();
+});
+
+// Test script
 const runScript = async () => {};
 
 runScript();
