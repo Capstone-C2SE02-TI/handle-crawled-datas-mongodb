@@ -3,9 +3,6 @@ const { dbMainConnection } = require("../../configs/connect-database");
 
 const InvestorSchema = new mongoose.Schema(
     {
-        sharkId: {
-            type: Number
-        },
         isShark: {
             type: Boolean,
             default: false
@@ -16,7 +13,15 @@ const InvestorSchema = new mongoose.Schema(
         },
         totalAssets: {
             type: String,
-            default: ""
+            default: "0"
+        },
+        totalValueOut: {
+            type: String,
+            default: "0"
+        },
+        totalValueIn: {
+            type: String,
+            default: "0"
         },
         percent24h: {
             type: Number,
@@ -35,10 +40,6 @@ const InvestorSchema = new mongoose.Schema(
             default: []
         },
         historyDatas: {
-            type: Array,
-            default: []
-        },
-        historyDatasTest: {
             type: Array,
             default: []
         },

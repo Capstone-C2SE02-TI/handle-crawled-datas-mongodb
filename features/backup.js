@@ -70,7 +70,8 @@ const backupDBMainDatas = async () => {
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(
-            `./databases/DB_Main/${collectionName}.json`,
+            `./databases/DB_Test_Main/${collectionName}.json`,
+            // `./databases/DB_Main/${collectionName}.json`,
             JSON.stringify(collectionDatas[index]),
             (error) => {
                 if (error) {

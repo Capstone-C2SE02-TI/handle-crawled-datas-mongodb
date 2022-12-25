@@ -582,25 +582,6 @@ const updateInvestorHistoryDatasTest = async () => {
     log("Update succesfully");
 };
 
-const updateInvestorsWalletAddress = async () => {
-    const _ids = require("../databases/DB_Crawl/investors_ids.json");
-
-    for (let i = 0; i < _ids.length; i++) {
-        await DBMainInvestorModel.findOneAndUpdate(
-            { sharkId: i + 1 },
-            { walletAddress: _ids[i]._id }
-        )
-            .then((data) => {
-                if (!data) throw new Error();
-            })
-            .catch((error) => {
-                throw new Error(error);
-            });
-    }
-
-    log("Update succesfully");
-};
-
 const saveInvestorsToFile = async () => {
     const investors = await DBCrawlInvestorModel.find({});
 
@@ -620,6 +601,8 @@ const saveInvestorsToFile = async () => {
 
 const convertInvestorsCollection = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
+    const _ids = require("../databases/DB_Crawl/investors_ids.json");
+
     let investorList = [];
 
     for (let i = 0; i < investors.length; i++) {
@@ -633,7 +616,7 @@ const convertInvestorsCollection = async () => {
             isShark: investors[i].is_shark,
             coins: investors[i].coins,
             transactionsHistory: investors[i].TXs,
-            walletAddress: investors[i]._id || "",
+            walletAddress: _ids[i]._id,
             followers: [],
             cryptos: cryptos,
             totalAssets: totalAssets,
@@ -681,29 +664,12 @@ const saveConvertedInvestorCollectionToDB = async () => {
     log("Write investors in DB successfully");
 };
 
-const saveCategoriesToFile = async () => {
-    const datas = await DBCrawlCategoryModel.find({});
-
-    await fs.writeFileAsync(
-        `./databases/DB_Crawl/categories-converted.json`,
-        JSON.stringify(datas),
-        (error) => {
-            if (error) {
-                log(`Write file categories-converted.json error`);
-                throw new Error(error);
-            }
-        }
-    );
-
-    log("Write categories into file successfully");
-};
-
 const saveCategoriesToDB = async () => {
-    const categories = require("../databases/DB_Crawl/categories-converted.json");
+    const categories = await DBCrawlCategoryModel.find({});
 
     for (let i = 0; i < categories.length; i++) {
         try {
-            await DBMainTagModel.create({ id: i + 1, ...categories[i] })
+            await DBMainTagModel.create({ id: i + 1, name: categories[i].name })
                 .then((data) => {})
                 .catch((error) => {
                     log("Write category in DB failed");
@@ -872,7 +838,6 @@ module.exports = {
     handleTradeTransaction,
     updateInvestorTradeTransaction,
     updateInvestorHistoryDatasTest,
-    updateInvestorsWalletAddress,
     saveInvestorsToFile,
     saveCoinsToFile,
     convertCoinsCollection,
@@ -883,7 +848,6 @@ module.exports = {
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
-    saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,

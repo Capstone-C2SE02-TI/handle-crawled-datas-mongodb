@@ -37,6 +37,10 @@ const UserSchema = new mongoose.Schema(
             trim: true,
             default: ""
         },
+        confirmationCode: {
+            type: String,
+            trim: true
+        },
         avatar: {
             type: String,
             trim: true,
@@ -61,13 +65,9 @@ const UserSchema = new mongoose.Schema(
             type: Array,
             default: []
         },
-        accessToken: {
-            type: String,
-            default: ""
-        },
-        refreshAccessToken: {
-            type: String,
-            default: ""
+        addedSharks: {
+            type: Array,
+            default: []
         }
     },
     { timestamps: true, versionKey: false }

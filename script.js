@@ -37,10 +37,9 @@ const {
     updateInvestorHistoryDatasTest,
     getListTransactionsOfInvestor,
     convertInvestorsCollection,
+    saveInvestorsToFile,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
-    updateInvestorsWalletAddress,
-    saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
@@ -52,38 +51,44 @@ const {
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 // Run every 10 minutes: Update all collection datas
-cron.schedule("*/10 * * * *", async () => {
-    // Tags
-    await dropDBMainCollection("tags");
-    await saveCategoriesToFile();
-    await saveCategoriesToDB();
+// cron.schedule("*/10 * * * *", async () => {
+//     // Tags
+//     await dropDBMainCollection("tags");
+//     await saveCategoriesToDB();
 
-    // Coins
-    await dropDBMainCollection("coins");
-    await saveCoinsToFile();
-    await saveConvertedCoinCollectionToFile();
-    await saveConvertedCoinCollectionToDB();
+//     // Coins
+//     await dropDBMainCollection("coins");
+//     await saveCoinsToFile();
+//     await saveConvertedCoinCollectionToFile();
+//     await saveConvertedCoinCollectionToDB();
 
-    // Investors
+//     // Investors
+//     await dropDBMainCollection("investors");
+//     await saveInvestorsToFile();
+//     await saveConvertedInvestorCollectionToFile();
+//     await saveConvertedInvestorCollectionToDB();
+
+//     // Transactions
+//     await dropDBMainCollection("transactions");
+//     await saveConvertedTransactionsToFile();
+//     await saveConvertedTransactionsToDB();
+// });
+
+// Run every day at 00:00: Backup all collection datas
+// cron.schedule("0 0 * * *", async () => {
+// await backupDBMainDatas();
+// await backupDBCrawlDatas();
+// });
+
+const runScript = async () => {
+    console.time("Execute time");
+
     await dropDBMainCollection("investors");
     await saveInvestorsToFile();
     await saveConvertedInvestorCollectionToFile();
     await saveConvertedInvestorCollectionToDB();
-    await updateInvestorsWalletAddress();
 
-    // Transactions
-    await dropDBMainCollection("transactions");
-    await saveConvertedTransactionsToFile();
-    await saveConvertedTransactionsToDB();
-});
-
-// Run every day at 00:00: Backup all collection datas
-cron.schedule("0 0 * * *", async () => {
-    await backupDBCrawlDatas();
-    await backupDBMainDatas();
-});
-
-// Test script
-const runScript = async () => {};
+    console.timeEnd("Execute time");
+};
 
 runScript();
