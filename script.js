@@ -35,7 +35,6 @@ const {
     handleFormatTradeTransactionDataCrawl,
     handleFormatTradeTransactionDataMain,
     updateInvestorHistoryDatasTest,
-    getListTransactionsOfInvestor,
     convertInvestorsCollection,
     saveInvestorsToFile,
     saveConvertedInvestorCollectionToFile,
@@ -83,10 +82,10 @@ const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 const runScript = async () => {
     console.time("Execute time");
 
-    await dropDBMainCollection("investors");
-    await saveInvestorsToFile();
-    await saveConvertedInvestorCollectionToFile();
-    await saveConvertedInvestorCollectionToDB();
+    // await dropDBMainCollection("investors");
+    // await saveInvestorsToFile();
+    // await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedInvestorCollectionToDB();
 
     console.timeEnd("Execute time");
 };

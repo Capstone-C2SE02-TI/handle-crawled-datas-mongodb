@@ -247,6 +247,7 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
     let datePricesTokenCut = dateList.map((date) => {
         return date["date"].slice(0, 10);
     });
+
     let dateTransactionCut = dateTransaction.slice(0, 10);
     let positionDate = null;
     // Cut hour
@@ -265,23 +266,25 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
     }
 
     // cut date
-    let dateCutByDates = datePricesTokenCut.filter((date, index) => {
-        date = date.slice(0, 8);
-        if (Number(date) === Number(dateTransactionCut.slice(0, 8)))
-            positionDate = index;
-        return Number(date) === Number(dateTransactionCut.slice(0, 8));
-    });
+    if (positionDate === null) {
+        let dateCutByDates = datePricesTokenCut.filter((date, index) => {
+            date = date.slice(0, 8);
+            if (Number(date) === Number(dateTransactionCut.slice(0, 8)))
+                positionDate = index;
+            return Number(date) === Number(dateTransactionCut.slice(0, 8));
+        });
 
-    let hourTrade = dateTransactionCut.slice(8);
-    let datesCutLength = dateCutByDates.length;
-    for (let i = 0; i < datesCutLength; i++) {
-        if (Number(hourTrade) > Number(dateCutByDates[i].slice(8)))
-            return dateList[positionDate - datesCutLength + i + 1];
+        let hourTrade = dateTransactionCut.slice(8);
+        let datesCutLength = dateCutByDates.length;
+        for (let i = 0; i < datesCutLength; i++) {
+            if (Number(hourTrade) > Number(dateCutByDates[i].slice(8)))
+                return dateList[positionDate - datesCutLength + i + 1];
+        }
     }
 
     return positionDate === null
         ? {
-              date: "none",
+              date: "notfound",
               value: 0
           }
         : positionDate === dateList.length - 1
@@ -289,62 +292,118 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
         : dateList[positionDate + 1];
 };
 
-const getListTransactionsOfInvestor = async (transactionsHistory) => {
-    let transactions = transactionsHistory.map(async (transaction) => {
-        let numberOfTokens =
-            transaction["value"] / Math.pow(10, transaction["tokenDecimal"]);
-        let hoursPrice = await getHoursPriceOfToken(transaction["tokenSymbol"]);
-
-        if (
-            typeof hoursPrice !== "undefined" &&
-            Boolean(hoursPrice) !== false
-        ) {
-            hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
-                let date = convertUnixTimestampToNumber(unixDate / 1000);
-                date = date.toString();
-                return {
-                    date: date,
-                    value: hoursPrice[unixDate]
-                };
-            });
-
-            hoursPrice.sort(
-                (firstObj, secondObj) => secondObj["date"] - firstObj["date"]
-            );
-        } else {
+const getPriceWithDaily = (dailyPrice, dateTransaction) => {
+    if (typeof dailyPrice !== "undefined") {
+        dailyPrice = Object.keys(dailyPrice).map((unixDate) => {
+            let date = convertUnixTimestampToNumber(unixDate);
+            date = date.toString();
             return {
-                numberOfTokens: numberOfTokens,
-                pastDate: null,
-                pastPrice: null,
-                presentDate: null,
-                presentPrice: null
+                date: date,
+                value: dailyPrice[unixDate]
             };
-        }
+        });
 
-        let presentData =
-            typeof hoursPrice !== "undefined" ? hoursPrice[0] : undefined;
+        dailyPrice.sort(
+            (firstObj, secondObj) => secondObj["date"] - firstObj["date"]
+        );
 
-        const dateNearTransaction =
-            typeof hoursPrice !== "undefined"
-                ? getDateNearTransaction(hoursPrice, transaction["timeStamp"])
-                : { date: "none", value: 0 };
+        const dateNearTransaction = getDateNearTransaction(
+            dailyPrice,
+            dateTransaction
+        );
+        return dateNearTransaction;
+    }
 
-        let presentPrice =
-            typeof presentData === "undefined" ? 0 : presentData["value"];
+    return { date: "none", value: 0 };
+};
 
-        let presentDate =
-            typeof presentData === "undefined" ? 0 : presentData["date"];
+const updateTransactionsOfShark = async (sharkId) => {
+    const rawData = await InvestorModel.find(
+        { "transactionsHistory.500": { $exists: 0 }, isShark: 1 },
+        { transactionsHistory: 1, sharkId: 1 }
+    );
 
-        return {
-            numberOfTokens: numberOfTokens,
-            pastDate: dateNearTransaction["date"],
-            pastPrice: dateNearTransaction["value"],
-            presentDate: presentDate,
-            presentPrice: presentPrice
-        };
+    await rawData.forEach(async (element) => {
+        let transactions = await element.transactionsHistory.map(
+            async (transaction) => {
+                let numberOfTokens =
+                    Number(transaction["value"]) /
+                    10 ** Number(transaction["tokenDecimal"]);
+
+                let originalPrices = await getOriginalPriceOfToken(
+                    transaction["tokenSymbol"]
+                );
+
+                let hoursPrice = originalPrices.hourly;
+
+                if (typeof hoursPrice !== "undefined") {
+                    hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
+                        let date = convertUnixTimestampToNumber(unixDate);
+                        date = date.toString();
+                        return {
+                            date: date,
+                            value: hoursPrice[unixDate]
+                        };
+                    });
+
+                    hoursPrice.sort(
+                        (firstObj, secondObj) =>
+                            secondObj["date"] - firstObj["date"]
+                    );
+                }
+
+                let presentData =
+                    typeof hoursPrice !== "undefined"
+                        ? hoursPrice[0]
+                        : undefined;
+
+                const dateTransac = convertUnixTimestampToNumber(
+                    transaction["timeStamp"]
+                );
+                let dateNearTransaction =
+                    typeof hoursPrice !== "undefined"
+                        ? getDateNearTransaction(
+                              hoursPrice,
+                              dateTransac.toString()
+                          )
+                        : { date: "none", value: 0 };
+
+                if (dateNearTransaction.date === "notfound") {
+                    let dailyPrice = originalPrices.daily;
+                    dateNearTransaction = getPriceWithDaily(
+                        dailyPrice,
+                        dateTransac.toString()
+                    );
+                }
+
+                let presentPrice =
+                    typeof presentData === "undefined"
+                        ? 0
+                        : presentData["value"];
+
+                let presentDate =
+                    typeof presentData === "undefined"
+                        ? 0
+                        : presentData["date"];
+
+                Object.assign(transaction, {
+                    numberOfTokens: numberOfTokens,
+                    pastDate: dateNearTransaction["date"],
+                    pastPrice: dateNearTransaction["value"],
+                    presentDate: presentDate,
+                    presentPrice: presentPrice
+                });
+
+                return transaction;
+            }
+        );
+        transactions = await getValueFromPromise(transactions);
+
+        await InvestorModel.updateOne(
+            { sharkId: element.sharkId },
+            { transactionsHistory: transactions }
+        );
     });
-
-    return await getValueFromPromise(transactions);
 };
 
 const getCoinOrTokenDetails = async (coinSymbol) => {
@@ -843,7 +902,6 @@ module.exports = {
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
-    getListTransactionsOfInvestor,
     getListCryptosOfShark,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
