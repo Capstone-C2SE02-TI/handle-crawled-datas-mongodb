@@ -458,6 +458,8 @@ const getListCryptosOfShark = async (coins) => {
 };
 
 const calculateInvestorPercent24h = (snapshots) => {
+    if (!snapshots) return 0;
+
     const snapshotsArr1 = Object.entries(snapshots).map((element) => [
         Number(element[0].slice(0, 10)),
         Number(element[1])
@@ -649,7 +651,7 @@ const saveInvestorsToFile = async () => {
         JSON.stringify(investors),
         (error) => {
             if (error) {
-                log(`Write file investors.json error`);
+                log(`Write file investors.json failed`);
                 throw new Error(error);
             }
         }
@@ -659,6 +661,7 @@ const saveInvestorsToFile = async () => {
 };
 
 const convertInvestorsCollection = async () => {
+    // const investors = await DBCrawlInvestorModel.find({});
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
 
@@ -694,7 +697,7 @@ const saveConvertedInvestorCollectionToFile = async () => {
         JSON.stringify(datas),
         (error) => {
             if (error) {
-                log(`Write file investors-converted.json error`);
+                log(`Write file investors-converted.json failed`);
                 throw new Error(error);
             }
         }

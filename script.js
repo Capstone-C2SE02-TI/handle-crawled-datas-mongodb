@@ -12,17 +12,6 @@ const {
     DBMainInvestorModel
 } = require("./models");
 const {
-    DBCrawlCoinsDatas,
-    DBCrawlInvestorsDatas,
-    DBCrawlCategoriesDatas,
-    DBMainAdminsDatas,
-    DBMainInvestorsDatas,
-    DBMainTagsDatas,
-    DBMainCoinsDatas,
-    DBMainTransactionsDatas,
-    DBMainUsersDatas
-} = require("./databases");
-const {
     dropDBMainCollection,
     dropDBCrawlCollection,
     handleTokensPrices,
