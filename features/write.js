@@ -726,8 +726,65 @@ const saveConvertedInvestorCollectionToDB = async () => {
     log("Write investors in DB successfully");
 };
 
-const saveCategoriesToDB = async () => {
+const updateInvestorsTotalValueInOut = async (sharkId) => {
+    const rawData = await InvestorModel.find(
+        { "transactionsHistory.500": { $exists: 0 }, isShark: 1 },
+        { transactionsHistory: 1, sharkId: 1, walletAddress: 1 }
+    );
+
+    await rawData.forEach(async (element) => {
+        let totalValueOut = new BigNumber(0);
+        let totalValueIn = new BigNumber(0);
+        totalValueIn = await element.transactionsHistory.reduce(
+            (curr, transaction) => {
+                const passValue =
+                    transaction.pastPrice === 0 ? 1 : transaction.pastPrice;
+                let tmp = curr;
+
+                if (
+                    element.walletAddress.toLowerCase() ===
+                    transaction.from.toLowerCase()
+                )
+                    tmp = tmp.plus(transaction.numberOfTokens * passValue);
+                else
+                    totalValueOut = totalValueOut.plus(
+                        transaction.numberOfTokens * passValue
+                    );
+
+                return tmp;
+            },
+            new BigNumber(0)
+        );
+
+        await InvestorModel.updateOne(
+            { sharkId: element.sharkId },
+            { totalValueIn: totalValueIn, totalValueOut: totalValueOut }
+        );
+    });
+
+    return 1;
+};
+
+const saveCategoriesToFile = async () => {
     const categories = await DBCrawlCategoryModel.find({});
+
+    await fs.writeFileAsync(
+        `./databases/DB_Crawl/categories.json`,
+        JSON.stringify(categories),
+        (error) => {
+            if (error) {
+                log(`Write file categories.json failed`);
+                throw new Error(error);
+            }
+        }
+    );
+
+    log("Write categories into file successfully");
+};
+
+const saveCategoriesToDB = async () => {
+    const categories = require(`../databases/DB_Crawl/categories.json`);
+    // const categories = await DBCrawlCategoryModel.find({});
 
     for (let i = 0; i < categories.length; i++) {
         try {
@@ -909,6 +966,8 @@ module.exports = {
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
+    updateInvestorsTotalValueInOut,
+    saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,

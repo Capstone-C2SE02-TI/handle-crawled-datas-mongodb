@@ -28,6 +28,7 @@ const {
     saveInvestorsToFile,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
+    saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
@@ -42,6 +43,7 @@ const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 // cron.schedule("*/10 * * * *", async () => {
 //     // Tags
 //     await dropDBMainCollection("tags");
+//     await saveCategoriesToFile();
 //     await saveCategoriesToDB();
 
 //     // Coins
@@ -70,11 +72,6 @@ const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
     console.time("Execute time");
-
-    // await dropDBMainCollection("investors");
-    // await saveInvestorsToFile();
-    // await saveConvertedInvestorCollectionToFile();
-    // await saveConvertedInvestorCollectionToDB();
 
     console.timeEnd("Execute time");
 };
