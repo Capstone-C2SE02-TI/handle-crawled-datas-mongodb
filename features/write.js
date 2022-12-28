@@ -20,10 +20,10 @@ const { convertUnixTimestampToNumber } = require("../helpers");
 const dropDBMainCollection = async (collectionName) => {
     await dbMainConnection.dropCollection(collectionName, (error, result) => {
         if (error) {
-            log("Drop collection failed");
+            log(`Drop collection ${collectionName} failed`);
             throw new Error(error);
         } else {
-            log("Drop collection successfully");
+            log(`Drop collection ${collectionName} successfully`);
         }
     });
 };
@@ -33,10 +33,10 @@ const dropDBCrawlCollection = async (collectionName) => {
         collectionName,
         (error, result) => {
             if (error) {
-                log("Drop collection failed");
+                log(`Drop collection ${collectionName} failed`);
                 throw new Error(error);
             } else {
-                log("Drop collection successfully");
+                log(`Drop collection ${collectionName} successfully`);
             }
         }
     );
