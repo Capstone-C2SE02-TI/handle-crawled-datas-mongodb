@@ -1,4 +1,4 @@
-const { fs, log } = require("../constants");
+const { fs, log, BigNumber } = require("../constants");
 const {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
@@ -443,7 +443,7 @@ const getListCryptosOfShark = async (coins) => {
                 cmcRank: coinDetails["cmcRank"],
                 iconURL: coinDetails["iconURL"],
                 price: coinDetails["usd"]["price"],
-                total: Math.floor(coinDetails["usd"]["price"] * quantity)
+                total: Math.floor(coinDetails["usd"]["price"] * quantity) || 0
             };
         }
     });
@@ -451,7 +451,7 @@ const getListCryptosOfShark = async (coins) => {
     const cryptos = await getValueFromPromise(cryptosList);
 
     const totalAssets = cryptos.reduce((current, crypto) => {
-        return current + BigInt(crypto.total);
+        return current + BigInt(crypto?.total || 0) || "0";
     }, 0n);
 
     return { cryptos: cryptos, totalAssets: totalAssets.toString() };
@@ -644,7 +644,7 @@ const updateInvestorHistoryDatasTest = async () => {
 };
 
 const saveInvestorsToFile = async () => {
-    const investors = await DBCrawlInvestorModel.find({});
+    const investors = await DBCrawlInvestorModel.find({ is_shark: true });
 
     await fs.writeFileAsync(
         `./databases/DB_Crawl/investors.json`,
@@ -672,6 +672,10 @@ const convertInvestorsCollection = async () => {
             investors[i].coins
         );
         const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
+        // const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
+        //     investors[i].TXs,
+        //     _ids[i]._id
+        // );
 
         investorList.push({
             sharkId: i + 1,
@@ -683,6 +687,8 @@ const convertInvestorsCollection = async () => {
             cryptos: cryptos,
             totalAssets: totalAssets,
             percent24h: percent24h || 0
+            // totalValueIn: totalValueIn,
+            // totalValueOut: totalValueOut
         });
     }
 
@@ -727,7 +733,7 @@ const saveConvertedInvestorCollectionToDB = async () => {
 };
 
 const updateInvestorsTotalValueInOut = async (sharkId) => {
-    const rawData = await InvestorModel.find(
+    const rawData = await DBMainInvestorModel.find(
         { "transactionsHistory.500": { $exists: 0 }, isShark: 1 },
         { transactionsHistory: 1, sharkId: 1, walletAddress: 1 }
     );
@@ -761,34 +767,26 @@ const updateInvestorsTotalValueInOut = async (sharkId) => {
             { totalValueIn: totalValueIn, totalValueOut: totalValueOut }
         );
     });
-
-    return 1;
 };
 
-const calculateTotalValueInOut = async () => {
+const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
     let totalValueOut = new BigNumber(0);
     let totalValueIn = new BigNumber(0);
 
-    totalValueIn = await element.transactionsHistory.reduce(
-        (curr, transaction) => {
-            const passValue =
-                transaction.pastPrice === 0 ? 1 : transaction.pastPrice;
-            let tmp = curr;
+    totalValueIn = await transactionsHistory.reduce((curr, transaction) => {
+        const passValue =
+            transaction.pastPrice === 0 ? 1 : transaction.pastPrice;
+        let tmp = curr;
 
-            if (
-                element.walletAddress.toLowerCase() ===
-                transaction.from.toLowerCase()
-            )
-                tmp = tmp.plus(transaction.numberOfTokens * passValue);
-            else
-                totalValueOut = totalValueOut.plus(
-                    transaction.numberOfTokens * passValue
-                );
+        if (walletAddress.toLowerCase() === transaction.from.toLowerCase())
+            tmp = tmp.plus(transaction.numberOfTokens * passValue);
+        else
+            totalValueOut = totalValueOut.plus(
+                transaction.numberOfTokens * passValue
+            );
 
-            return tmp;
-        },
-        new BigNumber(0)
-    );
+        return tmp;
+    }, new BigNumber(0));
 
     return { totalValueIn, totalValueOut };
 };

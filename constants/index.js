@@ -4,4 +4,6 @@ const fs = Promise.promisifyAll(require("fs"));
 
 const { log } = require("console");
 
-module.exports = { fs, log };
+const BigNumber = require("bignumber.js");
+
+module.exports = { fs, log, BigNumber };

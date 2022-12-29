@@ -87,21 +87,27 @@ const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 //     console.timeEnd("Execute time");
 // });
 
+// let ID1 = 0;
 // cron.schedule("* * * * *", async () => {
-//     console.time("Execute time");
-//     await saveCategoriesToFile();
-//     await dropDBMainCollection("tags");
-//     await saveCategoriesToDB();
-//     console.timeEnd("Execute time");
+//     console.time(`Execute time ${++ID1}`);
+//     await saveInvestorsToFile();
+//     await saveConvertedInvestorCollectionToFile();
+//     await dropDBMainCollection("investors");
+//     await saveConvertedInvestorCollectionToDB();
+//     await updateInvestorsTotalValueInOut();
+//     console.timeEnd(`Execute time ${ID1}`);
 // });
 
 const runScript = async () => {
-    console.time("Execute time");
-    await saveCoinsToFile();
-    await saveConvertedCoinCollectionToFile();
-    await dropDBMainCollection("coins");
-    await saveConvertedCoinCollectionToDB();
-    console.timeEnd("Execute time");
+    console.time(`Execute time`);
+    // await saveInvestorsToFile();
+
+    // await dropDBMainCollection("investors");
+    // await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedInvestorCollectionToDB();
+    // await updateInvestorsTotalValueInOut();
+
+    console.timeEnd(`Execute time`);
 };
 
 runScript();
