@@ -100,6 +100,7 @@ const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 const runScript = async () => {
     console.time(`Execute time`);
+    
     // await saveInvestorsToFile();
 
     // await dropDBMainCollection("investors");
