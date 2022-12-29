@@ -13,21 +13,22 @@ const {
 } = require("./models");
 const {
     dropDBMainCollection,
-    dropDBCrawlCollection,
     handleTokensPrices,
+    handleFormatTradeTransactionDataCrawl,
+    handleFormatTradeTransactionDataMain,
+    handleTradeTransaction,
+    updateInvestorTradeTransaction,
+    updateInvestorHistoryDatasTest,
+    saveInvestorsToFile,
     saveCoinsToFile,
     convertCoinsCollection,
     saveConvertedCoinCollectionToFile,
     saveConvertedCoinCollectionToDB,
-    handleTradeTransaction,
-    updateInvestorTradeTransaction,
-    handleFormatTradeTransactionDataCrawl,
-    handleFormatTradeTransactionDataMain,
-    updateInvestorHistoryDatasTest,
+    getListCryptosOfShark,
     convertInvestorsCollection,
-    saveInvestorsToFile,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
+    updateInvestorsTotalValueInOut,
     saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
@@ -39,39 +40,49 @@ const {
 } = require("./features/write");
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
-// Run every 10 minutes: Update all collection datas
+/* 1. Run every 10 minutes: Update collection datas */
+// // tags
 // cron.schedule("*/10 * * * *", async () => {
-//     // Tags
 //     await dropDBMainCollection("tags");
-//     await saveCategoriesToFile();
 //     await saveCategoriesToDB();
+// });
 
-//     // Coins
-//     await dropDBMainCollection("coins");
+// // coins
+// cron.schedule("*/10 * * * *", async () => {
 //     await saveCoinsToFile();
 //     await saveConvertedCoinCollectionToFile();
+//     await dropDBMainCollection("coins");
 //     await saveConvertedCoinCollectionToDB();
+// });
 
-//     // Investors
+// // investors
+// cron.schedule("*/10 * * * *", async () => {
 //     await dropDBMainCollection("investors");
 //     await saveInvestorsToFile();
 //     await saveConvertedInvestorCollectionToFile();
 //     await saveConvertedInvestorCollectionToDB();
+// });
 
-//     // Transactions
+// // transactions
+// cron.schedule("*/10 * * * *", async () => {
 //     await dropDBMainCollection("transactions");
 //     await saveConvertedTransactionsToFile();
 //     await saveConvertedTransactionsToDB();
 // });
 
-// Run every day at 00:00: Backup all collection datas
+/* 2. Run every day at 00:00: Backup all collection datas */
 // cron.schedule("0 0 * * *", async () => {
-// await backupDBMainDatas();
-// await backupDBCrawlDatas();
+//     await backupDBMainDatas();
+//     await backupDBCrawlDatas();
 // });
 
 const runScript = async () => {
     console.time("Execute time");
+
+    // await dropDBMainCollection("investors");
+    // await saveInvestorsToFile();
+    // await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedInvestorCollectionToDB();
 
     console.timeEnd("Execute time");
 };

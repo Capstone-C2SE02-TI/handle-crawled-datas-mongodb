@@ -28,20 +28,6 @@ const dropDBMainCollection = async (collectionName) => {
     });
 };
 
-const dropDBCrawlCollection = async (collectionName) => {
-    await dbCrawlConnection.db.dropCollection(
-        collectionName,
-        (error, result) => {
-            if (error) {
-                log(`Drop collection ${collectionName} failed`);
-                throw new Error(error);
-            } else {
-                log(`Drop collection ${collectionName} successfully`);
-            }
-        }
-    );
-};
-
 const handleTokensPrices = (coinsPrices) => {
     if (!coinsPrices)
         return {
@@ -682,7 +668,7 @@ const convertInvestorsCollection = async () => {
             followers: [],
             cryptos: cryptos,
             totalAssets: totalAssets,
-            percent24h: percent24h || 0
+            percent24h: percent24h || 0,
         });
     }
 
@@ -756,13 +742,41 @@ const updateInvestorsTotalValueInOut = async (sharkId) => {
             new BigNumber(0)
         );
 
-        await InvestorModel.updateOne(
+        await DBMainInvestorModel.updateOne(
             { sharkId: element.sharkId },
             { totalValueIn: totalValueIn, totalValueOut: totalValueOut }
         );
     });
 
     return 1;
+};
+
+const calculateTotalValueInOut = async () => {
+    let totalValueOut = new BigNumber(0);
+    let totalValueIn = new BigNumber(0);
+
+    totalValueIn = await element.transactionsHistory.reduce(
+        (curr, transaction) => {
+            const passValue =
+                transaction.pastPrice === 0 ? 1 : transaction.pastPrice;
+            let tmp = curr;
+
+            if (
+                element.walletAddress.toLowerCase() ===
+                transaction.from.toLowerCase()
+            )
+                tmp = tmp.plus(transaction.numberOfTokens * passValue);
+            else
+                totalValueOut = totalValueOut.plus(
+                    transaction.numberOfTokens * passValue
+                );
+
+            return tmp;
+        },
+        new BigNumber(0)
+    );
+
+    return { totalValueIn, totalValueOut };
 };
 
 const saveCategoriesToFile = async () => {
@@ -783,8 +797,8 @@ const saveCategoriesToFile = async () => {
 };
 
 const saveCategoriesToDB = async () => {
-    const categories = require(`../databases/DB_Crawl/categories.json`);
-    // const categories = await DBCrawlCategoryModel.find({});
+    // const categories = require(`../databases/DB_Crawl/categories.json`);
+    const categories = await DBCrawlCategoryModel.find({});
 
     for (let i = 0; i < categories.length; i++) {
         try {
@@ -950,7 +964,6 @@ const removeFieldInMultipleCollection = async () => {
 
 module.exports = {
     dropDBMainCollection,
-    dropDBCrawlCollection,
     handleTokensPrices,
     handleFormatTradeTransactionDataCrawl,
     handleFormatTradeTransactionDataMain,
