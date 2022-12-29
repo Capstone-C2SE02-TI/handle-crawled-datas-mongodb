@@ -15,7 +15,13 @@ const {
     dbCrawlConnection
 } = require("../configs/connect-database");
 const { getCollectionLength } = require("./read");
-const { convertUnixTimestampToNumber } = require("../helpers");
+const {
+    convertUnixTimestampToNumber,
+    getTodayDay,
+    getThisMonthYear,
+    getNearest7Days,
+    getNearest12Months
+} = require("../helpers");
 
 const dropDBMainCollection = async (collectionName) => {
     await dbMainConnection.dropCollection(collectionName, (error, result) => {
@@ -39,13 +45,16 @@ const handleTokensPrices = (coinsPrices) => {
 
     const { hourly, daily } = coinsPrices;
 
-    // 1. DAY => Thay 20221125 bằng ngày hiện tại
+    // 1. DAY
     let days = {};
+    let currentDay = 20221229;
+    // let currentDay = getTodayDay();
+
     if (hourly) {
         Object.keys(hourly).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
 
-            if (Math.floor(cv / 1000000) == 20221125) {
+            if (Math.floor(cv / 1000000) == currentDay) {
                 days[key] = hourly[`${key}`];
             }
         });
@@ -53,16 +62,17 @@ const handleTokensPrices = (coinsPrices) => {
         days = null;
     }
 
-    // 2. WEEK => Thay mảng dates bằng giá trị 7 ngày gần nhất
+    // 2. WEEK
     let weeks = {};
-    let dates = [
-        20221119, 20221120, 20221121, 20221122, 20221123, 20221124, 20221125
+    let currentDays = [
+        20221223, 20221224, 20221225, 20221226, 20221227, 20221228, 20221229
     ];
+    // let currentDays = getNearest7Days();
 
     if (daily) {
         Object.keys(daily).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-            if (dates.includes(Math.floor(cv / 1000000))) {
+            if (currentDays.includes(Math.floor(cv / 1000000))) {
                 weeks[key] = daily[`${key}`];
             }
         });
@@ -70,12 +80,15 @@ const handleTokensPrices = (coinsPrices) => {
         weeks = null;
     }
 
-    // 3. MONTH => Thay 202210 bằng giá trị tháng hiện tại (YYYYmm)
+    // 3. MONTH
     let months = {};
+    let currentMonthYear = 202212;
+    // let currentMonthYear = getThisMonthYear();
+
     if (daily) {
         Object.keys(daily).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-            if (Math.floor(cv / 100000000) == 202211) {
+            if (Math.floor(cv / 100000000) == currentMonthYear) {
                 months[key] = daily[`${key}`];
             }
         });
@@ -83,17 +96,18 @@ const handleTokensPrices = (coinsPrices) => {
         months = null;
     }
 
-    // 4. YEAR => Thay monthYears bằng giá trị 12 gần nhất kể cả trừ tháng hiện tại
+    // 4. YEAR
     let years = {};
-    const monthYears = [
-        202112, 202201, 202202, 202203, 202204, 202205, 202206, 202207, 202208,
-        202209, 202210, 202211
+    const currentMonthYears = [
+        202201, 202202, 202203, 202204, 202205, 202206, 202207, 202208, 202209,
+        202210, 202211, 202212
     ];
+    // const currentMonthYears = getNearest12Months();
 
     if (daily) {
         Object.keys(daily).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-            if (monthYears.includes(Math.floor(cv / 100000000))) {
+            if (currentMonthYears.includes(Math.floor(cv / 100000000))) {
                 years[key] = daily[`${key}`];
             }
         });
@@ -668,7 +682,7 @@ const convertInvestorsCollection = async () => {
             followers: [],
             cryptos: cryptos,
             totalAssets: totalAssets,
-            percent24h: percent24h || 0,
+            percent24h: percent24h || 0
         });
     }
 
@@ -797,8 +811,8 @@ const saveCategoriesToFile = async () => {
 };
 
 const saveCategoriesToDB = async () => {
-    // const categories = require(`../databases/DB_Crawl/categories.json`);
-    const categories = await DBCrawlCategoryModel.find({});
+    const categories = require(`../databases/DB_Crawl/categories.json`);
+    // const categories = await DBCrawlCategoryModel.find({});
 
     for (let i = 0; i < categories.length; i++) {
         try {

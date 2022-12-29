@@ -41,49 +41,66 @@ const {
 const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 
 /* 1. Run every 10 minutes: Update collection datas */
-// // tags
+// tags
 // cron.schedule("*/10 * * * *", async () => {
+//     console.time("Execute time");
+//     await saveCategoriesToFile();
 //     await dropDBMainCollection("tags");
 //     await saveCategoriesToDB();
+//     console.timeEnd("Execute time");
 // });
 
-// // coins
+// coins
 // cron.schedule("*/10 * * * *", async () => {
+//     console.time("Execute time");
 //     await saveCoinsToFile();
 //     await saveConvertedCoinCollectionToFile();
 //     await dropDBMainCollection("coins");
 //     await saveConvertedCoinCollectionToDB();
+//     console.timeEnd("Execute time");
 // });
 
-// // investors
+// investors
 // cron.schedule("*/10 * * * *", async () => {
-//     await dropDBMainCollection("investors");
+//     console.time("Execute time");
 //     await saveInvestorsToFile();
 //     await saveConvertedInvestorCollectionToFile();
+//     await dropDBMainCollection("investors");
 //     await saveConvertedInvestorCollectionToDB();
+//     console.timeEnd("Execute time");
 // });
 
-// // transactions
+// transactions
 // cron.schedule("*/10 * * * *", async () => {
-//     await dropDBMainCollection("transactions");
+//     console.time("Execute time");
 //     await saveConvertedTransactionsToFile();
+//     await dropDBMainCollection("transactions");
 //     await saveConvertedTransactionsToDB();
+//     console.timeEnd("Execute time");
 // });
 
 /* 2. Run every day at 00:00: Backup all collection datas */
 // cron.schedule("0 0 * * *", async () => {
+//     console.time("Execute time");
 //     await backupDBMainDatas();
 //     await backupDBCrawlDatas();
+//     console.timeEnd("Execute time");
+// });
+
+// cron.schedule("* * * * *", async () => {
+//     console.time("Execute time");
+//     await saveCategoriesToFile();
+//     await dropDBMainCollection("tags");
+//     await saveCategoriesToDB();
+//     console.timeEnd("Execute time");
 // });
 
 const runScript = async () => {
     console.time("Execute time");
-
-    // await dropDBMainCollection("investors");
-    // await saveInvestorsToFile();
-    // await saveConvertedInvestorCollectionToFile();
-    // await saveConvertedInvestorCollectionToDB();
-
+    await saveCoinsToFile();
+    await saveConvertedCoinCollectionToFile();
+    await dropDBMainCollection("coins");
+    await saveConvertedCoinCollectionToDB();
     console.timeEnd("Execute time");
 };
 

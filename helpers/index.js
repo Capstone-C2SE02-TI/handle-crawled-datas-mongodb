@@ -28,6 +28,83 @@ const convertUnixTimestampToNumber = (unixTimestamp) => {
     return formattedTimeNumber;
 };
 
+const getTodayDay = () => {
+    const date = new Date();
+
+    const year =
+        date.getFullYear() < 10
+            ? "0" + date.getFullYear()
+            : "" + date.getFullYear();
+    const month =
+        date.getMonth() + 1 < 10
+            ? "0" + (date.getMonth() + 1)
+            : "" + (date.getMonth() + 1);
+    const day =
+        date.getDate() < 10 ? "0" + date.getDate() : "" + date.getDate();
+
+    return Number(`${year}${month}${day}`);
+};
+
+const getThisMonthYear = () => {
+    const date = new Date();
+
+    const year =
+        date.getFullYear() < 10
+            ? "0" + date.getFullYear()
+            : "" + date.getFullYear();
+    const month =
+        date.getMonth() + 1 < 10
+            ? "0" + (date.getMonth() + 1)
+            : "" + (date.getMonth() + 1);
+
+    return Number(`${year}${month}`);
+};
+
+const getNearest7Days = () => {
+    const unixTimestampToNumber = (unixTimestamp) => {
+        const date = new Date(unixTimestamp);
+
+        const year =
+            date.getFullYear() < 10
+                ? "0" + date.getFullYear()
+                : "" + date.getFullYear();
+        const month =
+            date.getMonth() + 1 < 10
+                ? "0" + (date.getMonth() + 1)
+                : "" + (date.getMonth() + 1);
+        const day =
+            date.getDate() < 10 ? "0" + date.getDate() : "" + date.getDate();
+
+        return Number(`${year}${month}${day}`);
+    };
+
+    const dates = [6, 5, 4, 3, 2, 1, 0].map((i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        return unixTimestampToNumber(d);
+    });
+
+    return dates;
+};
+
+// ERROR
+const getNearest12Months = () => {
+    const date = new Date();
+
+    const year =
+        date.getFullYear() < 10
+            ? "0" + date.getFullYear()
+            : "" + date.getFullYear();
+    const month =
+        date.getMonth() + 1 < 10
+            ? "0" + (date.getMonth() + 1)
+            : "" + (date.getMonth() + 1);
+    const day =
+        date.getDate() < 10 ? "0" + date.getDate() : "" + date.getDate();
+
+    return Number(`${year}${month}${day}`);
+};
+
 const scientificNotationEToLongStringNumber = (x) => {
     if (Math.abs(x) < 1.0) {
         var e = parseInt(x.toString().split("e-")[1]);
@@ -49,5 +126,9 @@ const scientificNotationEToLongStringNumber = (x) => {
 
 module.exports = {
     convertUnixTimestampToNumber,
+    getTodayDay,
+    getNearest7Days,
+    getThisMonthYear,
+    getNearest12Months,
     scientificNotationEToLongStringNumber
 };
