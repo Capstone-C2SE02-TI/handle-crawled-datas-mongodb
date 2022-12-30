@@ -18,7 +18,8 @@ const {
     getThisMonthYear,
     getNearest7Days,
     getNearest12Months,
-    calculateFirstTransactionDate
+    calculateFirstTransactionDate,
+    scientificNotationEToLongStringNumber
 } = require("../helpers");
 
 const dropDBMainCollection = async (collectionName) => {
@@ -313,95 +314,6 @@ const getPriceWithDaily = (dailyPrice, dateTransaction) => {
     }
 
     return { date: "none", value: 0 };
-};
-
-const updateTransactionsOfShark = async (sharkId) => {
-    const rawData = await InvestorModel.find(
-        { "transactionsHistory.500": { $exists: 0 }, isShark: 1 },
-        { transactionsHistory: 1, sharkId: 1 }
-    );
-
-    await rawData.forEach(async (element) => {
-        let transactions = await element.transactionsHistory.map(
-            async (transaction) => {
-                let numberOfTokens =
-                    Number(transaction["value"]) /
-                    10 ** Number(transaction["tokenDecimal"]);
-
-                let originalPrices = await getOriginalPriceOfToken(
-                    transaction["tokenSymbol"]
-                );
-
-                let hoursPrice = originalPrices.hourly;
-
-                if (typeof hoursPrice !== "undefined") {
-                    hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
-                        let date = convertUnixTimestampToNumber(unixDate);
-                        date = date.toString();
-                        return {
-                            date: date,
-                            value: hoursPrice[unixDate]
-                        };
-                    });
-
-                    hoursPrice.sort(
-                        (firstObj, secondObj) =>
-                            secondObj["date"] - firstObj["date"]
-                    );
-                }
-
-                let presentData =
-                    typeof hoursPrice !== "undefined"
-                        ? hoursPrice[0]
-                        : undefined;
-
-                const dateTransac = convertUnixTimestampToNumber(
-                    transaction["timeStamp"]
-                );
-                let dateNearTransaction =
-                    typeof hoursPrice !== "undefined"
-                        ? getDateNearTransaction(
-                              hoursPrice,
-                              dateTransac.toString()
-                          )
-                        : { date: "none", value: 0 };
-
-                if (dateNearTransaction.date === "notfound") {
-                    let dailyPrice = originalPrices.daily;
-                    dateNearTransaction = getPriceWithDaily(
-                        dailyPrice,
-                        dateTransac.toString()
-                    );
-                }
-
-                let presentPrice =
-                    typeof presentData === "undefined"
-                        ? 0
-                        : presentData["value"];
-
-                let presentDate =
-                    typeof presentData === "undefined"
-                        ? 0
-                        : presentData["date"];
-
-                Object.assign(transaction, {
-                    numberOfTokens: numberOfTokens,
-                    pastDate: dateNearTransaction["date"],
-                    pastPrice: dateNearTransaction["value"],
-                    presentDate: presentDate,
-                    presentPrice: presentPrice
-                });
-
-                return transaction;
-            }
-        );
-        transactions = await getValueFromPromise(transactions);
-
-        await InvestorModel.updateOne(
-            { sharkId: element.sharkId },
-            { transactionsHistory: transactions }
-        );
-    });
 };
 
 const handleInvestorTransactionHistory = async (transactions) => {
@@ -733,7 +645,8 @@ const convertInvestorsCollection = async () => {
 
     let investorList = [];
 
-    for (let i = 0; i < investors.length; i++) {
+    // for (let i = 0; i < investors.length; i++) {
+    for (let i = 0; i < 4; i++) {
         const transactionHistory = await handleInvestorTransactionHistory(
             investors[i].TXs
         );
@@ -744,13 +657,12 @@ const convertInvestorsCollection = async () => {
             _followers.find((follower) => follower.sharkId == i + 1)
                 ?.followers || [];
         const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
-        const firstTransactionDate = calculateFirstTransactionDate(
-            investors[i].TXs
+        const firstTransactionDate =
+            calculateFirstTransactionDate(transactionHistory);
+        const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
+            transactionHistory,
+            _ids[i]._id
         );
-        // const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
-        //     investors[i].TXs,
-        //     _ids[i]._id
-        // );
 
         investorList.push({
             sharkId: i + 1,
@@ -762,9 +674,9 @@ const convertInvestorsCollection = async () => {
             cryptos: cryptos,
             totalAssets: totalAssets,
             percent24h: percent24h || 0,
-            firstTransactionDate: firstTransactionDate
-            // totalValueIn: totalValueIn,
-            // totalValueOut: totalValueOut,
+            firstTransactionDate: firstTransactionDate,
+            totalValueIn: totalValueIn,
+            totalValueOut: totalValueOut
         });
     }
 
@@ -827,7 +739,10 @@ const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
         return tmp;
     }, new BigNumber(0));
 
-    return { totalValueIn, totalValueOut };
+    return {
+        totalValueIn: scientificNotationEToLongStringNumber(totalValueIn),
+        totalValueOut: scientificNotationEToLongStringNumber(totalValueOut)
+    };
 };
 
 const getFollowersOldDatas = async () => {

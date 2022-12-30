@@ -104,8 +104,8 @@ const runScript = async () => {
 
     // await saveInvestorsToFile();
     await saveConvertedInvestorCollectionToFile();
-    await dropDBMainCollection("investors");
-    await saveConvertedInvestorCollectionToDB();
+    // await dropDBMainCollection("investors");
+    // await saveConvertedInvestorCollectionToDB();
     // await updateInvestorsTotalValueInOut();
 
     // await saveConvertedTransactionsToFile();
