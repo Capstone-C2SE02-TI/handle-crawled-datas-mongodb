@@ -88,22 +88,11 @@ const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
 //     console.timeEnd("Execute time");
 // });
 
-// let ID1 = 0;
-// cron.schedule("* * * * *", async () => {
-//     console.time(`Execute time ${++ID1}`);
-//     await saveInvestorsToFile();
-//     await saveConvertedInvestorCollectionToFile();
-//     await dropDBMainCollection("investors");
-//     await saveConvertedInvestorCollectionToDB();
-//     await updateInvestorsTotalValueInOut();
-//     console.timeEnd(`Execute time ${ID1}`);
-// });
-
 const runScript = async () => {
     console.time(`Execute time`);
 
     // await saveInvestorsToFile();
-    await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedInvestorCollectionToFile();
     // await dropDBMainCollection("investors");
     // await saveConvertedInvestorCollectionToDB();
     // await updateInvestorsTotalValueInOut();

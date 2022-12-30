@@ -637,7 +637,6 @@ const saveInvestorsToFile = async () => {
 };
 
 const convertInvestorsCollection = async () => {
-    // const investors = await DBCrawlInvestorModel.find({});
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
     const _followers = require("../databases/DB_Crawl/investors-followers.json");
@@ -645,8 +644,8 @@ const convertInvestorsCollection = async () => {
 
     let investorList = [];
 
-    // for (let i = 0; i < investors.length; i++) {
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < investors.length; i++) {
+    // for (let i = 0; i < 1; i++) {
         const transactionHistory = await handleInvestorTransactionHistory(
             investors[i].TXs
         );
@@ -721,15 +720,15 @@ const saveConvertedInvestorCollectionToDB = async () => {
 };
 
 const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
-    let totalValueOut = new BigNumber(0);
     let totalValueIn = new BigNumber(0);
+    let totalValueOut = new BigNumber(0);
 
     totalValueIn = await transactionsHistory.reduce((curr, transaction) => {
         const passValue =
-            transaction.pastPrice === 0 ? 1 : transaction.pastPrice;
+            transaction.pastPrice == 0 ? 1 : transaction.pastPrice;
         let tmp = curr;
 
-        if (walletAddress.toLowerCase() === transaction.from.toLowerCase())
+        if (walletAddress.toLowerCase() == transaction.from.toLowerCase())
             tmp = tmp.plus(transaction.numberOfTokens * passValue);
         else
             totalValueOut = totalValueOut.plus(
