@@ -29,6 +29,7 @@ const {
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
     updateInvestorsTotalValueInOut,
+    getAndSaveFollowersOldDatas,
     saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,

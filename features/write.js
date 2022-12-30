@@ -665,18 +665,20 @@ const convertInvestorsCollection = async () => {
     // const investors = await DBCrawlInvestorModel.find({});
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
+    const followers = require("../databases/DB_Crawl/investors-followers.json");
+    // const followers = await getFollowersOldDatas();
 
     let investorList = [];
 
     for (let i = 0; i < investors.length; i++) {
         const { cryptos, totalAssets } = await getListCryptosOfShark(
-            investors[i].coins
+            investors[i].coins[0]
         );
         const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
-        const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
-            investors[i].TXs,
-            _ids[i]._id
-        );
+        // const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
+        //     investors[i].TXs,
+        //     _ids[i]._id
+        // );
         const firstTransactionDate = calculateFirstTransactionDate(
             investors[i].TXs
         );
@@ -684,15 +686,17 @@ const convertInvestorsCollection = async () => {
         investorList.push({
             sharkId: i + 1,
             isShark: investors[i].is_shark,
-            coins: investors[i].coins,
+            coins: investors[i].coins[0],
             transactionsHistory: investors[i].TXs,
             walletAddress: _ids[i]._id,
-            followers: [],
+            followers:
+                followers.find((follower) => follower.sharkId == i + 1)
+                    ?.followers || [],
             cryptos: cryptos,
             totalAssets: totalAssets,
             percent24h: percent24h || 0,
-            totalValueIn: totalValueIn,
-            totalValueOut: totalValueOut,
+            // totalValueIn: totalValueIn,
+            // totalValueOut: totalValueOut,
             firstTransactionDate: firstTransactionDate
         });
     }
@@ -737,9 +741,10 @@ const saveConvertedInvestorCollectionToDB = async () => {
     log("Write investors in DB successfully");
 };
 
+// PENDING: Vì investors.transactionsHistory chưa có dữ liệu pastPrices, ...
 const updateInvestorsTotalValueInOut = async (sharkId) => {
     const rawData = await DBMainInvestorModel.find(
-        { "transactionsHistory.500": { $exists: 0 }, isShark: 1 },
+        { isShark: 1 },
         { transactionsHistory: 1, sharkId: 1, walletAddress: 1 }
     );
 
@@ -797,9 +802,14 @@ const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
     return { totalValueIn, totalValueOut };
 };
 
-const getAndSaveFollowersOldDatas = async() => {
-    
-}
+const getFollowersOldDatas = async () => {
+    // Chỉ lấy ra những docs có filed followers != []
+    const followers = await DBMainInvestorModel.find({
+        followers: { $exists: true, $not: { $size: 0 } }
+    }).select("sharkId followers -_id");
+
+    return followers;
+};
 
 const saveCategoriesToFile = async () => {
     const categories = await DBCrawlCategoryModel.find({});
@@ -1002,6 +1012,7 @@ module.exports = {
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
     updateInvestorsTotalValueInOut,
+    getFollowersOldDatas,
     saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
