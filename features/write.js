@@ -10,10 +10,7 @@ const {
     DBMainTransactionModel,
     DBMainUserModel
 } = require("../models");
-const {
-    dbMainConnection,
-    dbCrawlConnection
-} = require("../configs/connect-database");
+const { dbMainConnection } = require("../configs/connect-database");
 const { getCollectionLength } = require("./read");
 const {
     convertUnixTimestampToNumber,
@@ -236,12 +233,12 @@ const getValueFromPromise = async (promiseValue) => {
     return await Promise.all(promiseValue);
 };
 
-const getHoursPriceOfToken = async (tokenSymbol) => {
+const getOriginalPriceOfToken = async (tokenSymbol) => {
     const token = await DBMainCoinModel.findOne({
         symbol: tokenSymbol.toLowerCase()
     }).select("originalPrices -_id");
 
-    return token?.originalPrices?.hourly || null;
+    return token?.originalPrices || null;
 };
 
 const getDateNearTransaction = (dateList, dateTransaction) => {
@@ -405,6 +402,72 @@ const updateTransactionsOfShark = async (sharkId) => {
             { transactionsHistory: transactions }
         );
     });
+};
+
+const handleInvestorTransactionHistory = async (transactions) => {
+    let promises = await transactions.map(async (transaction) => {
+        let numberOfTokens =
+            Number(transaction["value"]) /
+            10 ** Number(transaction["tokenDecimal"]);
+
+        let originalPrices = await getOriginalPriceOfToken(
+            transaction["tokenSymbol"]
+        );
+
+        let hoursPrice = originalPrices?.hourly;
+
+        if (hoursPrice) {
+            hoursPrice = Object.keys(hoursPrice).map((unixDate) => {
+                let date = convertUnixTimestampToNumber(unixDate);
+                date = date.toString();
+                return {
+                    date: date,
+                    value: hoursPrice[unixDate]
+                };
+            });
+
+            hoursPrice.sort(
+                (firstObj, secondObj) => secondObj["date"] - firstObj["date"]
+            );
+        }
+
+        let presentData =
+            typeof hoursPrice !== "undefined" ? hoursPrice[0] : undefined;
+
+        const dateTransac = convertUnixTimestampToNumber(
+            transaction["timeStamp"]
+        );
+        let dateNearTransaction =
+            typeof hoursPrice !== "undefined"
+                ? getDateNearTransaction(hoursPrice, dateTransac.toString())
+                : { date: "none", value: 0 };
+
+        if (dateNearTransaction.date === "notfound") {
+            let dailyPrice = originalPrices.daily;
+            dateNearTransaction = getPriceWithDaily(
+                dailyPrice,
+                dateTransac.toString()
+            );
+        }
+
+        let presentPrice =
+            typeof presentData === "undefined" ? 0 : presentData["value"];
+
+        let presentDate =
+            typeof presentData === "undefined" ? "none" : presentData["date"];
+
+        Object.assign(transaction, {
+            numberOfTokens: numberOfTokens,
+            pastDate: dateNearTransaction["date"],
+            pastPrice: dateNearTransaction["value"],
+            presentDate: presentDate,
+            presentPrice: presentPrice
+        });
+
+        return transaction;
+    });
+
+    return await getValueFromPromise(promises);
 };
 
 const getCoinOrTokenDetails = async (coinSymbol) => {
@@ -665,39 +728,43 @@ const convertInvestorsCollection = async () => {
     // const investors = await DBCrawlInvestorModel.find({});
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
-    const followers = require("../databases/DB_Crawl/investors-followers.json");
-    // const followers = await getFollowersOldDatas();
+    const _followers = require("../databases/DB_Crawl/investors-followers.json");
+    // const _followers = await getFollowersOldDatas();
 
     let investorList = [];
 
     for (let i = 0; i < investors.length; i++) {
+        const transactionHistory = await handleInvestorTransactionHistory(
+            investors[i].TXs
+        );
         const { cryptos, totalAssets } = await getListCryptosOfShark(
             investors[i].coins[0]
         );
+        const followers =
+            _followers.find((follower) => follower.sharkId == i + 1)
+                ?.followers || [];
         const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
+        const firstTransactionDate = calculateFirstTransactionDate(
+            investors[i].TXs
+        );
         // const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
         //     investors[i].TXs,
         //     _ids[i]._id
         // );
-        const firstTransactionDate = calculateFirstTransactionDate(
-            investors[i].TXs
-        );
 
         investorList.push({
             sharkId: i + 1,
             isShark: investors[i].is_shark,
             coins: investors[i].coins[0],
-            transactionsHistory: investors[i].TXs,
             walletAddress: _ids[i]._id,
-            followers:
-                followers.find((follower) => follower.sharkId == i + 1)
-                    ?.followers || [],
+            transactionsHistory: transactionHistory,
+            followers: followers,
             cryptos: cryptos,
             totalAssets: totalAssets,
             percent24h: percent24h || 0,
+            firstTransactionDate: firstTransactionDate
             // totalValueIn: totalValueIn,
             // totalValueOut: totalValueOut,
-            firstTransactionDate: firstTransactionDate
         });
     }
 
@@ -739,45 +806,6 @@ const saveConvertedInvestorCollectionToDB = async () => {
     }
 
     log("Write investors in DB successfully");
-};
-
-// PENDING: Vì investors.transactionsHistory chưa có dữ liệu pastPrices, ...
-const updateInvestorsTotalValueInOut = async (sharkId) => {
-    const rawData = await DBMainInvestorModel.find(
-        { isShark: 1 },
-        { transactionsHistory: 1, sharkId: 1, walletAddress: 1 }
-    );
-
-    await rawData.forEach(async (element) => {
-        let totalValueOut = new BigNumber(0);
-        let totalValueIn = new BigNumber(0);
-
-        totalValueIn = await element.transactionsHistory.reduce(
-            (curr, transaction) => {
-                const passValue =
-                    transaction.pastPrice === 0 ? 1 : transaction.pastPrice;
-                let tmp = curr;
-
-                if (
-                    element.walletAddress.toLowerCase() ===
-                    transaction.from.toLowerCase()
-                )
-                    tmp = tmp.plus(transaction.numberOfTokens * passValue);
-                else
-                    totalValueOut = totalValueOut.plus(
-                        transaction.numberOfTokens * passValue
-                    );
-
-                return tmp;
-            },
-            new BigNumber(0)
-        );
-
-        await DBMainInvestorModel.updateOne(
-            { sharkId: element.sharkId },
-            { totalValueIn: totalValueIn, totalValueOut: totalValueOut }
-        );
-    });
 };
 
 const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
@@ -1011,12 +1039,13 @@ module.exports = {
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
-    updateInvestorsTotalValueInOut,
+    calculateTotalValueInOut,
     getFollowersOldDatas,
     saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
+    handleInvestorTransactionHistory,
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
     renameTransactionCollectionField,

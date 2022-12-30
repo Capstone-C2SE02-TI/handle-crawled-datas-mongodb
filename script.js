@@ -28,12 +28,12 @@ const {
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
-    updateInvestorsTotalValueInOut,
-    getAndSaveFollowersOldDatas,
+    calculateTotalValueInOut,
     saveCategoriesToFile,
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
+    updateNumberOfTokensPastPresentDateValue,
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
     renameTransactionCollectionField,
@@ -107,6 +107,10 @@ const runScript = async () => {
     await dropDBMainCollection("investors");
     await saveConvertedInvestorCollectionToDB();
     // await updateInvestorsTotalValueInOut();
+
+    // await saveConvertedTransactionsToFile();
+    // await dropDBMainCollection("transactions");
+    // await saveConvertedTransactionsToDB();
 
     console.timeEnd(`Execute time`);
 };
