@@ -7,6 +7,9 @@ const InvestorSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
+        sharkId: {
+            type: Number
+        },
         coins: {
             type: Object,
             default: {}
@@ -46,6 +49,10 @@ const InvestorSchema = new mongoose.Schema(
         followers: {
             type: Array,
             default: []
+        },
+        firstTransactionDate: {
+            type: Number,
+            default: 0
         }
     },
     { versionKey: false }

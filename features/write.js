@@ -20,7 +20,8 @@ const {
     getTodayDay,
     getThisMonthYear,
     getNearest7Days,
-    getNearest12Months
+    getNearest12Months,
+    calculateFirstTransactionDate
 } = require("../helpers");
 
 const dropDBMainCollection = async (collectionName) => {
@@ -672,10 +673,13 @@ const convertInvestorsCollection = async () => {
             investors[i].coins
         );
         const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
-        // const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
-        //     investors[i].TXs,
-        //     _ids[i]._id
-        // );
+        const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
+            investors[i].TXs,
+            _ids[i]._id
+        );
+        const firstTransactionDate = calculateFirstTransactionDate(
+            investors[i].TXs
+        );
 
         investorList.push({
             sharkId: i + 1,
@@ -686,9 +690,10 @@ const convertInvestorsCollection = async () => {
             followers: [],
             cryptos: cryptos,
             totalAssets: totalAssets,
-            percent24h: percent24h || 0
-            // totalValueIn: totalValueIn,
-            // totalValueOut: totalValueOut
+            percent24h: percent24h || 0,
+            totalValueIn: totalValueIn,
+            totalValueOut: totalValueOut,
+            firstTransactionDate: firstTransactionDate
         });
     }
 
@@ -741,6 +746,7 @@ const updateInvestorsTotalValueInOut = async (sharkId) => {
     await rawData.forEach(async (element) => {
         let totalValueOut = new BigNumber(0);
         let totalValueIn = new BigNumber(0);
+
         totalValueIn = await element.transactionsHistory.reduce(
             (curr, transaction) => {
                 const passValue =
@@ -790,6 +796,10 @@ const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
 
     return { totalValueIn, totalValueOut };
 };
+
+const getAndSaveFollowersOldDatas = async() => {
+    
+}
 
 const saveCategoriesToFile = async () => {
     const categories = await DBCrawlCategoryModel.find({});

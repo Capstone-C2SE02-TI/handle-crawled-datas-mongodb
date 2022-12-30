@@ -124,11 +124,26 @@ const scientificNotationEToLongStringNumber = (x) => {
     return x;
 };
 
+const calculateFirstTransactionDate = (transactionHistory) => {
+    const timeStamps = transactionHistory.map((TX) => TX.timeStamp);
+
+    let min = timeStamps[0];
+
+    for (let i = 1; i < timeStamps.length; i++) {
+        if (timeStamps[i] < min) min = timeStamps[i];
+    }
+
+    if (min === "") return undefined;
+
+    return convertUnixTimestampToNumber(min) || 0;
+};
+
 module.exports = {
     convertUnixTimestampToNumber,
     getTodayDay,
     getNearest7Days,
     getThisMonthYear,
     getNearest12Months,
-    scientificNotationEToLongStringNumber
+    scientificNotationEToLongStringNumber,
+    calculateFirstTransactionDate
 };
