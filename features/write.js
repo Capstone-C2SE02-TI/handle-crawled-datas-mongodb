@@ -19,7 +19,7 @@ const {
     getNearest7Days,
     getNearest12Months,
     calculateFirstTransactionDate,
-    scientificNotationEToLongStringNumber
+    eToLongStringNumber
 } = require("../helpers");
 
 const dropDBMainCollection = async (collectionName) => {
@@ -639,13 +639,12 @@ const saveInvestorsToFile = async () => {
 const convertInvestorsCollection = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
-    const _followers = require("../databases/DB_Crawl/investors-followers.json");
-    // const _followers = await getFollowersOldDatas();
+    // const _followers = require("../databases/DB_Crawl/investors-followers.json");
+    const _followers = await getFollowersOldDatas();
 
     let investorList = [];
 
     for (let i = 0; i < investors.length; i++) {
-    // for (let i = 0; i < 1; i++) {
         const transactionHistory = await handleInvestorTransactionHistory(
             investors[i].TXs
         );
@@ -728,7 +727,14 @@ const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
             transaction.pastPrice == 0 ? 1 : transaction.pastPrice;
         let tmp = curr;
 
-        if (walletAddress.toLowerCase() == transaction.from.toLowerCase())
+        // log(
+        //     "walletAddress",
+        //     walletAddress,
+        //     "/ntransaction.from",
+        //     transaction.from
+        // );
+
+        if (walletAddress == transaction.from)
             tmp = tmp.plus(transaction.numberOfTokens * passValue);
         else
             totalValueOut = totalValueOut.plus(
@@ -739,8 +745,8 @@ const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
     }, new BigNumber(0));
 
     return {
-        totalValueIn: scientificNotationEToLongStringNumber(totalValueIn),
-        totalValueOut: scientificNotationEToLongStringNumber(totalValueOut)
+        totalValueIn: eToLongStringNumber(totalValueIn),
+        totalValueOut: eToLongStringNumber(totalValueOut)
     };
 };
 

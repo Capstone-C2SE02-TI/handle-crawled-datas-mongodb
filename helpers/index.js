@@ -105,7 +105,7 @@ const getNearest12Months = () => {
     return Number(`${year}${month}${day}`);
 };
 
-const scientificNotationEToLongStringNumber = (x) => {
+const eToLongStringNumber = (x) => {
     if (Math.abs(x) < 1.0) {
         var e = parseInt(x.toString().split("e-")[1]);
         if (e) {
@@ -144,6 +144,6 @@ module.exports = {
     getNearest7Days,
     getThisMonthYear,
     getNearest12Months,
-    scientificNotationEToLongStringNumber,
+    eToLongStringNumber,
     calculateFirstTransactionDate
 };
