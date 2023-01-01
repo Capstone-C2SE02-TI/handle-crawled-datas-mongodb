@@ -90,6 +90,10 @@ const CoinSchema = new mongoose.Schema(
         totalInvestment: {
             type: Number,
             default: 0
+        },
+        updateDate: {
+            type: String,
+            default: new Date().toString()
         }
     },
     { versionKey: false }

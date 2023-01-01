@@ -103,6 +103,10 @@ const TransactionSchema = new mongoose.Schema(
         pastDate: {
             type: String,
             trim: true
+        },
+        updateDate: {
+            type: String,
+            default: new Date().toString()
         }
     },
     { timestamps: true, versionKey: false }

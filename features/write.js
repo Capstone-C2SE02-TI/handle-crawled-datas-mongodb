@@ -210,24 +210,67 @@ const saveConvertedCoinCollectionToFile = async () => {
     log("Write coins into file successfully");
 };
 
-const saveConvertedCoinCollectionToDB = async () => {
+// Số luồng: 183 docs / 10 = 18 luồng
+const saveConvertedCoinCollectionToDB = (id4) => {
     const coins = require("../databases/DB_Crawl/coins-converted.json");
 
-    for (let i = 0; i < coins.length; i++) {
-        try {
-            await DBMainCoinModel.create(coins[i])
-                .then((data) => {})
-                .catch((error) => {
-                    log("Write coin in DB failed");
-                    throw new Error(error);
-                });
-        } catch (error) {
-            log("Write coin in DB failed");
-            throw new Error(error);
+    const handleupdateCoin = (start, end, isLog) => {
+        for (let i = start; i < end; i++) {
+            try {
+                DBMainCoinModel.findOneAndUpdate(
+                    { coinId: i + 1 },
+                    { ...coins[i], updateDate: new Date().toString() }
+                )
+                    .then((data) => {})
+                    .catch((error) => {
+                        log(`Update coin ${i + 1} in DB failed`);
+                        throw new Error(error);
+                    });
+
+                if (isLog && i == end - 1)
+                    console.timeEnd(`Execute time coins-save-db ${id4}`);
+            } catch (error) {
+                log(`Update coin ${i + 1} in DB failed`);
+                throw new Error(error);
+            }
         }
+    };
+
+    let len = coins.length,
+        limit = Math.floor(len / 10),
+        jump = 10,
+        start = 0,
+        end = start + jump;
+
+    // Số luồng: 183 docs / 10 = 18 luồng
+    for (let i = 0; i < limit; i++) {
+        setTimeout(() => {
+            if (i == limit - 1) handleupdateCoin(start, len, true);
+            else handleupdateCoin(start, end);
+
+            start = start + jump;
+            end = start + jump;
+        }, 0);
     }
 
-    log("Write coins in DB successfully");
+    // for (let i = 0; i < coins.length; i++) {
+    //     try {
+    //         await DBMainCoinModel.findOneAndUpdate(
+    //             { coinId: i + 1 },
+    //             { ...coins[i], updateDate: new Date().toString() }
+    //         )
+    //             .then((data) => {})
+    //             .catch((error) => {
+    //                 log(`Update coin ${i + 1} in DB failed`);
+    //                 throw new Error(error);
+    //             });
+    //     } catch (error) {
+    //         log(`Update coin ${i + 1} in DB failed`);
+    //         throw new Error(error);
+    //     }
+    // }
+
+    log("Update coins in DB successfully");
 };
 
 const getValueFromPromise = async (promiseValue) => {
@@ -639,13 +682,11 @@ const saveInvestorsToFile = async () => {
 const convertInvestorsCollection = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
-    // const _followers = require("../databases/DB_Crawl/investors-followers.json");
     const _followers = await getFollowersOldDatas();
 
     let investorList = [];
 
     for (let i = 0; i < investors.length; i++) {
-        // for (let i = 0; i < 50; i++) {
         const transactionHistory = await handleInvestorTransactionHistory(
             investors[i].TXs
         );
@@ -819,23 +860,26 @@ const saveCategoriesToFile = async () => {
 
 const saveCategoriesToDB = async () => {
     const categories = require(`../databases/DB_Crawl/categories.json`);
-    // const categories = await DBCrawlCategoryModel.find({});
 
     for (let i = 0; i < categories.length; i++) {
         try {
-            await DBMainTagModel.create({ id: i + 1, name: categories[i].name })
+            await DBMainTagModel.create({
+                id: i + 1,
+                name: categories[i].name,
+                updateDate: new Date()
+            })
                 .then((data) => {})
                 .catch((error) => {
-                    log("Write category in DB failed");
+                    log(`Write tag ${i + 1} in DB failed`);
                     throw new Error(error);
                 });
         } catch (error) {
-            log("Write category in DB failed");
+            log(`Write tag ${i + 1} in DB failed`);
             throw new Error(error);
         }
     }
 
-    log("Write categories in DB successfully");
+    log("Write tags in DB successfully");
 };
 
 const handleEachTransaction = async ({

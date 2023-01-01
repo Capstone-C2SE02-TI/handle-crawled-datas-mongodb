@@ -9,6 +9,10 @@ const TagSchema = new mongoose.Schema(
         name: {
             type: String,
             trim: true
+        },
+        updateDate: {
+            type: String,
+            default: new Date().toString()
         }
     },
     { versionKey: false }

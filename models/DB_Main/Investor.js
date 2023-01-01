@@ -53,6 +53,10 @@ const InvestorSchema = new mongoose.Schema(
         firstTransactionDate: {
             type: Number,
             default: 0
+        },
+        updateDate: {
+            type: String,
+            default: new Date().toString()
         }
     },
     { versionKey: false }
