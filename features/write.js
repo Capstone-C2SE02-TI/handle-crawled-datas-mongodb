@@ -783,9 +783,9 @@ const updateInvestorTransactionsHistoryTotalValueFirstTrans = async () => {
                 }
             );
 
-            log("Successfully");
+            log(`Successfully ${i}`);
         } catch (error) {
-            log("Failed");
+            log(`Failed ${i}`);
             throw new Error(error);
         }
     }
