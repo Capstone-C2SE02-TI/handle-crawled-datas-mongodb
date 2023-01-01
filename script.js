@@ -33,7 +33,7 @@ const {
     saveCategoriesToDB,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
-    updateNumberOfTokensPastPresentDateValue,
+    updateInvestorTransactionsHistoryTotalValueFirstTrans,
     calculateInvestorPercent24h,
     handleDetailChartTransaction,
     renameTransactionCollectionField,
@@ -48,36 +48,36 @@ let ID1 = 0,
 
 /* 1. Run every 10 minutes: Update collection datas */
 // tags
-cron.schedule("*/10 * * * *", async () => {
-    log("Run tags ...");
-    console.time(`Execute time tags ${++ID1}`);
-    await saveCategoriesToFile();
-    await dropDBMainCollection("tags");
-    await saveCategoriesToDB();
-    console.timeEnd(`Execute time tags ${ID1}`);
-});
+// cron.schedule("*/10 * * * *", async () => {
+//     log("Run tags ...");
+//     console.time(`Execute time tags ${++ID1}`);
+//     await saveCategoriesToFile();
+//     await dropDBMainCollection("tags");
+//     await saveCategoriesToDB();
+//     console.timeEnd(`Execute time tags ${ID1}`);
+// });
 
 // coins
-cron.schedule("*/10 * * * *", async () => {
-    log("Run coins ...");
-    console.time(`Execute time coins ${++ID2}`);
-    await saveCoinsToFile();
-    await saveConvertedCoinCollectionToFile();
-    await dropDBMainCollection("coins");
-    await saveConvertedCoinCollectionToDB();
-    console.timeEnd(`Execute time coins ${ID2}`);
-});
+// cron.schedule("*/10 * * * *", async () => {
+//     log("Run coins ...");
+//     console.time(`Execute time coins ${++ID2}`);
+//     await saveCoinsToFile();
+//     await saveConvertedCoinCollectionToFile();
+//     await dropDBMainCollection("coins");
+//     await saveConvertedCoinCollectionToDB();
+//     console.timeEnd(`Execute time coins ${ID2}`);
+// });
 
 // investors
-cron.schedule("*/10 * * * *", async () => {
-    log("Run investors ...");
-    console.time(`Execute time investors ${++ID3}`);
-    await saveInvestorsToFile();
-    await saveConvertedInvestorCollectionToFile();
-    await dropDBMainCollection("investors");
-    await saveConvertedInvestorCollectionToDB();
-    console.timeEnd(`Execute time investors ${ID3}`);
-});
+// cron.schedule("*/10 * * * *", async () => {
+//     log("Run investors ...");
+//     console.time(`Execute time investors ${++ID3}`);
+//     await saveInvestorsToFile();
+//     await saveConvertedInvestorCollectionToFile();
+//     await dropDBMainCollection("investors");
+//     await saveConvertedInvestorCollectionToDB();
+//     console.timeEnd(`Execute time investors ${ID3}`);
+// });
 
 // transactions
 // cron.schedule("*/10 * * * *", async () => {
@@ -99,19 +99,20 @@ cron.schedule("*/10 * * * *", async () => {
 // });
 
 const runScript = async () => {
-    // console.time(`Execute time test`);
+    console.time(`Execute time test`);
 
     // await saveInvestorsToFile();
     // await saveConvertedInvestorCollectionToFile();
     // await dropDBMainCollection("investors");
     // await saveConvertedInvestorCollectionToDB();
-    // await updateInvestorsTotalValueInOut();
 
     // await saveConvertedTransactionsToFile();
     // await dropDBMainCollection("transactions");
     // await saveConvertedTransactionsToDB();
 
-    // console.timeEnd(`Execute time test`);
+    await updateInvestorTransactionsHistoryTotalValueFirstTrans();
+
+    console.timeEnd(`Execute time test`);
 };
 
 runScript();
