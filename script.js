@@ -64,7 +64,7 @@ let id1 = 0,
 //     console.timeEnd(`Execute time tags ${id1}`);
 // }, 0);
 
-// coins
+// coins: 2 phút (120000), 10 phút (600000)
 setInterval(async () => {
     log("Run coins ...");
     console.time(`Execute time coins ${++id3}`);
@@ -74,9 +74,6 @@ setInterval(async () => {
     saveConvertedCoinCollectionToDB(id4);
     console.timeEnd(`Execute time coins ${id3}`);
 }, 120000);
-// 2 phút
-// }, 600000);
-// 10 phút
 
 // investors
 // setTimeout(async () => {

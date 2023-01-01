@@ -33,6 +33,7 @@ const dropDBMainCollection = async (collectionName) => {
     });
 };
 
+// Need comment-uncomment 4 function calls
 const handleTokensPrices = (coinsPrices) => {
     if (!coinsPrices)
         return {
@@ -955,6 +956,7 @@ const convertTransactions = async () => {
     return transactionList;
 };
 
+// Not done yet
 const convertTransactions1 = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
     let transactions = [],

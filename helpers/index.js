@@ -87,22 +87,27 @@ const getNearest7Days = () => {
     return dates;
 };
 
-// ERROR
 const getNearest12Months = () => {
-    const date = new Date();
+    var dates = [];
+    (d = new Date()), (y = d.getFullYear()), (m = d.getMonth());
 
-    const year =
-        date.getFullYear() < 10
-            ? "0" + date.getFullYear()
-            : "" + date.getFullYear();
-    const month =
-        date.getMonth() + 1 < 10
-            ? "0" + (date.getMonth() + 1)
-            : "" + (date.getMonth() + 1);
-    const day =
-        date.getDate() < 10 ? "0" + date.getDate() : "" + date.getDate();
+    function padMonth(month) {
+        if (month < 10) return "0" + month;
+        else return month;
+    }
 
-    return Number(`${year}${month}${day}`);
+    if (m === 11) {
+        for (var i = 1; i < 13; i++) {
+            dates.push(Number(y + "" + padMonth(i)));
+        }
+    } else {
+        for (var i = m + 1; i < m + 13; i++) {
+            if (i % 12 > m) dates.push(Number(y - 1 + "" + padMonth(i + 1)));
+            else dates.push(Number(y + "" + padMonth((i % 12) + 1)));
+        }
+    }
+
+    return dates;
 };
 
 const eToLongStringNumber = (x) => {
