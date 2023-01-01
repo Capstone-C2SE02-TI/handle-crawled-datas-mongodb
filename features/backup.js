@@ -22,7 +22,8 @@ const backupDBCrawlDatas = async () => {
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(
-            `./databases/DB_Crawl/${collectionName}.json`,
+            `./databases/BACKUP/${collectionName}.json`,
+            // `./databases/DB_Crawl/${collectionName}.json`,
             JSON.stringify(collectionDatas[index]),
             (error) => {
                 if (error) {
@@ -70,7 +71,7 @@ const backupDBMainDatas = async () => {
 
     const promises = collectionNames.map((collectionName, index) => {
         return fs.writeFileAsync(
-            `./databases/DB_Test_Main/${collectionName}.json`,
+            `./databases/BACKUP/${collectionName}.json`,
             // `./databases/DB_Main/${collectionName}.json`,
             JSON.stringify(collectionDatas[index]),
             (error) => {

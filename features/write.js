@@ -242,7 +242,6 @@ const saveConvertedCoinCollectionToDB = (id4) => {
         start = 0,
         end = start + jump;
 
-    // Số luồng: 183 docs / 10 = 18 luồng
     for (let i = 0; i < limit; i++) {
         setTimeout(() => {
             if (i == limit - 1) handleupdateCoin(start, len, true);
@@ -252,23 +251,6 @@ const saveConvertedCoinCollectionToDB = (id4) => {
             end = start + jump;
         }, 0);
     }
-
-    // for (let i = 0; i < coins.length; i++) {
-    //     try {
-    //         await DBMainCoinModel.findOneAndUpdate(
-    //             { coinId: i + 1 },
-    //             { ...coins[i], updateDate: new Date().toString() }
-    //         )
-    //             .then((data) => {})
-    //             .catch((error) => {
-    //                 log(`Update coin ${i + 1} in DB failed`);
-    //                 throw new Error(error);
-    //             });
-    //     } catch (error) {
-    //         log(`Update coin ${i + 1} in DB failed`);
-    //         throw new Error(error);
-    //     }
-    // }
 
     log("Update coins in DB successfully");
 };

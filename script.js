@@ -65,7 +65,7 @@ let id1 = 0,
 // }, 0);
 
 // coins
-setTimeout(async () => {
+setInterval(async () => {
     log("Run coins ...");
     console.time(`Execute time coins ${++id3}`);
     await saveCoinsToFile();
@@ -73,8 +73,10 @@ setTimeout(async () => {
     console.time(`Execute time coins-save-db ${++id4}`);
     saveConvertedCoinCollectionToDB(id4);
     console.timeEnd(`Execute time coins ${id3}`);
-}, 0);
-//600000
+}, 120000);
+// 2 phút
+// }, 600000);
+// 10 phút
 
 // investors
 // setTimeout(async () => {
@@ -100,7 +102,7 @@ setTimeout(async () => {
 //     console.timeEnd(`Execute time transactions ${id7}`);
 // }, 600000);
 
-/* 2. Run every day at 00:00: Backup all datas */
+/* 2. Run every day: Backup all datas */
 // setInterval(async () => {
 //     log("Run backup ...");
 //     console.time(`Execute time backup ${++id9}`);
@@ -108,7 +110,3 @@ setTimeout(async () => {
 //     await backupDBCrawlDatas();
 //     console.timeEnd(`Execute time backup ${id9}`);
 // }, 600000);
-
-// const runScript = async () => {};
-
-// runScript();
