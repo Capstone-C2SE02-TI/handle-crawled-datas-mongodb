@@ -756,13 +756,16 @@ const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
 
 const updateInvestorTransactionsHistoryTotalValueFirstTrans = async () => {
     for (let i = 1; i <= 683; i++) {
-        const { transactionsHistory, walletAddress } =
-            await DBMainInvestorModel.findOne({ sharkId: i }).select(
-                "transactionsHistory walletAddress"
-            );
+        const investor = await DBMainInvestorModel.findOne({
+            sharkId: i
+        }).select("transactionsHistory walletAddress");
+
+        const transactionsHistory = await handleInvestorTransactionHistory(
+            investor.transactionsHistory
+        );
         const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
             transactionsHistory,
-            walletAddress
+            investor.walletAddress
         );
         const firstTransactionDate =
             calculateFirstTransactionDate(transactionsHistory);
