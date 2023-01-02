@@ -52,7 +52,7 @@ let id1 = 0,
 
 /* 1. Run every 10 minutes: Update collection datas */
 // tags
-// setTimeout(async () => {
+// setInterval(async () => {
 //     log("Run tags ...");
 //     console.time(`Execute time tags ${++id1}`);
 //     await saveCategoriesToFile();
@@ -61,7 +61,7 @@ let id1 = 0,
 //     await saveCategoriesToDB();
 //     console.timeEnd(`Execute time tags-save-db ${id2}`);
 //     console.timeEnd(`Execute time tags ${id1}`);
-// }, 0);
+// }, 600000);
 
 // coins: 2 phút (120000), 10 phút (600000)
 setInterval(async () => {
@@ -75,7 +75,7 @@ setInterval(async () => {
 }, 120000);
 
 // investors
-// setTimeout(async () => {
+// setInterval(async () => {
 //     log("Run investors ...");
 //     console.time(`Execute time investors ${++id5}`);
 //     await saveInvestorsToFile();
@@ -84,7 +84,7 @@ setInterval(async () => {
 //     await saveConvertedInvestorCollectionToDB();
 //     console.timeEnd(`Execute time investors-save-db ${id6}`);
 //     console.timeEnd(`Execute time investors ${id5}`);
-// }, 0);
+// }, 600000);
 
 // transactions
 // setInterval(async () => {
