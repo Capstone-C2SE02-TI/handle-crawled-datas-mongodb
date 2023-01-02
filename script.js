@@ -26,7 +26,9 @@ const {
     getListCryptosOfShark,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
+    saveConvertedInvestorsToDB,
     saveConvertedInvestorCollectionToDB,
+    _saveConvertedTransactionsToDB,
     calculateTotalValueInOut,
     saveCategoriesToFile,
     saveCategoriesToDB,
@@ -90,10 +92,9 @@ setInterval(async () => {
 // setInterval(async () => {
 //     log("Run transactions ...");
 //     console.time(`Execute time transactions ${++id7}`);
-//     await saveConvertedTransactionsToFile();
 //     await dropDBMainCollection("transactions");
 //     console.time(`Execute time transactions-save-db ${++id8}`);
-//     await saveConvertedTransactionsToDB();
+//     await _saveConvertedTransactionsToDB();
 //     console.timeEnd(`Execute time transactions-save-db ${id8}`);
 //     console.timeEnd(`Execute time transactions ${id7}`);
 // }, 600000);

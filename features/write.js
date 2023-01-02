@@ -662,45 +662,87 @@ const saveInvestorsToFile = async () => {
     log("Write investors into file successfully");
 };
 
-const convertInvestorsCollection = async () => {
+const convertInvestorsCollection = async (id5) => {
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
     const _followers = await getFollowersOldDatas();
-
     let investorList = [];
 
-    for (let i = 0; i < investors.length; i++) {
-        const transactionHistory = await handleInvestorTransactionHistory(
-            investors[i].TXs
+    const writeInvestor = async (index, datas) => {
+        await fs.writeFileAsync(
+            `./databases/DB_Crawl/investors/investor${index + 1}.json`,
+            // `./databases/DB_Crawl/investors-converted.json`,
+            JSON.stringify(datas),
+            (error) => {
+                if (error) {
+                    log(`Write file investors-converted.json failed`);
+                    throw new Error(error);
+                }
+            }
         );
-        const { cryptos, totalAssets } = await getListCryptosOfShark(
-            investors[i].coins[0]
-        );
-        const followers =
-            _followers.find((follower) => follower.sharkId == i + 1)
-                ?.followers || [];
-        const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
-        const firstTransactionDate =
-            calculateFirstTransactionDate(transactionHistory);
-        const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
-            transactionHistory,
-            _ids[i]._id
-        );
+    };
 
-        investorList.push({
-            sharkId: i + 1,
-            isShark: investors[i].is_shark,
-            coins: investors[i].coins[0],
-            walletAddress: _ids[i]._id,
-            transactionsHistory: transactionHistory,
-            followers: followers,
-            cryptos: cryptos,
-            totalAssets: totalAssets,
-            percent24h: percent24h || 0,
-            firstTransactionDate: firstTransactionDate,
-            totalValueIn: totalValueIn,
-            totalValueOut: totalValueOut
-        });
+    const handleConvertInvestor = async (start, end, isLog) => {
+        for (let i = start; i < end; i++) {
+            const transactionHistory = await handleInvestorTransactionHistory(
+                investors[i].TXs
+            );
+            const { cryptos, totalAssets } = await getListCryptosOfShark(
+                investors[i].coins[0]
+            );
+            const followers =
+                _followers.find((follower) => follower.sharkId == i + 1)
+                    ?.followers || [];
+            const percent24h = calculateInvestorPercent24h(
+                investors[i].snapshots
+            );
+            const firstTransactionDate =
+                calculateFirstTransactionDate(transactionHistory);
+            const { totalValueIn, totalValueOut } =
+                await calculateTotalValueInOut(transactionHistory, _ids[i]._id);
+
+            const investorInfo = {
+                sharkId: i + 1,
+                isShark: investors[i].is_shark,
+                coins: investors[i].coins[0],
+                walletAddress: _ids[i]._id,
+                transactionsHistory: transactionHistory,
+                followers: followers,
+                cryptos: cryptos,
+                totalAssets: totalAssets,
+                percent24h: percent24h || 0,
+                firstTransactionDate: firstTransactionDate,
+                totalValueIn: totalValueIn,
+                totalValueOut: totalValueOut
+            };
+            log(`Handle investor ${i + 1} ...`);
+            writeInvestor(i, investorInfo);
+
+            if (isLog && i == end - 1)
+                console.timeEnd(`Execute time investors-save-db ${id5}`);
+        }
+    };
+
+    let len = investors.length,
+        limit = Math.floor(len / 10),
+        jump = 10,
+        start = 0,
+        end = start + jump;
+
+    // Temp assignment
+    start = 130;
+    end = 140;
+
+    // for (let i = 0; i < limit; i++) {
+    // for (let i = 1; i <= 1; i++) {
+    for (let i = 13; i < limit; i++) {
+        setTimeout(() => {
+            if (i == limit - 1) handleConvertInvestor(start, len, true);
+            else handleConvertInvestor(start, end);
+
+            start = start + jump;
+            end = start + jump;
+        }, 0);
     }
 
     return investorList;
@@ -709,18 +751,75 @@ const convertInvestorsCollection = async () => {
 const saveConvertedInvestorCollectionToFile = async () => {
     const datas = await convertInvestorsCollection();
 
-    await fs.writeFileAsync(
-        `./databases/DB_Crawl/investors-converted.json`,
-        JSON.stringify(datas),
-        (error) => {
-            if (error) {
-                log(`Write file investors-converted.json failed`);
-                throw new Error(error);
-            }
-        }
-    );
+    // await fs.writeFileAsync(
+    //     `./databases/DB_Crawl/investors-converted1.json`,
+    //     JSON.stringify(datas),
+    //     (error) => {
+    //         if (error) {
+    //             log(`Write file investors-converted.json failed`);
+    //             throw new Error(error);
+    //         }
+    //     }
+    // );
 
     log("Write investors into file successfully");
+};
+
+const saveConvertedInvestorsToDB = async () => {
+    const investors = require("../databases/DB_Crawl/investors.json");
+
+    for (let i = 0; i < investors.length; i++) {
+        try {
+            const investor = require(`../databases/DB_Crawl/investors/investor${
+                i + 1
+            }.json`);
+
+            await DBMainInvestorModel.create(investor)
+                .then((data) => {})
+                .catch((error) => {
+                    log("Write investor in DB failed");
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log("Write investor in DB failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Write investors in DB successfully");
+};
+
+// Ready but not run yet
+const _saveConvertedTransactionsToDB = async () => {
+    const investors = require("../databases/DB_Crawl/investors.json");
+    let id = 1;
+
+    for (let i = 0; i < investors.length; i++) {
+        try {
+            const investor = require(`../databases/DB_Crawl/investors/investor${
+                i + 1
+            }.json`);
+
+            investor.transactionHistory.map(async (TX) => {
+                await DBMainTransactionModel.create({
+                    ...TX,
+                    investorId: i + 1,
+                    id: id,
+                    transactionId: id++
+                })
+                    .then((data) => {})
+                    .catch((error) => {
+                        log("Write investor in DB failed");
+                        throw new Error(error);
+                    });
+            });
+        } catch (error) {
+            log("Write investor in DB failed");
+            throw new Error(error);
+        }
+    }
+
+    log("Write investors in DB successfully");
 };
 
 const saveConvertedInvestorCollectionToDB = async () => {
@@ -935,6 +1034,7 @@ const handleEachTransaction = async ({
 
 const convertTransactions = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
+    // const investors = require("../databases/DB_Crawl/investors-converted.json");
     let transactionList = [],
         id = 1;
 
@@ -950,7 +1050,14 @@ const convertTransactions = async () => {
         });
 
         const transactions = await getValueFromPromise(promises);
-        transactionList.push(transactions);
+        transactionList.push(...transactions);
+
+        // transactionList.push({
+        //     ...investors[i],
+        //     investorId: i + 1,
+        //     id: id,
+        //     transactionId: id++
+        // });
     }
 
     return transactionList;
@@ -1119,7 +1226,9 @@ module.exports = {
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorCollectionToDB,
+    saveConvertedInvestorsToDB,
     calculateTotalValueInOut,
+    _saveConvertedTransactionsToDB,
     updateInvestorTransactionsHistoryTotalValueFirstTrans,
     getFollowersOldDatas,
     saveCategoriesToFile,
