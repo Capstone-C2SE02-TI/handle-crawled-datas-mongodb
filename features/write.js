@@ -124,7 +124,7 @@ const handleTokensPrices = (coinsPrices) => {
 };
 
 const saveCoinsToFile = async () => {
-    const datas = await DBCrawlCoinModel.find({});
+    const datas = await DBCrawlCoinModel.find({}).lean();
 
     await fs.writeFileAsync(
         `./databases/DB_Crawl/coins.json`,
@@ -222,6 +222,7 @@ const saveConvertedCoinCollectionToDB = (id4) => {
                     { coinId: i + 1 },
                     { ...coins[i], updateDate: new Date().toString() }
                 )
+                    .lean()
                     .then((data) => {})
                     .catch((error) => {
                         log(`Update coin ${i + 1} in DB failed`);
@@ -229,7 +230,7 @@ const saveConvertedCoinCollectionToDB = (id4) => {
                     });
 
                 if (isLog && i == end - 1)
-                    console.timeEnd(`Execute time coins-save-db ${id4}`);
+                    console.timeEnd(`Execute_time coins-save-db ${id4}`);
             } catch (error) {
                 log(`Update coin ${i + 1} in DB failed`);
                 throw new Error(error);
@@ -263,7 +264,9 @@ const getValueFromPromise = async (promiseValue) => {
 const getOriginalPriceOfToken = async (tokenSymbol) => {
     const token = await DBMainCoinModel.findOne({
         symbol: tokenSymbol.toLowerCase()
-    }).select("originalPrices -_id");
+    })
+        .select("originalPrices -_id")
+        .lean();
 
     return token?.originalPrices || null;
 };
@@ -275,7 +278,8 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
 
     let dateTransactionCut = dateTransaction.slice(0, 10);
     let positionDate = null;
-    // Cut hour
+
+    // cut hour
     let dateCutByHours = datePricesTokenCut.filter((date, index) => {
         if (Number(date) === Number(dateTransactionCut)) positionDate = index;
         return Number(date) === Number(dateTransactionCut);
@@ -411,7 +415,9 @@ const handleInvestorTransactionHistory = async (transactions) => {
 const getCoinOrTokenDetails = async (coinSymbol) => {
     const coinOrToken = await DBMainCoinModel.findOne({
         symbol: coinSymbol.toLowerCase()
-    }).select("coinId name type symbol iconURL cmcRank tagNames usd -_id");
+    })
+        .select("coinId name type symbol iconURL cmcRank tagNames usd -_id")
+        .lean();
 
     return coinOrToken || {};
 };
@@ -609,10 +615,12 @@ const handleTradeTransaction = (transactions) => {
 const updateInvestorTradeTransaction = async (coinSymbol) => {
     const coin = await DBMainCoinModel.findOne({
         symbol: coinSymbol.toLowerCase()
-    }).select("prices -_id");
-    const investors = await DBMainInvestorModel.findOne({ sharkId: 1 }).select(
-        "historyDatasTest -_id"
-    );
+    })
+        .select("prices -_id")
+        .lean();
+    const investors = await DBMainInvestorModel.findOne({ sharkId: 1 })
+        .select("historyDatasTest -_id")
+        .lean();
 
     const { week, month, year } = coin.prices;
     const { historyDatasTest } = investors;
@@ -634,6 +642,7 @@ const updateInvestorHistoryDatasTest = async () => {
             { sharkId: i + 1 },
             { historyDatasTest: historyDatasTest }
         )
+            .lean()
             .then((data) => {
                 if (!data) throw new Error();
             })
@@ -646,7 +655,9 @@ const updateInvestorHistoryDatasTest = async () => {
 };
 
 const saveInvestorsToFile = async () => {
-    const investors = await DBCrawlInvestorModel.find({ is_shark: true });
+    const investors = await DBCrawlInvestorModel.find({
+        is_shark: true
+    }).lean();
 
     await fs.writeFileAsync(
         `./databases/DB_Crawl/investors.json`,
@@ -675,7 +686,7 @@ const convertInvestorsCollection = async (id5) => {
             JSON.stringify(datas),
             (error) => {
                 if (error) {
-                    log(`Write file investors-converted.json failed`);
+                    log(`Write file investors${index + 1}.json failed`);
                     throw new Error(error);
                 }
             }
@@ -719,49 +730,38 @@ const convertInvestorsCollection = async (id5) => {
             writeInvestor(i, investorInfo);
 
             if (isLog && i == end - 1)
-                console.timeEnd(`Execute time investors-save-db ${id5}`);
+                console.timeEnd(`Execute_time investors-save-db ${id5}`);
         }
     };
 
-    let len = investors.length,
-        limit = Math.floor(len / 10),
-        jump = 10,
-        start = 0,
-        end = start + jump;
-
-    // Temp assignment
-    start = 130;
-    end = 140;
+    // let len = investors.length,
+    //     limit = Math.floor(len / 10),
+    //     jump = 10,
+    //     start = 0,
+    //     end = start + jump;
 
     // for (let i = 0; i < limit; i++) {
-    // for (let i = 1; i <= 1; i++) {
-    for (let i = 13; i < limit; i++) {
-        setTimeout(() => {
-            if (i == limit - 1) handleConvertInvestor(start, len, true);
-            else handleConvertInvestor(start, end);
+    //     setTimeout(() => {
+    //         if (i == limit - 1) handleConvertInvestor(start, len, true);
+    //         else handleConvertInvestor(start, end);
 
-            start = start + jump;
-            end = start + jump;
-        }, 0);
+    //         start = start + jump;
+    //         end = start + jump;
+    //     }, 0);
+    // }
+
+    for (let i = 0; i < investors.length / 10; i++) {
+        // setTimeout(() => {
+        if (i == investors.length - 1) handleConvertInvestor(i, i + 1, true);
+        else handleConvertInvestor(i, i + 1, false);
+        // }, 0);
     }
 
     return investorList;
 };
 
 const saveConvertedInvestorCollectionToFile = async () => {
-    const datas = await convertInvestorsCollection();
-
-    // await fs.writeFileAsync(
-    //     `./databases/DB_Crawl/investors-converted1.json`,
-    //     JSON.stringify(datas),
-    //     (error) => {
-    //         if (error) {
-    //             log(`Write file investors-converted.json failed`);
-    //             throw new Error(error);
-    //         }
-    //     }
-    // );
-
+    await convertInvestorsCollection();
     log("Write investors into file successfully");
 };
 
@@ -775,6 +775,7 @@ const saveConvertedInvestorsToDB = async () => {
             }.json`);
 
             await DBMainInvestorModel.create(investor)
+                .lean()
                 .then((data) => {})
                 .catch((error) => {
                     log("Write investor in DB failed");
@@ -807,6 +808,7 @@ const _saveConvertedTransactionsToDB = async () => {
                     id: id,
                     transactionId: id++
                 })
+                    .lean()
                     .then((data) => {})
                     .catch((error) => {
                         log("Write investor in DB failed");
@@ -828,6 +830,7 @@ const saveConvertedInvestorCollectionToDB = async () => {
     for (let i = 0; i < investors.length; i++) {
         try {
             await DBMainInvestorModel.create(investors[i])
+                .lean()
                 .then((data) => {})
                 .catch((error) => {
                     log("Write investor in DB failed");
@@ -881,7 +884,9 @@ const updateInvestorTransactionsHistoryTotalValueFirstTrans = async () => {
     for (let i = 1; i <= 683; i++) {
         const investor = await DBMainInvestorModel.findOne({
             sharkId: i
-        }).select("transactionsHistory walletAddress");
+        })
+            .select("transactionsHistory walletAddress")
+            .lean();
 
         const transactionsHistory = await handleInvestorTransactionHistory(
             investor.transactionsHistory
@@ -904,7 +909,7 @@ const updateInvestorTransactionsHistoryTotalValueFirstTrans = async () => {
                         firstTransactionDate: firstTransactionDate
                     }
                 }
-            );
+            ).lean();
 
             log(`Successfully ${i}`);
         } catch (error) {
@@ -918,13 +923,15 @@ const getFollowersOldDatas = async () => {
     // Chỉ lấy ra những docs có filed followers != []
     const followers = await DBMainInvestorModel.find({
         followers: { $exists: true, $not: { $size: 0 } }
-    }).select("sharkId followers -_id");
+    })
+        .select("sharkId followers -_id")
+        .lean();
 
     return followers;
 };
 
 const saveCategoriesToFile = async () => {
-    const categories = await DBCrawlCategoryModel.find({});
+    const categories = await DBCrawlCategoryModel.find({}).lean();
 
     await fs.writeFileAsync(
         `./databases/DB_Crawl/categories.json`,
@@ -950,6 +957,7 @@ const saveCategoriesToDB = async () => {
                 name: categories[i].name,
                 updateDate: new Date()
             })
+                .lean()
                 .then((data) => {})
                 .catch((error) => {
                     log(`Write tag ${i + 1} in DB failed`);
@@ -1039,7 +1047,6 @@ const convertTransactions = async () => {
         id = 1;
 
     for (let i = 0; i < investors.length; i++) {
-        // for (let i = 0; i < 2; i++) {
         let promises = await investors[i].TXs.map(async (transaction) => {
             return handleEachTransaction({
                 transaction: transaction,
@@ -1106,6 +1113,7 @@ const saveConvertedTransactionsToDB = async () => {
     for (let i = 0; i < transactions.length; i++) {
         try {
             await DBMainTransactionModel.create(transactions[i])
+                .lean()
                 .then((data) => {})
                 .catch((error) => {
                     log("Write transaction in DB failed");
@@ -1174,6 +1182,7 @@ const renameTransactionCollectionField = async () => {
                 { $rename: { investorId: "sharkId" } },
                 { multi: true }
             )
+                .lean()
                 .then((data) => {
                     if (!data) throw new Error();
                 })
@@ -1195,12 +1204,12 @@ const removeFieldInMultipleCollection = async () => {
         await DBMainUserModel.updateMany(
             {},
             { $unset: { accessToken: "", refreshAccessToken: "" } }
-        );
+        ).lean();
 
         await DBMainAdminModel.updateMany(
             {},
             { $unset: { accessToken: "", refreshAccessToken: "" } }
-        );
+        ).lean();
 
         log("Remove field in multiple collection successfully");
     } catch (error) {
