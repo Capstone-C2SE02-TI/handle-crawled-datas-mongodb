@@ -66,15 +66,15 @@ let id1 = 0,
 // }, 600000);
 
 // coins: 2 phút (120000), 10 phút (600000)
-setInterval(async () => {
-    log("Run coins ...");
-    console.time(`Execute time coins ${++id3}`);
-    await saveCoinsToFile();
-    await saveConvertedCoinCollectionToFile();
-    console.time(`Execute time coins-save-db ${++id4}`);
-    saveConvertedCoinCollectionToDB(id4);
-    console.timeEnd(`Execute time coins ${id3}`);
-}, 120000);
+// setInterval(async () => {
+//     log("Run coins ...");
+//     console.time(`Execute time coins ${++id3}`);
+//     await saveCoinsToFile();
+//     await saveConvertedCoinCollectionToFile();
+//     console.time(`Execute time coins-save-db ${++id4}`);
+//     saveConvertedCoinCollectionToDB(id4);
+//     console.timeEnd(`Execute time coins ${id3}`);
+// }, 120000);
 
 // investors
 // setInterval(async () => {
