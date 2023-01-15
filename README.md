@@ -1,8 +1,8 @@
 ## Cryptocurrency Tracking And Analysis System
 
-### Capstone Project 1 - Source Handle Crawled Datas MongoDB
+### Capstone Project - Source Handle Crawled Datas MongoDB
 
-### How to run this project?
+### Installation Guide
 
 #### 1. Clone project
 
