@@ -2,7 +2,7 @@ const { fs, log, BigNumber } = require("../constants");
 const {
     DBCrawlInvestorModel,
     DBMainInvestorModel,
-    DBMainCoinModel,
+    DBMainCoinModel
 } = require("../models");
 const {
     convertUnixTimestampToNumber,
@@ -268,20 +268,6 @@ const convertInvestorsCollection = async (id5) => {
     const _followers = await getFollowersOldDatas();
     let investorList = [];
 
-    const writeInvestor = async (index, datas) => {
-        await fs.writeFileAsync(
-            `./databases/DB_Crawl/investors/investor${index + 1}.json`,
-            // `./databases/DB_Crawl/investors-converted.json`,
-            JSON.stringify(datas),
-            (error) => {
-                if (error) {
-                    log(`Write file investors${index + 1}.json failed`);
-                    throw new Error(error);
-                }
-            }
-        );
-    };
-
     const handleConvertInvestor = async (start, end, isLog) => {
         for (let i = start; i < end; i++) {
             const transactionHistory = await handleInvestorTransactionHistory(
@@ -316,10 +302,29 @@ const convertInvestorsCollection = async (id5) => {
                 totalValueOut: totalValueOut
             };
             log(`Handle investor ${i + 1} ...`);
-            writeInvestor(i, investorInfo);
+
+            handleUpdateInvestor(i, investorInfo);
 
             if (isLog && i == end - 1)
                 console.timeEnd(`Execute_time investors-save-db ${id5}`);
+        }
+    };
+
+    const handleUpdateInvestor = (i, investorInfo) => {
+        try {
+            DBMainInvestorModel.findOneAndUpdate(
+                { sharkId: i + 1 },
+                { ...investorInfo, updateDate: new Date().toString() }
+            )
+                .lean()
+                .then()
+                .catch((error) => {
+                    log(`Update investor ${i + 1} in DB failed`);
+                    throw new Error(error);
+                });
+        } catch (error) {
+            log(`Update investor ${i + 1} in DB failed`);
+            throw new Error(error);
         }
     };
 
@@ -339,7 +344,7 @@ const convertInvestorsCollection = async (id5) => {
     //     }, 0);
     // }
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 2; i++) {
         // setTimeout(() => {
         if (i == investors.length - 1) handleConvertInvestor(i, i + 1, true);
         else handleConvertInvestor(i, i + 1, false);

@@ -190,7 +190,7 @@ const saveConvertedCoinCollectionToFile = async () => {
 const saveConvertedCoinCollectionToDB = (id4) => {
     const coins = require("../databases/DB_Crawl/coins-converted.json");
 
-    const handleupdateCoin = (start, end, isLog) => {
+    const handleUpdateCoin = (start, end, isLog) => {
         for (let i = start; i < end; i++) {
             try {
                 DBMainCoinModel.findOneAndUpdate(
@@ -221,8 +221,8 @@ const saveConvertedCoinCollectionToDB = (id4) => {
 
     for (let i = 0; i < limit; i++) {
         setTimeout(() => {
-            if (i == limit - 1) handleupdateCoin(start, len, true);
-            else handleupdateCoin(start, end);
+            if (i == limit - 1) handleUpdateCoin(start, len, true);
+            else handleUpdateCoin(start, end);
 
             start = start + jump;
             end = start + jump;
