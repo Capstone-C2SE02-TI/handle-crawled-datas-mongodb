@@ -9,6 +9,7 @@ const {
     calculateFirstTransactionDate,
     eToLongStringNumber
 } = require("../helpers");
+const { handleInvestorTransactionHistory } = require("./coins");
 
 const getListCryptosOfShark = async (coins) => {
     if (!coins) return { cryptos: null, totalAssets: "" };
@@ -338,7 +339,7 @@ const convertInvestorsCollection = async (id5) => {
     //     }, 0);
     // }
 
-    for (let i = 0; i < investors.length / 10; i++) {
+    for (let i = 0; i < 1; i++) {
         // setTimeout(() => {
         if (i == investors.length - 1) handleConvertInvestor(i, i + 1, true);
         else handleConvertInvestor(i, i + 1, false);
@@ -363,7 +364,6 @@ const saveConvertedInvestorsToDB = async () => {
             }.json`);
 
             await DBMainInvestorModel.create(investor)
-                .lean()
                 .then((data) => {})
                 .catch((error) => {
                     log("Write investor in DB failed");
@@ -384,7 +384,6 @@ const saveConvertedInvestorCollectionToDB = async () => {
     for (let i = 0; i < investors.length; i++) {
         try {
             await DBMainInvestorModel.create(investors[i])
-                .lean()
                 .then((data) => {})
                 .catch((error) => {
                     log("Write investor in DB failed");
@@ -474,7 +473,7 @@ const updateInvestorTransactionsHistoryTotalValueFirstTrans = async () => {
 };
 
 const getFollowersOldDatas = async () => {
-    // Chỉ lấy ra những docs có field followers != []
+    // Only retrieve docs with followers field != []
     const followers = await DBMainInvestorModel.find({
         followers: { $exists: true, $not: { $size: 0 } }
     })

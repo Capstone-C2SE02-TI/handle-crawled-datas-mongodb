@@ -28,7 +28,6 @@ const saveCategoriesToDB = async () => {
                 name: categories[i].name,
                 updateDate: new Date()
             })
-                .lean()
                 .then((data) => {})
                 .catch((error) => {
                     log(`Write tag ${i + 1} in DB failed`);

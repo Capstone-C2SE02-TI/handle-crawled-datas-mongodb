@@ -45,6 +45,7 @@ const {
     saveConvertedTransactionsToDB,
     handleDetailChartTransaction
 } = require("../functions/transactions");
+const { dropDBMainCollection } = require("../functions/common");
 let id1 = 0,
     id2 = 0,
     id3 = 0,
@@ -103,7 +104,14 @@ let id1 = 0,
 
 // Testing ...
 setTimeout(async () => {
-    console.time(`Execute_time 1`);
     // await saveConvertedInvestorCollectionToFile(id5);
-    console.timeEnd(`Execute_time 1`);
+
+    log("Run investors ...");
+    console.time(`Execute_time investors ${++id5}`);
+    // await saveInvestorsToFile();
+    console.time(`Execute_time investors-save-db ${++id6}`);
+    await saveConvertedInvestorCollectionToFile();
+    // await saveConvertedInvestorCollectionToDB();
+    console.timeEnd(`Execute_time investors-save-db ${id6}`);
+    console.timeEnd(`Execute_time investors ${id5}`);
 }, 0);
