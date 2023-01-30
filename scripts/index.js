@@ -104,8 +104,6 @@ let id1 = 0,
 
 // Testing ...
 setTimeout(async () => {
-    // await saveConvertedInvestorCollectionToFile(id5);
-
     log("Run investors ...");
     console.time(`Execute_time investors ${++id5}`);
     // await saveInvestorsToFile();
