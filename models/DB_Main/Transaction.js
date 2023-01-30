@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { dbMainConnection } = require("../../configs/connect-database");
+const { dbMainConnection } = require("../../configs/connectDatabase");
 
 const TransactionSchema = new mongoose.Schema(
     {

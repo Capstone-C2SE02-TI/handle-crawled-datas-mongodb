@@ -6,4 +6,13 @@ const { log } = require("console");
 
 const BigNumber = require("bignumber.js");
 
-module.exports = { fs, log, BigNumber };
+const TWO_MINUTES_SECONDS = 120000,
+    TEN_MINUTES_SECONDS = 600000;
+
+module.exports = {
+    fs,
+    log,
+    BigNumber,
+    TWO_MINUTES_SECONDS,
+    TEN_MINUTES_SECONDS
+};

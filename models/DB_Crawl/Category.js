@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { dbCrawlConnection } = require("../../configs/connect-database");
+const { dbCrawlConnection } = require("../../configs/connectDatabase");
 
 const CategorySchema = new mongoose.Schema({
     // _id: {

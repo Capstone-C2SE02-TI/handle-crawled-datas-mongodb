@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
-const { dbMainConnection } = require("../../configs/connect-database");
+const { dbMainConnection } = require("../../configs/connectDatabase");
 
 const UserSchema = new mongoose.Schema(
     {

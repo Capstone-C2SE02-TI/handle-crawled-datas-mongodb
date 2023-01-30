@@ -1,46 +1,50 @@
-const { fs, log } = require("./constants");
 const {
-    DBCrawlCoinModel,
-    DBCrawlInvestorModel,
-    DBCrawlCategoryModel,
-    DBMainAdminModel,
-    DBMainTagModel,
-    DBMainCoinModel,
-    DBMainTransactionModel,
-    DBMainUserModel,
-    DBMainInvestorModel
-} = require("./models");
+    log,
+    TWO_MINUTES_SECONDS,
+    TEN_MINUTES_SECONDS
+} = require("../constants");
 const {
-    dropDBMainCollection,
+    saveCategoriesToFile,
+    saveCategoriesToDB
+} = require("../functions/tags");
+const {
     handleTokensPrices,
+    saveCoinsToFile,
+    convertCoinsCollection,
+    saveConvertedCoinCollectionToFile,
+    saveConvertedCoinCollectionToDB,
+    getValueFromPromise,
+    getOriginalPriceOfToken,
+    getDateNearTransaction,
+    getPriceWithDaily,
+    handleInvestorTransactionHistory,
+    getCoinOrTokenDetails
+} = require("../functions/coins");
+const {
+    getListCryptosOfShark,
+    calculateInvestorPercent24h,
     handleFormatTradeTransactionDataCrawl,
     handleFormatTradeTransactionDataMain,
     handleTradeTransaction,
     updateInvestorTradeTransaction,
     updateInvestorHistoryDatasTest,
     saveInvestorsToFile,
-    saveCoinsToFile,
-    convertCoinsCollection,
-    saveConvertedCoinCollectionToFile,
-    saveConvertedCoinCollectionToDB,
-    getListCryptosOfShark,
     convertInvestorsCollection,
     saveConvertedInvestorCollectionToFile,
     saveConvertedInvestorsToDB,
     saveConvertedInvestorCollectionToDB,
-    _saveConvertedTransactionsToDB,
     calculateTotalValueInOut,
-    saveCategoriesToFile,
-    saveCategoriesToDB,
+    updateInvestorTransactionsHistoryTotalValueFirstTrans,
+    getFollowersOldDatas
+} = require("../functions/investors");
+const {
+    _saveConvertedTransactionsToDB,
+    handleEachTransaction,
+    convertTransactions,
     saveConvertedTransactionsToFile,
     saveConvertedTransactionsToDB,
-    updateInvestorTransactionsHistoryTotalValueFirstTrans,
-    calculateInvestorPercent24h,
-    handleDetailChartTransaction,
-    renameTransactionCollectionField,
-    removeFieldInMultipleCollection
-} = require("./features/write");
-const { backupDBMainDatas, backupDBCrawlDatas } = require("./features/backup");
+    handleDetailChartTransaction
+} = require("../functions/transactions");
 let id1 = 0,
     id2 = 0,
     id3 = 0,
@@ -48,11 +52,9 @@ let id1 = 0,
     id5 = 0,
     id6 = 0,
     id7 = 0,
-    id8 = 0,
-    id9 = 0,
-    id10 = 0;
+    id8 = 0;
 
-/* 1. Run every 10 minutes: Update collection datas */
+/* Run every 10 minutes: Update collection datas */
 // tags
 // setInterval(async () => {
 //     log("Run tags ...");
@@ -63,9 +65,9 @@ let id1 = 0,
 //     await saveCategoriesToDB();
 //     console.timeEnd(`Execute_time tags-save-db ${id2}`);
 //     console.timeEnd(`Execute_time tags ${id1}`);
-// }, 600000);
+// }, TEN_MINUTES_SECONDS);
 
-// coins: 2 phút (120000), 10 phút (600000)
+// coins
 // setInterval(async () => {
 //     log("Run coins ...");
 //     console.time(`Execute_time coins ${++id3}`);
@@ -74,7 +76,7 @@ let id1 = 0,
 //     console.time(`Execute_time coins-save-db ${++id4}`);
 //     saveConvertedCoinCollectionToDB(id4);
 //     console.timeEnd(`Execute_time coins ${id3}`);
-// }, 120000);
+// }, TWO_MINUTES_SECONDS);
 
 // investors
 // setInterval(async () => {
@@ -86,16 +88,7 @@ let id1 = 0,
 //     await saveConvertedInvestorCollectionToDB();
 //     console.timeEnd(`Execute_time investors-save-db ${id6}`);
 //     console.timeEnd(`Execute_time investors ${id5}`);
-// }, 600000);
-
-// Testing ...
-setTimeout(async () => {
-    console.time(`Execute_time 1`);
-
-    // await saveConvertedInvestorCollectionToFile(id5);
-
-    // console.timeEnd(`Execute_time 1`);
-}, 0);
+// }, TEN_MINUTES_SECONDS);
 
 // transactions
 // setInterval(async () => {
@@ -106,13 +99,11 @@ setTimeout(async () => {
 //     await _saveConvertedTransactionsToDB();
 //     console.timeEnd(`Execute_time transactions-save-db ${id8}`);
 //     console.timeEnd(`Execute_time transactions ${id7}`);
-// }, 600000);
+// }, TEN_MINUTES_SECONDS);
 
-/* 2. Run every day: Backup all datas */
-// setInterval(async () => {
-//     log("Run backup ...");
-//     console.time(`Execute_time backup ${++id9}`);
-//     await backupDBMainDatas();
-//     await backupDBCrawlDatas();
-//     console.timeEnd(`Execute_time backup ${id9}`);
-// }, 600000);
+// Testing ...
+setTimeout(async () => {
+    console.time(`Execute_time 1`);
+    // await saveConvertedInvestorCollectionToFile(id5);
+    console.timeEnd(`Execute_time 1`);
+}, 0);
