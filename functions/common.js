@@ -1,5 +1,5 @@
-const { log } = require("../constants");
-const { dbMainConnection } = require("../configs/connectDatabase");
+import { log } from "../constants/index.js";
+import { dbMainConnection } from "../configs/connectDatabase/index.js";
 
 const exportCollection = async (CollectionModel) => {
     return await CollectionModel.find({});
@@ -20,8 +20,4 @@ const dropDBMainCollection = async (collectionName) => {
     });
 };
 
-module.exports = {
-    exportCollection,
-    getCollectionLength,
-    dropDBMainCollection
-};
+export { exportCollection, getCollectionLength, dropDBMainCollection };

@@ -1,19 +1,19 @@
-const { fs, log, BigNumber } = require("../constants");
-const {
+import { fs, log, BigNumber } from "../constants/index.js";
+import {
     DBCrawlInvestorModel,
     DBMainInvestorModel,
     DBMainCoinModel
-} = require("../models");
-const {
+} from "../models/index.js";
+import {
     convertUnixTimestampToNumber,
     calculateFirstTransactionDate,
     eToLongStringNumber
-} = require("../helpers");
-const {
+} from "../helpers/index.js";
+import {
     getCoinOrTokenDetails,
     handleInvestorTransactionHistory,
     getValueFromPromise
-} = require("./coins");
+} from "./coins.js";
 
 const getListCryptosOfShark = async (coins) => {
     if (!coins) return { cryptos: null, totalAssets: "" };
@@ -409,7 +409,7 @@ const saveConvertedInvestorsToDB = async () => {
     log("Write investors in DB successfully");
 };
 
-module.exports = {
+export {
     getListCryptosOfShark,
     calculateInvestorPercent24h,
     handleFormatTradeTransactionDataCrawl,

@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { dbMainConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import { dbMainConnection } from "../../configs/connectDatabase/index.js";
 
 const TransactionSchema = new mongoose.Schema(
     {
@@ -117,4 +117,4 @@ const TransactionModel = dbMainConnection.model(
     TransactionSchema
 );
 
-module.exports = TransactionModel;
+export default TransactionModel;

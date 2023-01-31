@@ -1,11 +1,11 @@
-const DBMainAdminModel = require("./Admin");
-const DBMainInvestorModel = require("./Investor");
-const DBMainTagModel = require("./Tag");
-const DBMainCoinModel = require("./Coin");
-const DBMainTransactionModel = require("./Transaction");
-const DBMainUserModel = require("./User");
+import DBMainAdminModel from "./Admin.js";
+import DBMainInvestorModel from "./Investor.js";
+import DBMainTagModel from "./Tag.js";
+import DBMainCoinModel from "./Coin.js";
+import DBMainTransactionModel from "./Transaction.js";
+import DBMainUserModel from "./User.js";
 
-module.exports = {
+export {
     DBMainAdminModel,
     DBMainInvestorModel,
     DBMainTagModel,

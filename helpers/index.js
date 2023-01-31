@@ -143,7 +143,7 @@ const calculateFirstTransactionDate = (transactionHistory) => {
     return convertUnixTimestampToNumber(min) || 0;
 };
 
-module.exports = {
+export {
     convertUnixTimestampToNumber,
     getTodayDay,
     getNearest7Days,

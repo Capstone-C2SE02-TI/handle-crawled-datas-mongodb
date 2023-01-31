@@ -1,9 +1,5 @@
-const DBCrawlCoinModel = require("./Coin");
-const DBCrawlInvestorModel = require("./Investor");
-const DBCrawlCategoryModel = require("./Category");
+import DBCrawlCoinModel from "./Coin.js";
+import DBCrawlInvestorModel from "./Investor.js";
+import DBCrawlCategoryModel from "./Category.js";
 
-module.exports = {
-    DBCrawlCoinModel,
-    DBCrawlInvestorModel,
-    DBCrawlCategoryModel
-};
+export { DBCrawlCoinModel, DBCrawlInvestorModel, DBCrawlCategoryModel };

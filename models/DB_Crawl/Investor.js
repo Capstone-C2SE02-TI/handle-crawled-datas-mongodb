@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { dbCrawlConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import { dbCrawlConnection } from "../../configs/connectDatabase/index.js";
 
 const InvestorSchema = new mongoose.Schema({
     TXs: {
@@ -19,9 +19,9 @@ const InvestorSchema = new mongoose.Schema({
     },
     coins: {
         type: Array
-    },
+    }
 });
 
 const InvestorModel = dbCrawlConnection.model("Investor", InvestorSchema);
 
-module.exports = InvestorModel;
+export default InvestorModel;

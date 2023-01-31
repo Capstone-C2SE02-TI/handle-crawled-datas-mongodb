@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { dbCrawlConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import { dbCrawlConnection } from "../../configs/connectDatabase/index.js";
 
 const CategorySchema = new mongoose.Schema({
     // _id: {
@@ -12,4 +12,4 @@ const CategorySchema = new mongoose.Schema({
 
 const CategoryModel = dbCrawlConnection.model("Category", CategorySchema);
 
-module.exports = CategoryModel;
+export default CategoryModel;

@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { dbMainConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import { dbMainConnection } from "../../configs/connectDatabase/index.js";
 
 const TagSchema = new mongoose.Schema(
     {
@@ -20,4 +20,4 @@ const TagSchema = new mongoose.Schema(
 
 const TagModel = dbMainConnection.model("Tag", TagSchema);
 
-module.exports = TagModel;
+export default TagModel;

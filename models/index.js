@@ -1,19 +1,19 @@
-const {
+import {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
     DBCrawlCategoryModel
-} = require("./DB_Crawl");
+} from "./DB_Crawl/index.js";
 
-const {
+import {
     DBMainAdminModel,
     DBMainInvestorModel,
     DBMainTagModel,
     DBMainCoinModel,
     DBMainTransactionModel,
     DBMainUserModel
-} = require("./DB_Main");
+} from "./DB_Main/index.js";
 
-module.exports = {
+export {
     DBCrawlCoinModel,
     DBCrawlInvestorModel,
     DBCrawlCategoryModel,

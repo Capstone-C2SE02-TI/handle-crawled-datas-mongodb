@@ -3,6 +3,7 @@
     "version": "2.0.0",
     "description": "Capstone Project - Source Handle Crawled Datas MongoDB",
     "main": "index.js",
+    "type": "module",
     "scripts": {
         "start": "node index.js",
         "update-deps": "npx npm-check-updates -u && npm install"

@@ -1,12 +1,12 @@
-const { fs, log } = require("../constants");
-const { DBCrawlCoinModel, DBMainCoinModel } = require("../models");
-const {
+import { fs, log } from "../constants/index.js";
+import {
     convertUnixTimestampToNumber,
     getTodayDay,
     getNearest7Days,
     getThisMonthYear,
     getNearest12Months
-} = require("../helpers");
+} from "../helpers/index.js";
+import { DBCrawlCoinModel, DBMainCoinModel } from "../models/index.js";
 
 // [Need comment-uncomment 4 below function calls]
 const handleTokensPrices = (coinsPrices) => {
@@ -397,7 +397,7 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
     return coinOrToken || {};
 };
 
-module.exports = {
+export {
     handleTokensPrices,
     saveCoinsToFile,
     convertCoinsCollection,

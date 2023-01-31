@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { dbMainConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import { dbMainConnection } from "../../configs/connectDatabase/index.js";
 
 const CoinSchema = new mongoose.Schema(
     {
@@ -101,4 +101,4 @@ const CoinSchema = new mongoose.Schema(
 
 const CoinModel = dbMainConnection.model("Coin", CoinSchema);
 
-module.exports = CoinModel;
+export default CoinModel;

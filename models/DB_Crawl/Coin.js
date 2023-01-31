@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { dbCrawlConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import { dbCrawlConnection } from "../../configs/connectDatabase/index.js";
 
 const CoinSchema = new mongoose.Schema({
     // price: {
@@ -129,4 +129,4 @@ const CoinSchema = new mongoose.Schema({
 
 const CoinModel = dbCrawlConnection.model("Coin", CoinSchema);
 
-module.exports = CoinModel;
+export default CoinModel;

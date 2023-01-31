@@ -1,5 +1,5 @@
-const { fs, log } = require("../constants");
-const { DBCrawlCategoryModel, DBMainTagModel } = require("../models");
+import { fs, log } from "../constants/index.js";
+import { DBCrawlCategoryModel, DBMainTagModel } from "../models/index.js";
 
 const saveCategoriesToFile = async () => {
     const categories = await DBCrawlCategoryModel.find({}).lean();
@@ -42,4 +42,4 @@ const saveCategoriesToDB = async () => {
     log("Write tags in DB successfully");
 };
 
-module.exports = { saveCategoriesToFile, saveCategoriesToDB };
+export { saveCategoriesToFile, saveCategoriesToDB };

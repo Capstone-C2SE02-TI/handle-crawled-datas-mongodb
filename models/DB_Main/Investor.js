@@ -1,5 +1,7 @@
-const mongoose = require("mongoose");
-const { dbMainConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import Inc from "mongoose-sequence";
+const AutoIncrement = Inc(mongoose);
+import { dbMainConnection } from "../../configs/connectDatabase/index.js";
 
 const InvestorSchema = new mongoose.Schema(
     {
@@ -62,6 +64,8 @@ const InvestorSchema = new mongoose.Schema(
     { versionKey: false }
 );
 
+InvestorSchema.plugin(AutoIncrement, { inc_field: "sharkId" });
+
 const InvestorModel = dbMainConnection.model("Investor", InvestorSchema);
 
-module.exports = InvestorModel;
+export default InvestorModel;

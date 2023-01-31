@@ -1,6 +1,6 @@
-const { fs, log } = require("../constants");
-const { DBMainTransactionModel } = require("../models");
-const { convertUnixTimestampToNumber } = require("../helpers");
+import { fs, log } from "../constants/index.js";
+import { DBMainTransactionModel } from "../models/index.js";
+import { convertUnixTimestampToNumber } from "../helpers/index.js";
 
 // [Need run]
 const _saveConvertedTransactionsToDB = async () => {
@@ -214,7 +214,7 @@ const handleDetailChartTransaction = async () => {
     return sharks;
 };
 
-module.exports = {
+export {
     _saveConvertedTransactionsToDB,
     handleEachTransaction,
     convertTransactions,

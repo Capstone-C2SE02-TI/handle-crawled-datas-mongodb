@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
-const { dbMainConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import Inc from "mongoose-sequence";
+const AutoIncrement = Inc(mongoose);
+import { dbMainConnection } from "../../configs/connectDatabase/index.js";
 
 const UserSchema = new mongoose.Schema(
     {
@@ -77,4 +78,4 @@ UserSchema.plugin(AutoIncrement, { inc_field: "userId" });
 
 const UserModel = dbMainConnection.model("User", UserSchema);
 
-module.exports = UserModel;
+export default UserModel;

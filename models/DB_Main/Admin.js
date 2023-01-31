@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { dbMainConnection } = require("../../configs/connectDatabase");
+import mongoose from "mongoose";
+import { dbMainConnection } from "../../configs/connectDatabase/index.js";
 
 const AdminSchema = new mongoose.Schema(
     {
@@ -43,4 +43,4 @@ const AdminSchema = new mongoose.Schema(
 
 const AdminModel = dbMainConnection.model("Admin", AdminSchema);
 
-module.exports = AdminModel;
+export default AdminModel;
