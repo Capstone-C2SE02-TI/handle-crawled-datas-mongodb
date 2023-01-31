@@ -29,12 +29,9 @@ const {
     updateInvestorTradeTransaction,
     updateInvestorHistoryDatasTest,
     saveInvestorsToFile,
-    convertInvestorsCollection,
-    saveConvertedInvestorCollectionToFile,
+    convertAndSaveInvestorsToDB,
     saveConvertedInvestorsToDB,
-    saveConvertedInvestorCollectionToDB,
     calculateTotalValueInOut,
-    updateInvestorTransactionsHistoryTotalValueFirstTrans,
     getFollowersOldDatas
 } = require("../functions/investors");
 const {
@@ -82,13 +79,11 @@ let id1 = 0,
 // investors
 // setInterval(async () => {
 //     log("Run investors ...");
-//     console.time(`Execute_time investors ${++id5}`);
+//     console.time(`Execute_time investors-save-file ${id5}`);
 //     await saveInvestorsToFile();
-//     await saveConvertedInvestorCollectionToFile();
+//     console.timeEnd(`Execute_time investors-save-file ${id5}`);
 //     console.time(`Execute_time investors-save-db ${++id6}`);
-//     await saveConvertedInvestorCollectionToDB();
-//     console.timeEnd(`Execute_time investors-save-db ${id6}`);
-//     console.timeEnd(`Execute_time investors ${id5}`);
+//     await convertAndSaveInvestorsToDB(id6);
 // }, TEN_MINUTES_SECONDS);
 
 // transactions
@@ -104,12 +99,11 @@ let id1 = 0,
 
 // Testing ...
 setTimeout(async () => {
-    log("Run investors ...");
-    console.time(`Execute_time investors ${++id5}`);
-    // await saveInvestorsToFile();
-    console.time(`Execute_time investors-save-db ${++id6}`);
-    await saveConvertedInvestorCollectionToFile();
-    // await saveConvertedInvestorCollectionToDB();
-    console.timeEnd(`Execute_time investors-save-db ${id6}`);
-    console.timeEnd(`Execute_time investors ${id5}`);
+    // log("Run transactions ...");
+    // console.time(`Execute_time transactions ${++id7}`);
+    // // await dropDBMainCollection("transactions");
+    // console.time(`Execute_time transactions-save-db ${++id8}`);
+    // await _saveConvertedTransactionsToDB();
+    // console.timeEnd(`Execute_time transactions-save-db ${id8}`);
+    // console.timeEnd(`Execute_time transactions ${id7}`);
 }, 0);

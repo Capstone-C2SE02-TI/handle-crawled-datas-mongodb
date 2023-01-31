@@ -9,7 +9,11 @@ const {
     calculateFirstTransactionDate,
     eToLongStringNumber
 } = require("../helpers");
-const { handleInvestorTransactionHistory } = require("./coins");
+const {
+    getCoinOrTokenDetails,
+    handleInvestorTransactionHistory,
+    getValueFromPromise
+} = require("./coins");
 
 const getListCryptosOfShark = async (coins) => {
     if (!coins) return { cryptos: null, totalAssets: "" };
@@ -54,6 +58,17 @@ const getListCryptosOfShark = async (coins) => {
     return { cryptos: cryptos, totalAssets: totalAssets.toString() };
 };
 
+const getFollowersOldDatas = async () => {
+    // Only retrieve docs with followers field != []
+    const followers = await DBMainInvestorModel.find({
+        followers: { $exists: true, $not: { $size: 0 } }
+    })
+        .select("sharkId followers -_id")
+        .lean();
+
+    return followers;
+};
+
 const calculateInvestorPercent24h = (snapshots) => {
     if (!snapshots) return 0;
 
@@ -77,7 +92,33 @@ const calculateInvestorPercent24h = (snapshots) => {
     return result || 0;
 };
 
-// Not done yet
+const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
+    let totalValueIn = new BigNumber(0);
+    let totalValueOut = new BigNumber(0);
+
+    totalValueIn = await transactionsHistory.reduce((curr, transaction) => {
+        const passValue =
+            transaction.pastPrice == 0 ? 1 : transaction.pastPrice;
+        let tmp = curr;
+
+        if (walletAddress == transaction.from) {
+            tmp = tmp.plus(transaction.numberOfTokens * passValue);
+        } else {
+            totalValueOut = totalValueOut.plus(
+                transaction.numberOfTokens * passValue
+            );
+        }
+
+        return tmp;
+    }, new BigNumber(0));
+
+    return {
+        totalValueIn: eToLongStringNumber(totalValueIn),
+        totalValueOut: eToLongStringNumber(totalValueOut)
+    };
+};
+
+// [Not done yet]
 const handleFormatTradeTransactionDataCrawl = async (investor) => {
     let historyDatas = [];
     const sharkWallet = investor._id;
@@ -112,7 +153,7 @@ const handleFormatTradeTransactionDataCrawl = async (investor) => {
     return historyDatas;
 };
 
-// Not done yet
+// [Not done yet]
 const handleFormatTradeTransactionDataMain = async (investor) => {
     let historyDatas = [];
     const sharkWallet = investor.walletAddress;
@@ -154,7 +195,7 @@ const handleFormatTradeTransactionDataMain = async (investor) => {
     return historyDatas;
 };
 
-// Not done yet
+// [Not done yet]
 const handleTradeTransaction = (transactions) => {
     if (!transactions)
         return {
@@ -200,7 +241,7 @@ const handleTradeTransaction = (transactions) => {
     };
 };
 
-// Not done yet
+// [Not done yet]
 const updateInvestorTradeTransaction = async (coinSymbol) => {
     const coin = await DBMainCoinModel.findOne({
         symbol: coinSymbol.toLowerCase()
@@ -218,7 +259,7 @@ const updateInvestorTradeTransaction = async (coinSymbol) => {
     log(historyDatasTest);
 };
 
-// Not done yet
+// [Not done yet]
 const updateInvestorHistoryDatasTest = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
 
@@ -262,19 +303,18 @@ const saveInvestorsToFile = async () => {
     log("Write investors into file successfully");
 };
 
-const convertInvestorsCollection = async (id5) => {
+const convertAndSaveInvestorsToDB = async (id6) => {
     const investors = require("../databases/DB_Crawl/investors.json");
     const _ids = require("../databases/DB_Crawl/investors_ids.json");
     const _followers = await getFollowersOldDatas();
-    let investorList = [];
 
     const handleConvertInvestor = async (start, end, isLog) => {
         for (let i = start; i < end; i++) {
-            const transactionHistory = await handleInvestorTransactionHistory(
+            const transactionsHistory = await handleInvestorTransactionHistory(
                 investors[i].TXs
             );
             const { cryptos, totalAssets } = await getListCryptosOfShark(
-                investors[i].coins[0]
+                investors[i].coins
             );
             const followers =
                 _followers.find((follower) => follower.sharkId == i + 1)
@@ -283,16 +323,19 @@ const convertInvestorsCollection = async (id5) => {
                 investors[i].snapshots
             );
             const firstTransactionDate =
-                calculateFirstTransactionDate(transactionHistory);
+                calculateFirstTransactionDate(transactionsHistory);
             const { totalValueIn, totalValueOut } =
-                await calculateTotalValueInOut(transactionHistory, _ids[i]._id);
+                await calculateTotalValueInOut(
+                    transactionsHistory,
+                    _ids[i]._id
+                );
 
             const investorInfo = {
                 sharkId: i + 1,
                 isShark: investors[i].is_shark,
                 coins: investors[i].coins[0],
                 walletAddress: _ids[i]._id,
-                transactionsHistory: transactionHistory,
+                transactionsHistory: transactionsHistory,
                 followers: followers,
                 cryptos: cryptos,
                 totalAssets: totalAssets,
@@ -306,7 +349,7 @@ const convertInvestorsCollection = async (id5) => {
             handleUpdateInvestor(i, investorInfo);
 
             if (isLog && i == end - 1)
-                console.timeEnd(`Execute_time investors-save-db ${id5}`);
+                console.timeEnd(`Execute_time investors-save-db ${id6}`);
         }
     };
 
@@ -314,10 +357,21 @@ const convertInvestorsCollection = async (id5) => {
         try {
             DBMainInvestorModel.findOneAndUpdate(
                 { sharkId: i + 1 },
-                { ...investorInfo, updateDate: new Date().toString() }
+                {
+                    isShark: investorInfo.isShark,
+                    coins: investorInfo.coins,
+                    transactionsHistory: investorInfo.transactionHistory,
+                    followers: investorInfo.followers,
+                    cryptos: investorInfo.cryptos,
+                    totalAssets: investorInfo.totalAssets,
+                    percent24h: investorInfo.percent24h || 0,
+                    totalValueIn: investorInfo.totalValueIn,
+                    totalValueOut: investorInfo.totalValueOut,
+                    updateDate: new Date().toString()
+                }
             )
                 .lean()
-                .then()
+                .then(() => log(`Update investor ${i + 1} in DB successfully`))
                 .catch((error) => {
                     log(`Update investor ${i + 1} in DB failed`);
                     throw new Error(error);
@@ -328,62 +382,14 @@ const convertInvestorsCollection = async (id5) => {
         }
     };
 
-    // let len = investors.length,
-    //     limit = Math.floor(len / 10),
-    //     jump = 10,
-    //     start = 0,
-    //     end = start + jump;
-
-    // for (let i = 0; i < limit; i++) {
-    //     setTimeout(() => {
-    //         if (i == limit - 1) handleConvertInvestor(start, len, true);
-    //         else handleConvertInvestor(start, end);
-
-    //         start = start + jump;
-    //         end = start + jump;
-    //     }, 0);
-    // }
-
-    for (let i = 0; i < 2; i++) {
-        // setTimeout(() => {
+    for (let i = 60; i < 90; i++) {
+        // for (let i = 10; i < investors.length; i++) {
         if (i == investors.length - 1) handleConvertInvestor(i, i + 1, true);
         else handleConvertInvestor(i, i + 1, false);
-        // }, 0);
     }
-
-    return investorList;
-};
-
-const saveConvertedInvestorCollectionToFile = async () => {
-    await convertInvestorsCollection();
-    log("Write investors into file successfully");
 };
 
 const saveConvertedInvestorsToDB = async () => {
-    const investors = require("../databases/DB_Crawl/investors.json");
-
-    for (let i = 0; i < investors.length; i++) {
-        try {
-            const investor = require(`../databases/DB_Crawl/investors/investor${
-                i + 1
-            }.json`);
-
-            await DBMainInvestorModel.create(investor)
-                .then((data) => {})
-                .catch((error) => {
-                    log("Write investor in DB failed");
-                    throw new Error(error);
-                });
-        } catch (error) {
-            log("Write investor in DB failed");
-            throw new Error(error);
-        }
-    }
-
-    log("Write investors in DB successfully");
-};
-
-const saveConvertedInvestorCollectionToDB = async () => {
     const investors = require("../databases/DB_Crawl/investors-converted.json");
 
     for (let i = 0; i < investors.length; i++) {
@@ -403,91 +409,6 @@ const saveConvertedInvestorCollectionToDB = async () => {
     log("Write investors in DB successfully");
 };
 
-const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
-    let totalValueIn = new BigNumber(0);
-    let totalValueOut = new BigNumber(0);
-
-    totalValueIn = await transactionsHistory.reduce((curr, transaction) => {
-        const passValue =
-            transaction.pastPrice == 0 ? 1 : transaction.pastPrice;
-        let tmp = curr;
-
-        // log(
-        //     "walletAddress",
-        //     walletAddress,
-        //     "/ntransaction.from",
-        //     transaction.from
-        // );
-
-        if (walletAddress == transaction.from) {
-            tmp = tmp.plus(transaction.numberOfTokens * passValue);
-            // log("=");
-            // log("tmp", tmp);
-        } else {
-            totalValueOut = totalValueOut.plus(
-                transaction.numberOfTokens * passValue
-            );
-        }
-
-        return tmp;
-    }, new BigNumber(0));
-
-    return {
-        totalValueIn: eToLongStringNumber(totalValueIn),
-        totalValueOut: eToLongStringNumber(totalValueOut)
-    };
-};
-
-const updateInvestorTransactionsHistoryTotalValueFirstTrans = async () => {
-    for (let i = 1; i <= 683; i++) {
-        const investor = await DBMainInvestorModel.findOne({
-            sharkId: i
-        })
-            .select("transactionsHistory walletAddress")
-            .lean();
-
-        const transactionsHistory = await handleInvestorTransactionHistory(
-            investor.transactionsHistory
-        );
-        const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
-            transactionsHistory,
-            investor.walletAddress
-        );
-        const firstTransactionDate =
-            calculateFirstTransactionDate(transactionsHistory);
-
-        try {
-            await DBMainInvestorModel.findOneAndUpdate(
-                { sharkId: i },
-                {
-                    $set: {
-                        transactionsHistory: transactionsHistory,
-                        totalValueIn: totalValueIn,
-                        totalValueOut: totalValueOut,
-                        firstTransactionDate: firstTransactionDate
-                    }
-                }
-            ).lean();
-
-            log(`Successfully ${i}`);
-        } catch (error) {
-            log(`Failed ${i}`);
-            throw new Error(error);
-        }
-    }
-};
-
-const getFollowersOldDatas = async () => {
-    // Only retrieve docs with followers field != []
-    const followers = await DBMainInvestorModel.find({
-        followers: { $exists: true, $not: { $size: 0 } }
-    })
-        .select("sharkId followers -_id")
-        .lean();
-
-    return followers;
-};
-
 module.exports = {
     getListCryptosOfShark,
     calculateInvestorPercent24h,
@@ -497,11 +418,8 @@ module.exports = {
     updateInvestorTradeTransaction,
     updateInvestorHistoryDatasTest,
     saveInvestorsToFile,
-    convertInvestorsCollection,
-    saveConvertedInvestorCollectionToFile,
+    convertAndSaveInvestorsToDB,
     saveConvertedInvestorsToDB,
-    saveConvertedInvestorCollectionToDB,
     calculateTotalValueInOut,
-    updateInvestorTransactionsHistoryTotalValueFirstTrans,
     getFollowersOldDatas
 };

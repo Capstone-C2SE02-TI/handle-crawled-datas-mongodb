@@ -2,7 +2,7 @@ const { fs, log } = require("../constants");
 const { DBMainTransactionModel } = require("../models");
 const { convertUnixTimestampToNumber } = require("../helpers");
 
-// Ready but not run yet
+// [Need run]
 const _saveConvertedTransactionsToDB = async () => {
     const investors = require("../databases/DB_Crawl/investors.json");
     let id = 1;
@@ -20,7 +20,7 @@ const _saveConvertedTransactionsToDB = async () => {
                     id: id,
                     transactionId: id++
                 })
-                    .then((data) => {})
+                    .then()
                     .catch((error) => {
                         log("Write investor in DB failed");
                         throw new Error(error);

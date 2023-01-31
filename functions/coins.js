@@ -8,7 +8,7 @@ const {
     getNearest12Months
 } = require("../helpers");
 
-// Need comment-uncomment 4 below function calls
+// [Need comment-uncomment 4 below function calls]
 const handleTokensPrices = (coinsPrices) => {
     if (!coinsPrices)
         return {
@@ -186,7 +186,7 @@ const saveConvertedCoinCollectionToFile = async () => {
     log("Write coins into file successfully");
 };
 
-// Number of threads: 183 docs / 10 = 18 threads
+// [Number of threads: 183 docs / 10 = 18 threads]
 const saveConvertedCoinCollectionToDB = (id4) => {
     const coins = require("../databases/DB_Crawl/coins-converted.json");
 
@@ -198,7 +198,7 @@ const saveConvertedCoinCollectionToDB = (id4) => {
                     { ...coins[i], updateDate: new Date().toString() }
                 )
                     .lean()
-                    .then((data) => {})
+                    .then()
                     .catch((error) => {
                         log(`Update coin ${i + 1} in DB failed`);
                         throw new Error(error);
