@@ -1,9 +1,9 @@
 import express from "express";
-import scripts from "./scripts/index.js";
 import dotenv from "dotenv";
-dotenv.config();
+import scripts from "./scripts/index.js";
 
 const app = express();
+dotenv.config();
 const PORT = process.env.PORT || 8000;
 
 scripts();

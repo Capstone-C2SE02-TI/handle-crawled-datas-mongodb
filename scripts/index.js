@@ -77,7 +77,7 @@ const scripts = () => {
     // investors
     // setInterval(async () => {
     //     log("Run investors ...");
-    //     console.time(`Execute_time investors-save-file ${id5}`);
+    //     console.time(`Execute_time investors-save-file ${++id5}`);
     //     await saveInvestorsToFile();
     //     console.timeEnd(`Execute_time investors-save-file ${id5}`);
     //     console.time(`Execute_time investors-save-db ${++id6}`);
