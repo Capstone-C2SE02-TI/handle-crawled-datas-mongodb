@@ -97,13 +97,12 @@ const scripts = () => {
 
     // Testing ...
     setTimeout(async () => {
-        // log("Run transactions ...");
-        // console.time(`Execute_time transactions ${++id7}`);
-        // await dropDBMainCollection("transactions");
-        // console.time(`Execute_time transactions-save-db ${++id8}`);
-        // await _saveConvertedTransactionsToDB();
-        // console.timeEnd(`Execute_time transactions-save-db ${id8}`);
-        // console.timeEnd(`Execute_time transactions ${id7}`);
+        log("Run investors ...");
+        // console.time(`Execute_time investors-save-file ${++id5}`);
+        // await saveInvestorsToFile();
+        // console.timeEnd(`Execute_time investors-save-file ${id5}`);
+        console.time(`Execute_time investors-save-db ${++id6}`);
+        await convertAndSaveInvestorsToDB(id6);
     }, 0);
 };
 

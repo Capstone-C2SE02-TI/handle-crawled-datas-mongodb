@@ -1,4 +1,3 @@
-import { fs, log, BigNumber } from "../constants/index.js";
 import {
     DBCrawlInvestorModel,
     DBMainInvestorModel,
@@ -14,6 +13,9 @@ import {
     handleInvestorTransactionHistory,
     getValueFromPromise
 } from "./coins.js";
+import { fs, log, BigNumber } from "../constants/index.js";
+import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
+import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 
 const getListCryptosOfShark = async (coins) => {
     if (!coins) return { cryptos: null, totalAssets: "" };
@@ -287,7 +289,8 @@ const updateInvestorHistoryDatasTest = async () => {
 const saveInvestorsToFile = async () => {
     const investors = await DBCrawlInvestorModel.find({
         is_shark: true
-    }).lean();
+    });
+    //.lean();
 
     await fs.writeFileAsync(
         `./databases/DB_Crawl/investors.json`,
@@ -304,8 +307,6 @@ const saveInvestorsToFile = async () => {
 };
 
 const convertAndSaveInvestorsToDB = async (id6) => {
-    const investors = require("../databases/DB_Crawl/investors.json");
-    const _ids = require("../databases/DB_Crawl/investors_ids.json");
     const _followers = await getFollowersOldDatas();
 
     const handleConvertInvestor = async (start, end, isLog) => {
@@ -333,7 +334,7 @@ const convertAndSaveInvestorsToDB = async (id6) => {
             const investorInfo = {
                 sharkId: i + 1,
                 isShark: investors[i].is_shark,
-                coins: investors[i].coins[0],
+                coins: investors[i]?.coins[0] || {},
                 walletAddress: _ids[i]._id,
                 transactionsHistory: transactionsHistory,
                 followers: followers,
@@ -382,8 +383,8 @@ const convertAndSaveInvestorsToDB = async (id6) => {
         }
     };
 
-    for (let i = 60; i < 90; i++) {
-        // for (let i = 10; i < investors.length; i++) {
+    for (let i = 260; i < 360; i++) {
+        // for (let i = 0; i < investors.length; i++) {
         if (i == investors.length - 1) handleConvertInvestor(i, i + 1, true);
         else handleConvertInvestor(i, i + 1, false);
     }
