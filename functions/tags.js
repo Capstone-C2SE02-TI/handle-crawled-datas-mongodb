@@ -1,5 +1,6 @@
 import { fs, log } from "../constants/index.js";
 import { DBCrawlCategoryModel, DBMainTagModel } from "../models/index.js";
+import categories from "../databases/DB_Crawl/categories.json" assert { type: "json" };
 
 const saveCategoriesToFile = async () => {
     const categories = await DBCrawlCategoryModel.find({}).lean();
@@ -19,8 +20,6 @@ const saveCategoriesToFile = async () => {
 };
 
 const saveCategoriesToDB = async () => {
-    const categories = require(`../databases/DB_Crawl/categories.json`);
-
     for (let i = 0; i < categories.length; i++) {
         try {
             await DBMainTagModel.create({
@@ -28,7 +27,7 @@ const saveCategoriesToDB = async () => {
                 name: categories[i].name,
                 updateDate: new Date()
             })
-                .then((data) => {})
+                .then()
                 .catch((error) => {
                     log(`Write tag ${i + 1} in DB failed`);
                     throw new Error(error);

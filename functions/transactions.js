@@ -1,39 +1,9 @@
 import { fs, log } from "../constants/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 import { convertUnixTimestampToNumber } from "../helpers/index.js";
-
-// [Need run]
-const _saveConvertedTransactionsToDB = async () => {
-    const investors = require("../databases/DB_Crawl/investors.json");
-    let id = 1;
-
-    for (let i = 0; i < investors.length; i++) {
-        try {
-            const investor = require(`../databases/DB_Crawl/investors/investor${
-                i + 1
-            }.json`);
-
-            investor.transactionHistory.map(async (TX) => {
-                await DBMainTransactionModel.create({
-                    ...TX,
-                    investorId: i + 1,
-                    id: id,
-                    transactionId: id++
-                })
-                    .then()
-                    .catch((error) => {
-                        log("Write investor in DB failed");
-                        throw new Error(error);
-                    });
-            });
-        } catch (error) {
-            log("Write investor in DB failed");
-            throw new Error(error);
-        }
-    }
-
-    log("Write investors in DB successfully");
-};
+import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
+import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
+// import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 
 const handleEachTransaction = async ({
     transaction,
@@ -104,8 +74,6 @@ const handleEachTransaction = async ({
 };
 
 const convertTransactions = async () => {
-    const investors = require("../databases/DB_Crawl/investors.json");
-    // const investors = require("../databases/DB_Crawl/investors-converted.json");
     let transactionList = [],
         id = 1;
 
@@ -121,13 +89,6 @@ const convertTransactions = async () => {
 
         const transactions = await getValueFromPromise(promises);
         transactionList.push(...transactions);
-
-        // transactionList.push({
-        //     ...investors[i],
-        //     investorId: i + 1,
-        //     id: id,
-        //     transactionId: id++
-        // });
     }
 
     return transactionList;
@@ -141,7 +102,7 @@ const saveConvertedTransactionsToFile = async () => {
         JSON.stringify(datas),
         (error) => {
             if (error) {
-                log(`Backup file transactions-converted.json error`);
+                log("Write transactions into file error");
                 throw new Error(error);
             }
         }
@@ -151,12 +112,10 @@ const saveConvertedTransactionsToFile = async () => {
 };
 
 const saveConvertedTransactionsToDB = async () => {
-    const transactions = require("../databases/DB_Crawl/transactions-converted.json");
-
-    for (let i = 0; i < transactions.length; i++) {
+    for (let i = 0; i < transactionsConverted.length; i++) {
         try {
-            await DBMainTransactionModel.create(transactions[i])
-                .then((data) => {})
+            await DBMainTransactionModel.create(transactionsConverted[i])
+                .then()
                 .catch((error) => {
                     log("Write transaction in DB failed");
                     throw new Error(error);
@@ -215,7 +174,6 @@ const handleDetailChartTransaction = async () => {
 };
 
 export {
-    _saveConvertedTransactionsToDB,
     handleEachTransaction,
     convertTransactions,
     saveConvertedTransactionsToFile,

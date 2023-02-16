@@ -32,7 +32,6 @@ import {
     getFollowersOldDatas
 } from "../functions/investors.js";
 import {
-    _saveConvertedTransactionsToDB,
     handleEachTransaction,
     convertTransactions,
     saveConvertedTransactionsToFile,
@@ -49,59 +48,59 @@ let id1 = 0,
     id7 = 0,
     id8 = 0;
 
-/* Run every 10 minutes: Update collection datas */
+/* Update collections data every 10 minutes */
 const scripts = () => {
     // tags
     // setInterval(async () => {
     //     log("Run tags ...");
-    //     console.time(`Execute_time tags ${++id1}`);
+    //     console.time(`Time tags ${++id1}`);
     //     await saveCategoriesToFile();
     //     await dropDBMainCollection("tags");
-    //     console.time(`Execute_time tags-save-db ${++id2}`);
+    //     console.time(`Time tags-save-db ${++id2}`);
     //     await saveCategoriesToDB();
-    //     console.timeEnd(`Execute_time tags-save-db ${id2}`);
-    //     console.timeEnd(`Execute_time tags ${id1}`);
+    //     console.timeEnd(`Time tags-save-db ${id2}`);
+    //     console.timeEnd(`Time tags ${id1}`);
     // }, TEN_MINUTES_SECONDS);
 
     // coins
     // setInterval(async () => {
     //     log("Run coins ...");
-    //     console.time(`Execute_time coins ${++id3}`);
+    //     console.time(`Time coins ${++id3}`);
     //     await saveCoinsToFile();
     //     await saveConvertedCoinCollectionToFile();
-    //     console.time(`Execute_time coins-save-db ${++id4}`);
+    //     console.time(`Time coins-save-db ${++id4}`);
     //     saveConvertedCoinCollectionToDB(id4);
-    //     console.timeEnd(`Execute_time coins ${id3}`);
+    //     console.timeEnd(`Time coins ${id3}`);
     // }, TWO_MINUTES_SECONDS);
 
     // investors
     // setInterval(async () => {
     //     log("Run investors ...");
-    //     console.time(`Execute_time investors-save-file ${++id5}`);
+    //     console.time(`Time investors-save-file ${++id5}`);
     //     await saveInvestorsToFile();
-    //     console.timeEnd(`Execute_time investors-save-file ${id5}`);
-    //     console.time(`Execute_time investors-save-db ${++id6}`);
+    //     console.timeEnd(`Time investors-save-file ${id5}`);
+    //     console.time(`Time investors-save-db ${++id6}`);
     //     await convertAndSaveInvestorsToDB(id6);
     // }, TEN_MINUTES_SECONDS);
 
     // transactions
     // setInterval(async () => {
     //     log("Run transactions ...");
-    //     console.time(`Execute_time transactions ${++id7}`);
+    //     console.time(`Time transactions ${++id7}`);
     //     await dropDBMainCollection("transactions");
-    //     console.time(`Execute_time transactions-save-db ${++id8}`);
-    //     await _saveConvertedTransactionsToDB();
-    //     console.timeEnd(`Execute_time transactions-save-db ${id8}`);
-    //     console.timeEnd(`Execute_time transactions ${id7}`);
+    //     console.time(`Time transactions-save-db ${++id8}`);
+    //     await saveConvertedTransactionsToDB();
+    //     console.timeEnd(`Time transactions-save-db ${id8}`);
+    //     console.timeEnd(`Time transactions ${id7}`);
     // }, TEN_MINUTES_SECONDS);
 
     // Testing ...
     setTimeout(async () => {
         log("Run investors ...");
-        // console.time(`Execute_time investors-save-file ${++id5}`);
+        // console.time(`Time investors-save-file ${++id5}`);
         // await saveInvestorsToFile();
-        // console.timeEnd(`Execute_time investors-save-file ${id5}`);
-        console.time(`Execute_time investors-save-db ${++id6}`);
+        // console.timeEnd(`Time investors-save-file ${id5}`);
+        console.time(`Time investors-save-db ${++id6}`);
         await convertAndSaveInvestorsToDB(id6);
     }, 0);
 };

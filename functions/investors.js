@@ -15,6 +15,7 @@ import {
 } from "./coins.js";
 import { fs, log, BigNumber } from "../constants/index.js";
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
+import investorsConverted from "../databases/DB_Crawl/investors-converted.json" assert { type: "json" };
 import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 
 const getListCryptosOfShark = async (coins) => {
@@ -61,7 +62,7 @@ const getListCryptosOfShark = async (coins) => {
 };
 
 const getFollowersOldDatas = async () => {
-    // Only retrieve docs with followers field != []
+    // Retrieve docs has followers != []
     const followers = await DBMainInvestorModel.find({
         followers: { $exists: true, $not: { $size: 0 } }
     })
@@ -263,8 +264,6 @@ const updateInvestorTradeTransaction = async (coinSymbol) => {
 
 // [Not done yet]
 const updateInvestorHistoryDatasTest = async () => {
-    const investors = require("../databases/DB_Crawl/investors.json");
-
     for (let i = 0; i < investors.length; i++) {
         const historyDatasTest = await handleFormatTradeTransactionDataCrawl(
             investors[i]
@@ -290,7 +289,6 @@ const saveInvestorsToFile = async () => {
     const investors = await DBCrawlInvestorModel.find({
         is_shark: true
     });
-    //.lean();
 
     await fs.writeFileAsync(
         `./databases/DB_Crawl/investors.json`,
@@ -331,7 +329,7 @@ const convertAndSaveInvestorsToDB = async (id6) => {
                     _ids[i]._id
                 );
 
-            const investorInfo = {
+            const investor = {
                 sharkId: i + 1,
                 isShark: investors[i].is_shark,
                 coins: investors[i]?.coins[0] || {},
@@ -345,29 +343,28 @@ const convertAndSaveInvestorsToDB = async (id6) => {
                 totalValueIn: totalValueIn,
                 totalValueOut: totalValueOut
             };
-            log(`Handle investor ${i + 1} ...`);
 
-            handleUpdateInvestor(i, investorInfo);
+            handleUpdateInvestor(i, investor);
 
             if (isLog && i == end - 1)
-                console.timeEnd(`Execute_time investors-save-db ${id6}`);
+                console.timeEnd(`Time investors-save-db ${id6}`);
         }
     };
 
-    const handleUpdateInvestor = (i, investorInfo) => {
+    const handleUpdateInvestor = (i, investor) => {
         try {
             DBMainInvestorModel.findOneAndUpdate(
                 { sharkId: i + 1 },
                 {
-                    isShark: investorInfo.isShark,
-                    coins: investorInfo.coins,
-                    transactionsHistory: investorInfo.transactionHistory,
-                    followers: investorInfo.followers,
-                    cryptos: investorInfo.cryptos,
-                    totalAssets: investorInfo.totalAssets,
-                    percent24h: investorInfo.percent24h || 0,
-                    totalValueIn: investorInfo.totalValueIn,
-                    totalValueOut: investorInfo.totalValueOut,
+                    isShark: investor.isShark,
+                    coins: investor.coins,
+                    transactionsHistory: investor.transactionHistory,
+                    followers: investor.followers,
+                    cryptos: investor.cryptos,
+                    totalAssets: investor.totalAssets,
+                    percent24h: investor.percent24h || 0,
+                    totalValueIn: investor.totalValueIn,
+                    totalValueOut: investor.totalValueOut,
                     updateDate: new Date().toString()
                 }
             )
@@ -391,12 +388,10 @@ const convertAndSaveInvestorsToDB = async (id6) => {
 };
 
 const saveConvertedInvestorsToDB = async () => {
-    const investors = require("../databases/DB_Crawl/investors-converted.json");
-
-    for (let i = 0; i < investors.length; i++) {
+    for (let i = 0; i < investorsConverted.length; i++) {
         try {
-            await DBMainInvestorModel.create(investors[i])
-                .then((data) => {})
+            await DBMainInvestorModel.create(investorsConverted[i])
+                .then()
                 .catch((error) => {
                     log("Write investor in DB failed");
                     throw new Error(error);
