@@ -9,5 +9,5 @@ const PORT = process.env.PORT || 8000;
 scripts();
 
 app.listen(PORT, () => {
-    console.log(`Server is listening at http://localhost:${PORT}/`);
+	console.log(`Server is listening at http://localhost:${PORT}/`);
 });

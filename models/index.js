@@ -1,26 +1,26 @@
 import {
-    DBCrawlCoinModel,
-    DBCrawlInvestorModel,
-    DBCrawlCategoryModel
+	DBCrawlCoinModel,
+	DBCrawlInvestorModel,
+	DBCrawlCategoryModel
 } from "./DB_Crawl/index.js";
 
 import {
-    DBMainAdminModel,
-    DBMainInvestorModel,
-    DBMainTagModel,
-    DBMainCoinModel,
-    DBMainTransactionModel,
-    DBMainUserModel
+	DBMainAdminModel,
+	DBMainInvestorModel,
+	DBMainTagModel,
+	DBMainCoinModel,
+	DBMainTransactionModel,
+	DBMainUserModel
 } from "./DB_Main/index.js";
 
 export {
-    DBCrawlCoinModel,
-    DBCrawlInvestorModel,
-    DBCrawlCategoryModel,
-    DBMainAdminModel,
-    DBMainInvestorModel,
-    DBMainTagModel,
-    DBMainCoinModel,
-    DBMainTransactionModel,
-    DBMainUserModel
+	DBCrawlCoinModel,
+	DBCrawlInvestorModel,
+	DBCrawlCategoryModel,
+	DBMainAdminModel,
+	DBMainInvestorModel,
+	DBMainTagModel,
+	DBMainCoinModel,
+	DBMainTransactionModel,
+	DBMainUserModel
 };

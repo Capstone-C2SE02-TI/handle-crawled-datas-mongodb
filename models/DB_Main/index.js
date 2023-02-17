@@ -6,10 +6,10 @@ import DBMainTransactionModel from "./Transaction.js";
 import DBMainUserModel from "./User.js";
 
 export {
-    DBMainAdminModel,
-    DBMainInvestorModel,
-    DBMainTagModel,
-    DBMainCoinModel,
-    DBMainTransactionModel,
-    DBMainUserModel
+	DBMainAdminModel,
+	DBMainInvestorModel,
+	DBMainTagModel,
+	DBMainCoinModel,
+	DBMainTransactionModel,
+	DBMainUserModel
 };
