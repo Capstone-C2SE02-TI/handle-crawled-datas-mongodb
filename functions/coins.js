@@ -7,9 +7,9 @@ import {
     getNearest12Months
 } from "../helpers/index.js";
 import { DBCrawlCoinModel, DBMainCoinModel } from "../models/index.js";
-import coinsConverted from "../databases/DB_Crawl/coins-converted.json" assert { type: "json" };
-import coins from "../databases/DB_Crawl/coins.json" assert { type: "json" };
 import ids from "../databases/DB_Crawl/ids.json" assert { type: "json" };
+import coins from "../databases/DB_Crawl/coins.json" assert { type: "json" };
+import coinsConverted from "../databases/DB_Crawl/coins-converted.json" assert { type: "json" };
 
 // [Need comment-uncomment 4 below function calls]
 const handleTokensPrices = (coinsPrices) => {
@@ -177,7 +177,7 @@ const saveConvertedCoinCollectionToFile = async () => {
         JSON.stringify(datas),
         (error) => {
             if (error) {
-                log(`Backup file coins-converted.json error`);
+                log(`Write file coins-converted.json error`);
                 throw new Error(error);
             }
         }
@@ -186,31 +186,31 @@ const saveConvertedCoinCollectionToFile = async () => {
     log("Write coins into file successfully");
 };
 
-// [Number of threads: 183 docs / 10 = 18 threads]
-const saveConvertedCoinCollectionToDB = (id4) => {
-    const handleUpdateCoin = (start, end, isLog) => {
-        for (let i = start; i < end; i++) {
-            try {
-                DBMainCoinModel.findOneAndUpdate(
-                    { coinId: i + 1 },
-                    { ...coinsConverted[i], updateDate: new Date().toString() }
-                )
-                    .lean()
-                    .then()
-                    .catch((error) => {
-                        log(`Update coin ${i + 1} in DB failed`);
-                        throw new Error(error);
-                    });
+const handleUpdateCoin = (start, end, isLog, id4) => {
+    for (let i = start; i < end; i++) {
+        try {
+            DBMainCoinModel.findOneAndUpdate(
+                { coinId: i + 1 },
+                { ...coinsConverted[i], updateDate: new Date().toString() }
+            )
+                .lean()
+                .then()
+                .catch((error) => {
+                    log(`Update coin ${i + 1} in DB failed`);
+                    throw new Error(error);
+                });
 
-                if (isLog && i == end - 1)
-                    console.timeEnd(`Time coins-save-db ${id4}`);
-            } catch (error) {
-                log(`Update coin ${i + 1} in DB failed`);
-                throw new Error(error);
-            }
+            if (isLog && i == end - 1)
+                console.timeEnd(`Time coins-save-db ${id4}`);
+        } catch (error) {
+            log(`Update coin ${i + 1} in DB failed`);
+            throw new Error(error);
         }
-    };
+    }
+};
 
+// [Number of threads: 186 docs / 10 = 18 threads]
+const saveConvertedCoinCollectionToDB = (id4) => {
     let len = coinsConverted.length,
         limit = Math.floor(len / 10),
         jump = 10,
@@ -219,7 +219,7 @@ const saveConvertedCoinCollectionToDB = (id4) => {
 
     for (let i = 0; i < limit; i++) {
         setTimeout(() => {
-            if (i == limit - 1) handleUpdateCoin(start, len, true);
+            if (i == limit - 1) handleUpdateCoin(start, len, true, id4);
             else handleUpdateCoin(start, end);
 
             start = start + jump;

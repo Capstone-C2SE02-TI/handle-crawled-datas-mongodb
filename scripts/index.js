@@ -96,12 +96,20 @@ const scripts = () => {
 
     // Testing ...
     setTimeout(async () => {
-        log("Run investors ...");
+        log("Run coins ...");
+        console.time(`Time coins ${++id3}`);
+        await saveCoinsToFile();
+        await saveConvertedCoinCollectionToFile();
+        console.time(`Time coins-save-db ${++id4}`);
+        saveConvertedCoinCollectionToDB(id4);
+        console.timeEnd(`Time coins ${id3}`);
+
+        // log("Run investors ...");
         // console.time(`Time investors-save-file ${++id5}`);
         // await saveInvestorsToFile();
         // console.timeEnd(`Time investors-save-file ${id5}`);
-        console.time(`Time investors-save-db ${++id6}`);
-        await convertAndSaveInvestorsToDB(id6);
+        // console.time(`Time investors-save-db ${++id6}`);
+        // await convertAndSaveInvestorsToDB(id6);
     }, 0);
 };
 

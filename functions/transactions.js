@@ -3,7 +3,7 @@ import { DBMainTransactionModel } from "../models/index.js";
 import { convertUnixTimestampToNumber } from "../helpers/index.js";
 import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
-// import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
+import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 
 const handleEachTransaction = async ({
     transaction,

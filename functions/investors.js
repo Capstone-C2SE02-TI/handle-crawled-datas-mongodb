@@ -14,9 +14,10 @@ import {
     getValueFromPromise
 } from "./coins.js";
 import { fs, log, BigNumber } from "../constants/index.js";
+import { getNearest7Days, getThisMonthYear } from "../helpers/index.js";
+import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors-converted.json" assert { type: "json" };
-import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 
 const getListCryptosOfShark = async (coins) => {
     if (!coins) return { cryptos: null, totalAssets: "" };
@@ -208,16 +209,17 @@ const handleTradeTransaction = (transactions) => {
 
     const datas = transactions;
 
-    // 1. WEEK => Thay mảng dates bằng giá trị 7 ngày gần nhất
+    // 1. WEEK
     let weeks = {};
-    let dates = [
+    let currentDays = [
         20221119, 20221120, 20221121, 20221122, 20221123, 20221124, 20221125
     ];
+    // let currentDays = getNearest7Days();
 
     if (datas) {
         Object.keys(datas).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-            if (dates.includes(Math.floor(cv / 1000000))) {
+            if (currentDays.includes(Math.floor(cv / 1000000))) {
                 weeks[key] = datas[`${key}`];
             }
         });
@@ -227,10 +229,13 @@ const handleTradeTransaction = (transactions) => {
 
     // 2. MONTH => Thay 202210 bằng giá trị tháng hiện tại (YYYYmm)
     let months = {};
+    let currentMonthYear = 202212;
+    // let currentMonthYear = getThisMonthYear();
+
     if (datas) {
         Object.keys(datas).forEach((key) => {
             const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-            if (Math.floor(cv / 100000000) == 202211) {
+            if (Math.floor(cv / 100000000) == currentMonthYear) {
                 months[key] = datas[`${key}`];
             }
         });
@@ -304,86 +309,84 @@ const saveInvestorsToFile = async () => {
     log("Write investors into file successfully");
 };
 
-const convertAndSaveInvestorsToDB = async (id6) => {
+const handleUpdateInvestor = (i, investor) => {
+    try {
+        DBMainInvestorModel.findOneAndUpdate(
+            { sharkId: i + 1 },
+            {
+                isShark: investor.isShark,
+                coins: investor.coins,
+                transactionsHistory: investor.transactionHistory,
+                followers: investor.followers,
+                cryptos: investor.cryptos,
+                totalAssets: investor.totalAssets,
+                percent24h: investor.percent24h || 0,
+                totalValueIn: investor.totalValueIn,
+                totalValueOut: investor.totalValueOut,
+                updateDate: new Date().toString()
+            }
+        )
+            .lean()
+            .then(() => log(`Update investor ${i + 1} in DB successfully`))
+            .catch((error) => {
+                log(`Update investor ${i + 1} in DB failed`);
+                throw new Error(error);
+            });
+    } catch (error) {
+        log(`Update investor ${i + 1} in DB failed`);
+        throw new Error(error);
+    }
+};
+
+const handleConvertInvestor = async (start, end, isLog, id6) => {
     const _followers = await getFollowersOldDatas();
 
-    const handleConvertInvestor = async (start, end, isLog) => {
-        for (let i = start; i < end; i++) {
-            const transactionsHistory = await handleInvestorTransactionHistory(
-                investors[i].TXs
-            );
-            const { cryptos, totalAssets } = await getListCryptosOfShark(
-                investors[i].coins
-            );
-            const followers =
-                _followers.find((follower) => follower.sharkId == i + 1)
-                    ?.followers || [];
-            const percent24h = calculateInvestorPercent24h(
-                investors[i].snapshots
-            );
-            const firstTransactionDate =
-                calculateFirstTransactionDate(transactionsHistory);
-            const { totalValueIn, totalValueOut } =
-                await calculateTotalValueInOut(
-                    transactionsHistory,
-                    _ids[i]._id
-                );
+    for (let i = start; i < end; i++) {
+        const transactionsHistory = await handleInvestorTransactionHistory(
+            investors[i].TXs
+        );
+        const { cryptos, totalAssets } = await getListCryptosOfShark(
+            investors[i].coins
+        );
+        const followers =
+            _followers.find((follower) => follower.sharkId == i + 1)
+                ?.followers || [];
+        const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
+        const firstTransactionDate =
+            calculateFirstTransactionDate(transactionsHistory);
+        const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
+            transactionsHistory,
+            _ids[i]._id
+        );
 
-            const investor = {
-                sharkId: i + 1,
-                isShark: investors[i].is_shark,
-                coins: investors[i]?.coins[0] || {},
-                walletAddress: _ids[i]._id,
-                transactionsHistory: transactionsHistory,
-                followers: followers,
-                cryptos: cryptos,
-                totalAssets: totalAssets,
-                percent24h: percent24h || 0,
-                firstTransactionDate: firstTransactionDate,
-                totalValueIn: totalValueIn,
-                totalValueOut: totalValueOut
-            };
+        const investor = {
+            sharkId: i + 1,
+            isShark: investors[i].is_shark,
+            coins: investors[i]?.coins[0] || {},
+            walletAddress: _ids[i]._id,
+            transactionsHistory: transactionsHistory,
+            followers: followers,
+            cryptos: cryptos,
+            totalAssets: totalAssets,
+            percent24h: percent24h || 0,
+            firstTransactionDate: firstTransactionDate,
+            totalValueIn: totalValueIn,
+            totalValueOut: totalValueOut
+        };
 
-            handleUpdateInvestor(i, investor);
+        handleUpdateInvestor(i, investor);
 
-            if (isLog && i == end - 1)
-                console.timeEnd(`Time investors-save-db ${id6}`);
-        }
-    };
+        if (isLog && i == end - 1)
+            console.timeEnd(`Time investors-save-db ${id6}`);
+    }
+};
 
-    const handleUpdateInvestor = (i, investor) => {
-        try {
-            DBMainInvestorModel.findOneAndUpdate(
-                { sharkId: i + 1 },
-                {
-                    isShark: investor.isShark,
-                    coins: investor.coins,
-                    transactionsHistory: investor.transactionHistory,
-                    followers: investor.followers,
-                    cryptos: investor.cryptos,
-                    totalAssets: investor.totalAssets,
-                    percent24h: investor.percent24h || 0,
-                    totalValueIn: investor.totalValueIn,
-                    totalValueOut: investor.totalValueOut,
-                    updateDate: new Date().toString()
-                }
-            )
-                .lean()
-                .then(() => log(`Update investor ${i + 1} in DB successfully`))
-                .catch((error) => {
-                    log(`Update investor ${i + 1} in DB failed`);
-                    throw new Error(error);
-                });
-        } catch (error) {
-            log(`Update investor ${i + 1} in DB failed`);
-            throw new Error(error);
-        }
-    };
-
-    for (let i = 260; i < 360; i++) {
+const convertAndSaveInvestorsToDB = async (id6) => {
+    for (let i = 401; i < 411; i++) {
         // for (let i = 0; i < investors.length; i++) {
-        if (i == investors.length - 1) handleConvertInvestor(i, i + 1, true);
-        else handleConvertInvestor(i, i + 1, false);
+        if (i == investors.length - 1)
+            handleConvertInvestor(i, i + 1, true, id6);
+        else handleConvertInvestor(i, i + 1);
     }
 };
 
