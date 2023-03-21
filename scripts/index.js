@@ -39,6 +39,7 @@ import {
 	handleDetailChartTransaction
 } from "../functions/transactions.js";
 import { dropDBMainCollection } from "../functions/common.js";
+import { deleteFieldsInUsersCollection } from "../functions/index.js";
 let id1 = 0,
 	id2 = 0,
 	id3 = 0,
@@ -49,7 +50,7 @@ let id1 = 0,
 	id8 = 0;
 
 /* Update collections data every 10 minutes */
-const scripts = () => {
+const scripts = async () => {
 	// tags
 	// setInterval(async () => {
 	//     log("Run tags ...");
@@ -95,14 +96,16 @@ const scripts = () => {
 	// }, TEN_MINUTES_SECONDS);
 
 	// Testing ...
-	setTimeout(async () => {
-		log("Run investors ...");
-		// console.time(`Time investors-save-file ${++id5}`);
-		// await saveInvestorsToFile();
-		// console.timeEnd(`Time investors-save-file ${id5}`);
-		console.time(`Time investors-save-db ${++id6}`);
-		await convertAndSaveInvestorsToDB(id6);
-	}, 0);
+	// setTimeout(async () => {
+	// 	log("Run investors ...");
+	// 	// console.time(`Time investors-save-file ${++id5}`);
+	// 	// await saveInvestorsToFile();
+	// 	// console.timeEnd(`Time investors-save-file ${id5}`);
+	// 	console.time(`Time investors-save-db ${++id6}`);
+	// 	await convertAndSaveInvestorsToDB(id6);
+	// }, 0);
+
+	await deleteFieldsInUsersCollection();
 };
 
 export default scripts;

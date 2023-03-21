@@ -5,7 +5,6 @@ import {
 } from "./DB_Crawl/index.js";
 
 import {
-	DBMainAdminModel,
 	DBMainInvestorModel,
 	DBMainTagModel,
 	DBMainCoinModel,
@@ -17,7 +16,6 @@ export {
 	DBCrawlCoinModel,
 	DBCrawlInvestorModel,
 	DBCrawlCategoryModel,
-	DBMainAdminModel,
 	DBMainInvestorModel,
 	DBMainTagModel,
 	DBMainCoinModel,
