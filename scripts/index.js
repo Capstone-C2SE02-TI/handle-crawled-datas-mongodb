@@ -104,8 +104,6 @@ const scripts = async () => {
 	// 	console.time(`Time investors-save-db ${++id6}`);
 	// 	await convertAndSaveInvestorsToDB(id6);
 	// }, 0);
-
-	await deleteFieldsInUsersCollection();
 };
 
 export default scripts;
