@@ -38,6 +38,7 @@ import {
     saveConvertedTransactionsToDB,
     handleDetailChartTransaction
 } from "../functions/transactions.js";
+import { updateMultipleFieldType } from "../functions/blog.js";
 import { dropDBMainCollection } from "../functions/common.js";
 let id1 = 0,
     id2 = 0,
@@ -95,22 +96,23 @@ const scripts = () => {
     // }, TEN_MINUTES_SECONDS);
 
     // Testing ...
-    setTimeout(async () => {
-        log("Run coins ...");
-        console.time(`Time coins ${++id3}`);
-        await saveCoinsToFile();
-        await saveConvertedCoinCollectionToFile();
-        console.time(`Time coins-save-db ${++id4}`);
-        saveConvertedCoinCollectionToDB(id4);
-        console.timeEnd(`Time coins ${id3}`);
+    // setTimeout(async () => {
+    // log("Run coins ...");
+    // console.time(`Time coins ${++id3}`);
+    // await saveCoinsToFile();
+    // await saveConvertedCoinCollectionToFile();
+    // console.time(`Time coins-save-db ${++id4}`);
+    // saveConvertedCoinCollectionToDB(id4);
+    // console.timeEnd(`Time coins ${id3}`);
+    // log("Run investors ...");
+    // console.time(`Time investors-save-file ${++id5}`);
+    // await saveInvestorsToFile();
+    // console.timeEnd(`Time investors-save-file ${id5}`);
+    // console.time(`Time investors-save-db ${++id6}`);
+    // await convertAndSaveInvestorsToDB(id6);
+    // }, 0);
 
-        // log("Run investors ...");
-        // console.time(`Time investors-save-file ${++id5}`);
-        // await saveInvestorsToFile();
-        // console.timeEnd(`Time investors-save-file ${id5}`);
-        // console.time(`Time investors-save-db ${++id6}`);
-        // await convertAndSaveInvestorsToDB(id6);
-    }, 0);
+    // updateMultipleFieldType();
 };
 
 export default scripts;
