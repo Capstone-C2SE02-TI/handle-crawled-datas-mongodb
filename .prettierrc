@@ -1,9 +1,12 @@
 {
-    "arrowParens": "always",
-    "trailingComma": "none",
-    "tabWidth": 4,
-    "printWidth": 80,
-    "semi": true,
-    "doubleQuote": true,
-    "bracketSpacing": true
+	"arrowParens": "always",
+	"trailingComma": "none",
+	"tabWidth": 2,
+	"printWidth": 80,
+	"semi": true,
+	"doubleQuote": true,
+	"bracketSpacing": true,
+	"useTabs": true,
+	"embeddedLanguageFormatting": "auto",
+	"endOfLine": "auto"
 }
