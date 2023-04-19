@@ -1,29 +1,32 @@
 import mongoose from "mongoose";
-import Inc from "mongoose-sequence";
-const AutoIncrement = Inc(mongoose);
 import { dbMainConnection } from "../../configs/connectDatabase/index.js";
+import { DEFAULT_USER_AVATARS } from "../../constants/index.js";
 
 const UserSchema = new mongoose.Schema(
 	{
 		walletAddress: {
 			type: String,
 			trim: true,
-			default: null
+			required: true,
+			unique: true
 		},
 		fullName: {
 			type: String,
 			trim: true,
 			default: ""
 		},
-		confirmationCode: {
+		email: {
 			type: String,
-			trim: true
+			trim: true,
+			default: ""
 		},
 		avatar: {
 			type: String,
 			trim: true,
 			default:
-				"https://res.cloudinary.com/dhzbsq7fj/image/upload/v1643101647/avatardefault_92824_aifry9.png"
+				DEFAULT_USER_AVATARS[
+					Math.floor(Math.random() * DEFAULT_USER_AVATARS.length)
+				]
 		},
 		website: {
 			type: String,
@@ -46,8 +49,5 @@ const UserSchema = new mongoose.Schema(
 	{ timestamps: true, versionKey: false }
 );
 
-UserSchema.plugin(AutoIncrement, { inc_field: "userId" });
-
 const UserModel = dbMainConnection.model("User", UserSchema);
-
 export default UserModel;

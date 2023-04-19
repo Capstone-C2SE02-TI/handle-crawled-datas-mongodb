@@ -108,7 +108,7 @@ const scripts = async () => {
 	// console.time(`Time investors-save-db ${++id6}`);
 	// await convertAndSaveInvestorsToDB(id6);
 	// }, 0);
-	// updateMultipleFieldType();
+	updateMultipleFieldType();
 };
 
 export default scripts;
