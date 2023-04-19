@@ -1,4 +1,4 @@
-## Cryptocurrency Tracking And Analysis System
+## Cryptocurrency Tracking And Analysis System Version 2.0
 
 ### Capstone Project - Handle Crawled Data
 

@@ -9,7 +9,9 @@ import {
 	DBMainTagModel,
 	DBMainCoinModel,
 	DBMainTransactionModel,
-	DBMainUserModel
+	DBMainUserModel,
+	DBMainBlogModel,
+	DBMainCommentModel
 } from "./DB_Main/index.js";
 
 export {
@@ -20,5 +22,7 @@ export {
 	DBMainTagModel,
 	DBMainCoinModel,
 	DBMainTransactionModel,
-	DBMainUserModel
+	DBMainUserModel,
+	DBMainBlogModel,
+	DBMainCommentModel
 };
