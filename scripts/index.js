@@ -63,6 +63,7 @@ const scripts = async () => {
 	//     console.timeEnd(`Time tags-save-db ${id2}`);
 	//     console.timeEnd(`Time tags ${id1}`);
 	// }, TEN_MINUTES_SECONDS);
+
 	// coins
 	// setInterval(async () => {
 	//     log("Run coins ...");
@@ -73,6 +74,7 @@ const scripts = async () => {
 	//     saveConvertedCoinCollectionToDB(id4);
 	//     console.timeEnd(`Time coins ${id3}`);
 	// }, TWO_MINUTES_SECONDS);
+
 	// investors
 	// setInterval(async () => {
 	//     log("Run investors ...");
@@ -82,6 +84,7 @@ const scripts = async () => {
 	//     console.time(`Time investors-save-db ${++id6}`);
 	//     await convertAndSaveInvestorsToDB(id6);
 	// }, TEN_MINUTES_SECONDS);
+
 	// transactions
 	// setInterval(async () => {
 	//     log("Run transactions ...");
@@ -92,23 +95,31 @@ const scripts = async () => {
 	//     console.timeEnd(`Time transactions-save-db ${id8}`);
 	//     console.timeEnd(`Time transactions ${id7}`);
 	// }, TEN_MINUTES_SECONDS);
-	// Testing ...
-	// setTimeout(async () => {
-	// log("Run coins ...");
-	// console.time(`Time coins ${++id3}`);
-	// await saveCoinsToFile();
-	// await saveConvertedCoinCollectionToFile();
-	// console.time(`Time coins-save-db ${++id4}`);
-	// saveConvertedCoinCollectionToDB(id4);
-	// console.timeEnd(`Time coins ${id3}`);
-	// log("Run investors ...");
-	// console.time(`Time investors-save-file ${++id5}`);
-	// await saveInvestorsToFile();
-	// console.timeEnd(`Time investors-save-file ${id5}`);
-	// console.time(`Time investors-save-db ${++id6}`);
-	// await convertAndSaveInvestorsToDB(id6);
-	// }, 0);
-	updateMultipleFieldType();
+
+	// Testing
+	setTimeout(async () => {
+		log("Run coins ...");
+		console.time(`Time coins ${++id3}`);
+		await saveCoinsToFile();
+		await saveConvertedCoinCollectionToFile();
+		console.time(`Time coins-save-db ${++id4}`);
+		saveConvertedCoinCollectionToDB(id4);
+		console.timeEnd(`Time coins ${id3}`);
+
+		// log("Run coins ...");
+		// console.time(`Time coins ${++id3}`);
+		// await saveCoinsToFile();
+		// await saveConvertedCoinCollectionToFile();
+		// console.time(`Time coins-save-db ${++id4}`);
+		// saveConvertedCoinCollectionToDB(id4);
+		// console.timeEnd(`Time coins ${id3}`);
+		// log("Run investors ...");
+		// console.time(`Time investors-save-file ${++id5}`);
+		// await saveInvestorsToFile();
+		// console.timeEnd(`Time investors-save-file ${id5}`);
+		// console.time(`Time investors-save-db ${++id6}`);
+		// await convertAndSaveInvestorsToDB(id6);
+	}, 0);
 };
 
 export default scripts;

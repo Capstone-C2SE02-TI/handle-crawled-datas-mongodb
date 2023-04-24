@@ -10,14 +10,15 @@ const getCollectionLength = async (CollectionModel) => {
 };
 
 const dropDBMainCollection = async (collectionName) => {
-	await dbMainConnection.dropCollection(collectionName, (error, result) => {
-		if (error) {
-			log(`Drop collection ${collectionName} failed`);
-			throw new Error(error);
-		} else {
-			log(`Drop collection ${collectionName} successfully`);
-		}
-	});
+	await dbMainConnection.dropCollection(collectionName);
+	// , (error, result) => {
+	// 	if (error) {
+	// 		log(`Drop collection ${collectionName} failed`);
+	// 		throw new Error(error);
+	// 	} else {
+	// 		log(`Drop collection ${collectionName} successfully`);
+	// 	}
+	// });
 };
 
 export { exportCollection, getCollectionLength, dropDBMainCollection };
