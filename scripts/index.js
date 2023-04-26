@@ -98,14 +98,6 @@ const scripts = async () => {
 
 	// Testing
 	setTimeout(async () => {
-		log("Run coins ...");
-		console.time(`Time coins ${++id3}`);
-		await saveCoinsToFile();
-		await saveConvertedCoinCollectionToFile();
-		console.time(`Time coins-save-db ${++id4}`);
-		saveConvertedCoinCollectionToDB(id4);
-		console.timeEnd(`Time coins ${id3}`);
-
 		// log("Run coins ...");
 		// console.time(`Time coins ${++id3}`);
 		// await saveCoinsToFile();
@@ -113,6 +105,7 @@ const scripts = async () => {
 		// console.time(`Time coins-save-db ${++id4}`);
 		// saveConvertedCoinCollectionToDB(id4);
 		// console.timeEnd(`Time coins ${id3}`);
+
 		// log("Run investors ...");
 		// console.time(`Time investors-save-file ${++id5}`);
 		// await saveInvestorsToFile();

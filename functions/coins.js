@@ -25,7 +25,7 @@ const handleTokensPrices = (coinsPrices) => {
 
 	// 1. DAY
 	let days = {};
-	let currentDay = 20221229;
+	let currentDay = 20230401;
 	// let currentDay = getTodayDay();
 
 	if (hourly) {
@@ -43,7 +43,7 @@ const handleTokensPrices = (coinsPrices) => {
 	// 2. WEEK
 	let weeks = {};
 	let currentDays = [
-		20221223, 20221224, 20221225, 20221226, 20221227, 20221228, 20221229
+		20230326, 20230327, 20230328, 20230329, 20230330, 20230331, 20230401
 	];
 	// let currentDays = getNearest7Days();
 
@@ -60,7 +60,7 @@ const handleTokensPrices = (coinsPrices) => {
 
 	// 3. MONTH
 	let months = {};
-	let currentMonthYear = 202212;
+	let currentMonthYear = 202304;
 	// let currentMonthYear = getThisMonthYear();
 
 	if (daily) {
@@ -77,8 +77,8 @@ const handleTokensPrices = (coinsPrices) => {
 	// 4. YEAR
 	let years = {};
 	const currentMonthYears = [
-		202201, 202202, 202203, 202204, 202205, 202206, 202207, 202208, 202209,
-		202210, 202211, 202212
+		202205, 202206, 202207, 202208, 202209, 202210, 202211, 202212, 202301,
+		202302, 202303, 202304
 	];
 	// const currentMonthYears = getNearest12Months();
 
