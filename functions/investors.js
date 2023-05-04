@@ -382,7 +382,7 @@ const handleConvertInvestor = async (start, end, isLog, id6) => {
 };
 
 const convertAndSaveInvestorsToDB = async (id6) => {
-    for (let i = 522; i < 523; i++) {
+    for (let i = 290; i < 300; i++) {
         // for (let i = 0; i < investors.length; i++) {
         if (i == investors.length - 1) {
             handleConvertInvestor(i, i + 1, true, id6);
