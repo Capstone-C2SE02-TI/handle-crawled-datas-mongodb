@@ -343,15 +343,15 @@ const handleConvertInvestor = async (start, end, isLog, id6) => {
 
     for (let i = start; i < end; i++) {
         const transactionsHistory = await handleInvestorTransactionHistory(
-            investors[i].TXs
+            investors[i]?.TXs || []
         );
         const { cryptos, totalAssets } = await getListCryptosOfShark(
-            investors[i].coins
+            investors[i]?.coins
         );
         const followers =
             _followers.find((follower) => follower.sharkId == i + 1)
                 ?.followers || [];
-        const percent24h = calculateInvestorPercent24h(investors[i].snapshots);
+        const percent24h = calculateInvestorPercent24h(investors[i]?.snapshots);
         const firstTransactionDate =
             calculateFirstTransactionDate(transactionsHistory);
         const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
@@ -361,8 +361,8 @@ const handleConvertInvestor = async (start, end, isLog, id6) => {
 
         const investor = {
             sharkId: i + 1,
-            isShark: investors[i].is_shark,
-            coins: investors[i]?.coins[0] || {},
+            isShark: investors[i]?.is_shark,
+            coins: investors[i]?.coins?.[0] || {},
             walletAddress: _ids[i]._id,
             transactionsHistory: transactionsHistory,
             followers: followers,
@@ -381,8 +381,9 @@ const handleConvertInvestor = async (start, end, isLog, id6) => {
     }
 };
 
+// 677 sharks
 const convertAndSaveInvestorsToDB = async (id6) => {
-    for (let i = 290; i < 300; i++) {
+    for (let i = 0; i < 677; i++) {
         // for (let i = 0; i < investors.length; i++) {
         if (i == investors.length - 1) {
             handleConvertInvestor(i, i + 1, true, id6);

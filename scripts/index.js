@@ -99,11 +99,11 @@ const scripts = async () => {
 	// Testing
 	setTimeout(async () => {
 		log("Run investors ...");
-		console.time(`Time investors-save-file ${++id5}`);
+		// console.time(`Time investors-save-file ${++id5}`);
 		// await saveInvestorsToFile();
-		console.timeEnd(`Time investors-save-file ${id5}`);
+		// console.timeEnd(`Time investors-save-file ${id5}`);
 		console.time(`Time investors-save-db ${++id6}`);
-		await convertAndSaveInvestorsToDB(id6);
+		convertAndSaveInvestorsToDB(id6);
 		console.timeEnd(`Time investors-save-db ${id6}`);
 	}, 0);
 };
