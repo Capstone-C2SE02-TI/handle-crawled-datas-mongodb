@@ -1,6 +1,7 @@
 import { fs, log } from "../constants/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 import { convertUnixTimestampToNumber } from "../helpers/index.js";
+import { getDateNearTransaction, getOriginalPriceOfToken, getPriceWithDaily, getValueFromPromise } from "./coins.js";
 import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
@@ -61,6 +62,7 @@ const handleEachTransaction = async ({
 		pastPrice: dateNearTransaction["value"],
 		presentDate: presentDate,
 		presentPrice: presentPrice,
+		timeStamp: parseInt(transaction.timeStamp),
 		investorId: investorId,
 		id: id,
 		transactionId: transactionId
@@ -74,7 +76,7 @@ const convertTransactions = async () => {
 		id = 1;
 
 	for (let i = 0; i < investors.length; i++) {
-		let promises = await investors[i].TXs.map(async (transaction) => {
+		let promises = await investors[i].TXs?.map(async (transaction) => {
 			return handleEachTransaction({
 				transaction: transaction,
 				investorId: i + 1,
