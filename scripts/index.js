@@ -100,17 +100,22 @@ const scripts = async () => {
 
 	// Testing
 	setTimeout(async () => {
+		console.time(`Time coins ${++id3}`);
+		await saveCoinsToFile();
+		await saveConvertedCoinCollectionToFile();
+		console.time(`Time coins-save-db ${++id4}`);
+		saveConvertedCoinCollectionToDB(id4);
+		console.timeEnd(`Time coins-save-db ${id4}`);
+		console.timeEnd(`Time coins ${id3}`);
+
 		// console.time(`Time transactions ${++id7}`);
 		// await dropDBMainCollection("transactions");
 		// console.time(`Time transactions-save-file ${++id8}`);
 		// await saveConvertedTransactionsToFile();
 		// console.timeEnd(`Time transactions-save-file ${id8}`);
-		console.time(`Time transactions-save-db ${++id9}`);
+		// console.time(`Time transactions-save-db ${++id9}`);
 		// await saveConvertedTransactionsToDB();
-		for (let i = 210001; i <= 212057; i++) {
-			await DBMainTransactionModel.findOneAndDelete({ transactionId: i });
-		}
-		console.timeEnd(`Time transactions-save-db ${id9}`);
+		// console.timeEnd(`Time transactions-save-db ${id9}`);
 		// console.timeEnd(`Time transactions ${id7}`);
 	}, 0);
 };
