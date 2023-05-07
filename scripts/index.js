@@ -41,6 +41,7 @@ import {
 import { updateMultipleFieldType } from "../functions/blog.js";
 import { dropDBMainCollection } from "../functions/common.js";
 import { deleteFieldsInUsersCollection } from "../functions/index.js";
+import { DBMainTransactionModel } from "../models/index.js";
 let id1 = 0,
 	id2 = 0,
 	id3 = 0,
@@ -48,7 +49,8 @@ let id1 = 0,
 	id5 = 0,
 	id6 = 0,
 	id7 = 0,
-	id8 = 0;
+	id8 = 0,
+	id9 = 0;
 
 /* Update collections data every 10 minutes */
 const scripts = async () => {
@@ -73,7 +75,7 @@ const scripts = async () => {
 	//     console.time(`Time coins-save-db ${++id4}`);
 	//     saveConvertedCoinCollectionToDB(id4);
 	//     console.timeEnd(`Time coins ${id3}`);
-	// }, TWO_MINUTES_SECONDS);
+	// }, TEN_MINUTES_SECONDS);
 
 	// investors
 	// setInterval(async () => {
@@ -100,10 +102,15 @@ const scripts = async () => {
 	setTimeout(async () => {
 		// console.time(`Time transactions ${++id7}`);
 		// await dropDBMainCollection("transactions");
-		console.time(`Time transactions-save-db ${++id8}`);
-		await saveConvertedTransactionsToFile();
+		// console.time(`Time transactions-save-file ${++id8}`);
+		// await saveConvertedTransactionsToFile();
+		// console.timeEnd(`Time transactions-save-file ${id8}`);
+		console.time(`Time transactions-save-db ${++id9}`);
 		// await saveConvertedTransactionsToDB();
-		console.timeEnd(`Time transactions-save-db ${id8}`);
+		for (let i = 210001; i <= 212057; i++) {
+			await DBMainTransactionModel.findOneAndDelete({ transactionId: i });
+		}
+		console.timeEnd(`Time transactions-save-db ${id9}`);
 		// console.timeEnd(`Time transactions ${id7}`);
 	}, 0);
 };

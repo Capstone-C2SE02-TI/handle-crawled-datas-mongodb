@@ -2,9 +2,9 @@ import { fs, log } from "../constants/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 import { convertUnixTimestampToNumber } from "../helpers/index.js";
 import { getDateNearTransaction, getOriginalPriceOfToken, getPriceWithDaily, getValueFromPromise } from "./coins.js";
-import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
+import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
 
 const handleEachTransaction = async ({
 	transaction,
@@ -107,10 +107,13 @@ const saveConvertedTransactionsToFile = async () => {
 	);
 
 	log("Write transactions into file successfully");
-};
+};	
 
+// 413818 transactions: each 1000 trans are executed with 1m33s
+// 195023th transaction has error "MongoServerError: you are over your space quota, using 513 MB of 512 MB"
 const saveConvertedTransactionsToDB = async () => {
-	for (let i = 0; i < transactionsConverted.length; i++) {
+	for (let i = 195023; i < 413818; i++) {
+		// for (let i = 0; i < transactionsConverted.length; i++) {
 		try {
 			await DBMainTransactionModel.create(transactionsConverted[i])
 				.then()
