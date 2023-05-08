@@ -25,13 +25,12 @@ const handleTokensPrices = (coinsPrices) => {
 
 	// 1. DAY
 	let days = {};
-	let currentDay = 20230401;
+	let currentDay = 20230507;
 	// let currentDay = getTodayDay();
 
 	if (hourly) {
 		Object.keys(hourly).forEach((key) => {
 			const cv = convertUnixTimestampToNumber(key.slice(0, 10));
-
 			if (Math.floor(cv / 1000000) == currentDay) {
 				days[key] = hourly[`${key}`];
 			}
@@ -43,7 +42,7 @@ const handleTokensPrices = (coinsPrices) => {
 	// 2. WEEK
 	let weeks = {};
 	let currentDays = [
-		20230326, 20230327, 20230328, 20230329, 20230330, 20230331, 20230401
+		20230501, 20230502, 20230503, 20230504, 20230505, 20230506, 20230507
 	];
 	// let currentDays = getNearest7Days();
 
@@ -92,6 +91,13 @@ const handleTokensPrices = (coinsPrices) => {
 	} else {
 		years = null;
 	}
+
+	log({
+		day: days,
+		week: weeks,
+		month: months,
+		year: years
+	});
 
 	return {
 		day: days,
@@ -189,11 +195,21 @@ const saveConvertedCoinCollectionToFile = async () => {
 const handleUpdateCoin = (start, end, isLog, id4) => {
 	for (let i = start; i < end; i++) {
 		try {
-			DBMainCoinModel.findOneAndUpdate(
-				{ coinId: i + 1 },
-				{ ...coinsConverted[i], updateDate: new Date().toString() }
-			)
-				.lean()
+			// DBMainCoinModel.findOneAndUpdate(
+			// 	{ coinId: i + 1 },
+			// 	{ ...coinsConverted[i], updateDate: new Date().toString() }
+			// )
+			// 	.lean()
+			// 	.then()
+			// 	.catch((error) => {
+			// 		log(`Update coin ${i + 1} in DB failed`);
+			// 		throw new Error(error);
+			// 	});
+
+			DBMainCoinModel.create({
+				...coinsConverted[i],
+				updateDate: new Date().toString()
+			})
 				.then()
 				.catch((error) => {
 					log(`Update coin ${i + 1} in DB failed`);

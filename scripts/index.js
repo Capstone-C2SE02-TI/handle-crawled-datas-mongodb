@@ -38,8 +38,8 @@ import {
 	saveConvertedTransactionsToDB,
 	handleDetailChartTransaction
 } from "../functions/transactions.js";
-import { updateMultipleFieldType } from "../functions/blog.js";
 import { dropDBMainCollection } from "../functions/common.js";
+import { updateMultipleFieldType } from "../functions/blog.js";
 import { deleteFieldsInUsersCollection } from "../functions/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 let id1 = 0,
@@ -51,6 +51,8 @@ let id1 = 0,
 	id7 = 0,
 	id8 = 0,
 	id9 = 0;
+
+import coinsConverted from "../databases/DB_Crawl/coins-converted.json" assert { type: "json" };
 
 /* Update collections data every 10 minutes */
 const scripts = async () => {
@@ -101,22 +103,12 @@ const scripts = async () => {
 	// Testing
 	setTimeout(async () => {
 		console.time(`Time coins ${++id3}`);
-		await saveCoinsToFile();
-		await saveConvertedCoinCollectionToFile();
+		// await saveCoinsToFile();
+		// await saveConvertedCoinCollectionToFile();
 		console.time(`Time coins-save-db ${++id4}`);
-		saveConvertedCoinCollectionToDB(id4);
+		// saveConvertedCoinCollectionToDB(id4);
 		console.timeEnd(`Time coins-save-db ${id4}`);
 		console.timeEnd(`Time coins ${id3}`);
-
-		// console.time(`Time transactions ${++id7}`);
-		// await dropDBMainCollection("transactions");
-		// console.time(`Time transactions-save-file ${++id8}`);
-		// await saveConvertedTransactionsToFile();
-		// console.timeEnd(`Time transactions-save-file ${id8}`);
-		// console.time(`Time transactions-save-db ${++id9}`);
-		// await saveConvertedTransactionsToDB();
-		// console.timeEnd(`Time transactions-save-db ${id9}`);
-		// console.timeEnd(`Time transactions ${id7}`);
 	}, 0);
 };
 

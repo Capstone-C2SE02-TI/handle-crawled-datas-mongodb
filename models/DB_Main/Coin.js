@@ -22,13 +22,13 @@ const CoinSchema = new mongoose.Schema(
 		name: {
 			type: String,
 			trim: true,
-			required: true,
+			// required: true,
 			default: ""
 		},
 		symbol: {
 			type: String,
 			trim: true,
-			required: true
+			// required: true
 		},
 		contractAddress: {
 			type: String,
