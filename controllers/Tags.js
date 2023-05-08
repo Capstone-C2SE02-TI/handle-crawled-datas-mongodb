@@ -1,17 +1,21 @@
-import { updateTags } from "../services/tags.js";
+import { saveCategoriesToFile, saveCategoriesToDB } from "../services/tags.js";
+import { dropDBMainCollection } from "../services/index.js";
 
 function TagsController() {
 	this.updateTags = async (req, res, next) => {
-		const executedTime = await updateTags();
-		executedTime
+		await saveCategoriesToFile();
+		await dropDBMainCollection("tags");
+		await saveCategoriesToDB();
+		
+		true
 			? res.status(200).json({
 					message: "successfully",
-					executedTime: executedTime,
+					// executedTime: executedTime,
 					error: null
 			  })
 			: res.status(400).json({
 					message: "failed",
-					executedTime: null,
+					// executedTime: null,
 					error: null
 			  });
 	};

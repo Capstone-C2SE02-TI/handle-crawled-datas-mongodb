@@ -1,17 +1,22 @@
-import { updateInvestors } from "../services/investors.js";
+import {
+	saveInvestorsToFile,
+	convertAndSaveInvestorsToDB
+} from "../services/investors.js";
 
 function InvestorsController() {
 	this.updateInvestors = async (req, res, next) => {
-		const executedTime = await updateInvestors();
-		executedTime
+		await saveInvestorsToFile();
+		await convertAndSaveInvestorsToDB(id6);
+		
+		true
 			? res.status(200).json({
 					message: "successfully",
-					executedTime: executedTime,
+					// executedTime: executedTime,
 					error: null
 			  })
 			: res.status(400).json({
 					message: "failed",
-					executedTime: null,
+					// executedTime: null,
 					error: null
 			  });
 	};

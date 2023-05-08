@@ -1,17 +1,20 @@
-import { updateTransactions } from "../services/transactions.js";
+import { saveConvertedTransactionsToDB } from "../services/transactions.js";
+import { dropDBMainCollection } from "../services/index.js";
 
 function TransactionsController() {
 	this.updateTransactions = async (req, res, next) => {
-		const executedTime = await updateTransactions();
-		executedTime
+		await dropDBMainCollection("transactions");
+		await saveConvertedTransactionsToDB();
+		
+		true
 			? res.status(200).json({
 					message: "successfully",
-					executedTime: executedTime,
+					// executedTime: executedTime,
 					error: null
 			  })
 			: res.status(400).json({
 					message: "failed",
-					executedTime: null,
+					// executedTime: null,
 					error: null
 			  });
 	};
