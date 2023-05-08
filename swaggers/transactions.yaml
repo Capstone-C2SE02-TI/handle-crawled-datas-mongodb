@@ -1,0 +1,111 @@
+# Online Swagger yaml file formatter: https://editor.swagger.io/
+
+/user/profile/update:
+    post:
+        summary: Update user profile
+        tags:
+            - User
+        parameters:
+            - in: query
+              name: walletAddress
+              schema:
+                  type: string
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                            - fullName
+                            - email
+                            - phoneNumber
+                            - website
+                            - avatar
+                        properties:
+                            fullName:
+                                type: string
+                            email:
+                                type: string
+                            phoneNumber:
+                                type: string
+                            website:
+                                type: string
+                            avatar:
+                                type: string
+                        example:
+                            fullName: "Huynh Ngoc Hieu"
+                            email: "hieuhn@gmail.com"
+                            phoneNumber: "0366871673"
+                            website: "https://www.britannica.com/biography/Elon-Musk"
+                            avatar: "https://res.cloudinary.com/dhzbsq7fj/image/upload/v1643101647/avatardefault_92824_aifry9.png"
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed
+
+/user/profile:
+    get:
+        summary: Get user profile
+        tags:
+            - User
+        parameters:
+            - in: query
+              name: walletAddress
+              schema:
+                  type: string
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed
+
+/user/upgrade-premium-account:
+    post:
+        summary: Upgrade premium account
+        tags:
+            - User
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                            - walletAddress
+                        properties:
+                            walletAddress:
+                                type: string
+                        example:
+                            walletAddress: "0x...."
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed
+
+/user/follow-shark-wallet:
+    post:
+        summary: Follow shark wallet
+        tags:
+            - User
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                            - walletAddress
+                            - sharkId
+                        properties:
+                            walletAddress:
+                                type: string
+                            sharkId:
+                                type: string
+                        example:
+                            walletAddress: "0x..."
+                            sharkId: "1"
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed

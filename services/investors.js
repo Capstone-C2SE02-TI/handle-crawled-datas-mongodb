@@ -19,7 +19,7 @@ import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors-converted.json" assert { type: "json" };
 
-const getListCryptosOfShark = async (coins) => {
+export const getListCryptosOfShark = async (coins) => {
 	if (!coins) return { cryptos: null, totalAssets: "" };
 
 	let cryptosList = Object.keys(coins).map(async (coinSymbol) => {
@@ -60,7 +60,7 @@ const getListCryptosOfShark = async (coins) => {
 	return { cryptos: cryptos, totalAssets: totalAssets.toString() };
 };
 
-const getFollowersOldDatas = async () => {
+export const getFollowersOldDatas = async () => {
 	// Retrieve docs has followers != []
 	const followers = await DBMainInvestorModel.find({
 		followers: { $exists: true, $not: { $size: 0 } }
@@ -71,7 +71,7 @@ const getFollowersOldDatas = async () => {
 	return followers;
 };
 
-const calculateInvestorPercent24h = (snapshots) => {
+export const calculateInvestorPercent24h = (snapshots) => {
 	if (!snapshots) return 0;
 
 	const snapshotsArr1 = Object.entries(snapshots).map((element) => [
@@ -94,7 +94,7 @@ const calculateInvestorPercent24h = (snapshots) => {
 	return result || 0;
 };
 
-const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
+export const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
 	let totalValueIn = new BigNumber(0);
 	let totalValueOut = new BigNumber(0);
 
@@ -120,7 +120,7 @@ const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
 };
 
 // [Not done yet]
-const handleFormatTradeTransactionDataCrawl = async (investor) => {
+export const handleFormatTradeTransactionDataCrawl = async (investor) => {
 	let historyDatas = [];
 	const sharkWallet = investor._id;
 	const symbols = [
@@ -153,7 +153,7 @@ const handleFormatTradeTransactionDataCrawl = async (investor) => {
 };
 
 // [Not done yet]
-const handleFormatTradeTransactionDataMain = async (investor) => {
+export const handleFormatTradeTransactionDataMain = async (investor) => {
 	let historyDatas = [];
 	const sharkWallet = investor.walletAddress;
 	const symbols = [
@@ -192,7 +192,7 @@ const handleFormatTradeTransactionDataMain = async (investor) => {
 };
 
 // [Not done yet]
-const handleTradeTransaction = (transactions) => {
+export const handleTradeTransaction = (transactions) => {
 	if (!transactions)
 		return {
 			week: null,
@@ -242,7 +242,7 @@ const handleTradeTransaction = (transactions) => {
 };
 
 // [Not done yet]
-const updateInvestorTradeTransaction = async (coinSymbol) => {
+export const updateInvestorTradeTransaction = async (coinSymbol) => {
 	const coin = await DBMainCoinModel.findOne({
 		symbol: coinSymbol.toLowerCase()
 	})
@@ -260,7 +260,7 @@ const updateInvestorTradeTransaction = async (coinSymbol) => {
 };
 
 // [Not done yet]
-const updateInvestorHistoryDatasTest = async () => {
+export const updateInvestorHistoryDatasTest = async () => {
 	for (let i = 0; i < investors.length; i++) {
 		const historyDatasTest = await handleFormatTradeTransactionDataCrawl(
 			investors[i]
@@ -282,7 +282,7 @@ const updateInvestorHistoryDatasTest = async () => {
 	log("Update succesfully");
 };
 
-const saveInvestorsToFile = async () => {
+export const saveInvestorsToFile = async () => {
 	const investors = await DBCrawlInvestorModel.find({
 		is_shark: true
 	});
@@ -301,7 +301,7 @@ const saveInvestorsToFile = async () => {
 	log("Write investors into file successfully");
 };
 
-const handleUpdateInvestor = (i, investor) => {
+export const handleUpdateInvestor = (i, investor) => {
 	try {
 		DBMainInvestorModel.findOneAndUpdate(
 			{ sharkId: i + 1 },
@@ -330,7 +330,7 @@ const handleUpdateInvestor = (i, investor) => {
 	}
 };
 
-const handleConvertInvestor = async (start, end, isLog, id6) => {
+export const handleConvertInvestor = async (start, end, isLog, id6) => {
 	const _followers = await getFollowersOldDatas();
 
     for (let i = start; i < end; i++) {
@@ -372,8 +372,8 @@ const handleConvertInvestor = async (start, end, isLog, id6) => {
 	}
 };
 
-// 677 sharks
-const convertAndSaveInvestorsToDB = async (id6) => {
+// 886 sharks
+export const convertAndSaveInvestorsToDB = async (id6) => {
 	// for (let i = 0; i < 677; i++) {
 	// 	// for (let i = 0; i < investors.length; i++) {
 	// 	if (i == investors.length - 1) {
@@ -401,7 +401,7 @@ const convertAndSaveInvestorsToDB = async (id6) => {
 		.catch((error) => log(`Error during conversion: ${error}`));
 };
 
-const saveConvertedInvestorsToDB = async () => {
+export const saveConvertedInvestorsToDB = async () => {
 	for (let i = 0; i < investorsConverted.length; i++) {
 		try {
 			await DBMainInvestorModel.create(investorsConverted[i])
@@ -417,19 +417,4 @@ const saveConvertedInvestorsToDB = async () => {
 	}
 
 	log("Write investors in DB successfully");
-};
-
-export {
-	getListCryptosOfShark,
-	calculateInvestorPercent24h,
-	handleFormatTradeTransactionDataCrawl,
-	handleFormatTradeTransactionDataMain,
-	handleTradeTransaction,
-	updateInvestorTradeTransaction,
-	updateInvestorHistoryDatasTest,
-	saveInvestorsToFile,
-	convertAndSaveInvestorsToDB,
-	saveConvertedInvestorsToDB,
-	calculateTotalValueInOut,
-	getFollowersOldDatas
 };

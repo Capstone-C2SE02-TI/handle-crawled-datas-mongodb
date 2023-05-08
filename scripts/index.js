@@ -38,9 +38,7 @@ import {
 	saveConvertedTransactionsToDB,
 	handleDetailChartTransaction
 } from "../functions/transactions.js";
-import { dropDBMainCollection } from "../functions/common.js";
-import { updateMultipleFieldType } from "../functions/blog.js";
-import { deleteFieldsInUsersCollection } from "../functions/index.js";
+import { dropDBMainCollection } from "../functions/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 let id1 = 0,
 	id2 = 0,
@@ -52,9 +50,6 @@ let id1 = 0,
 	id8 = 0,
 	id9 = 0;
 
-import coinsConverted from "../databases/DB_Crawl/coins-converted.json" assert { type: "json" };
-
-/* Update collections data every 10 minutes */
 const scripts = async () => {
 	// tags
 	// setInterval(async () => {
@@ -67,7 +62,6 @@ const scripts = async () => {
 	//     console.timeEnd(`Time tags-save-db ${id2}`);
 	//     console.timeEnd(`Time tags ${id1}`);
 	// }, TEN_MINUTES_SECONDS);
-
 	// coins
 	// setInterval(async () => {
 	//     log("Run coins ...");
@@ -78,7 +72,6 @@ const scripts = async () => {
 	//     saveConvertedCoinCollectionToDB(id4);
 	//     console.timeEnd(`Time coins ${id3}`);
 	// }, TEN_MINUTES_SECONDS);
-
 	// investors
 	// setInterval(async () => {
 	//     log("Run investors ...");
@@ -88,7 +81,6 @@ const scripts = async () => {
 	//     console.time(`Time investors-save-db ${++id6}`);
 	//     await convertAndSaveInvestorsToDB(id6);
 	// }, TEN_MINUTES_SECONDS);
-
 	// transactions
 	// setInterval(async () => {
 	//     log("Run transactions ...");
@@ -99,17 +91,6 @@ const scripts = async () => {
 	//     console.timeEnd(`Time transactions-save-db ${id8}`);
 	//     console.timeEnd(`Time transactions ${id7}`);
 	// }, TEN_MINUTES_SECONDS);
-
-	// Testing
-	setTimeout(async () => {
-		console.time(`Time coins ${++id3}`);
-		// await saveCoinsToFile();
-		// await saveConvertedCoinCollectionToFile();
-		console.time(`Time coins-save-db ${++id4}`);
-		// saveConvertedCoinCollectionToDB(id4);
-		console.timeEnd(`Time coins-save-db ${id4}`);
-		console.timeEnd(`Time coins ${id3}`);
-	}, 0);
 };
 
 export default scripts;

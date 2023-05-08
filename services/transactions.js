@@ -1,12 +1,17 @@
 import { fs, log } from "../constants/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 import { convertUnixTimestampToNumber } from "../helpers/index.js";
-import { getDateNearTransaction, getOriginalPriceOfToken, getPriceWithDaily, getValueFromPromise } from "./coins.js";
+import {
+	getDateNearTransaction,
+	getOriginalPriceOfToken,
+	getPriceWithDaily,
+	getValueFromPromise
+} from "./coins.js";
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
 
-const handleEachTransaction = async ({
+export const handleEachTransaction = async ({
 	transaction,
 	investorId,
 	id,
@@ -71,7 +76,7 @@ const handleEachTransaction = async ({
 	return transaction;
 };
 
-const convertTransactions = async () => {
+export const convertTransactions = async () => {
 	let transactionList = [],
 		id = 1;
 
@@ -92,7 +97,7 @@ const convertTransactions = async () => {
 	return transactionList;
 };
 
-const saveConvertedTransactionsToFile = async () => {
+export const saveConvertedTransactionsToFile = async () => {
 	const datas = await convertTransactions();
 
 	await fs.writeFileAsync(
@@ -107,12 +112,11 @@ const saveConvertedTransactionsToFile = async () => {
 	);
 
 	log("Write transactions into file successfully");
-};	
+};
 
-// 413818 transactions: each 1000 trans are executed with 1m33s
-// 195023th transaction has error "MongoServerError: you are over your space quota, using 513 MB of 512 MB"
-const saveConvertedTransactionsToDB = async () => {
-	for (let i = 195023; i < 413818; i++) {
+// 194998 transactions: each 1000 trans are executed with 1m33s
+export const saveConvertedTransactionsToDB = async () => {
+	for (let i = 0; i < 194998; i++) {
 		// for (let i = 0; i < transactionsConverted.length; i++) {
 		try {
 			await DBMainTransactionModel.create(transactionsConverted[i])
@@ -130,7 +134,7 @@ const saveConvertedTransactionsToDB = async () => {
 	log("Write transactions in DB successfully");
 };
 
-const handleDetailChartTransaction = async () => {
+export const handleDetailChartTransaction = async () => {
 	let sharks = [];
 	let shark = {};
 
@@ -170,12 +174,4 @@ const handleDetailChartTransaction = async () => {
 	});
 
 	return sharks;
-};
-
-export {
-	handleEachTransaction,
-	convertTransactions,
-	saveConvertedTransactionsToFile,
-	saveConvertedTransactionsToDB,
-	handleDetailChartTransaction
 };
