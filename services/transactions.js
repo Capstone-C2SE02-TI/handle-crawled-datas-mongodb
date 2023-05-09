@@ -10,7 +10,7 @@ import {
 import investors_ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
-import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
+import transactionsConverted from "../databases/DB_Crawl/transactions-converted1.json" assert { type: "json" };
 
 export const handleEachTransaction = async ({
 	transaction,
@@ -83,7 +83,7 @@ export const convertTransactions = async () => {
 	let transactionList = [],
 		id = 1;
 
-	for (let i = 0; i < 20; i++) {
+	for (let i = 0; i < 50; i++) {
 		// for (let i = 0; i < investors.length; i++) {
 		let promises = await investors[i].TXs?.map(async (transaction) => {
 			return handleEachTransaction({
@@ -119,9 +119,9 @@ export const saveConvertedTransactionsToFile = async () => {
 	log("Write transactions into file successfully");
 };
 
-// 194998 transactions: each 1000 trans are executed with 1m33s
+// 65000 transactions: each 1000 trans are executed with 1m33s
 export const saveConvertedTransactionsToDB = async () => {
-	for (let i = 0; i < 194998; i++) {
+	for (let i = 0; i < 65000; i++) {
 		// for (let i = 0; i < transactionsConverted.length; i++) {
 		try {
 			await DBMainTransactionModel.create(transactionsConverted[i])

@@ -79,7 +79,7 @@ const scripts = async () => {
 	//     await saveInvestorsToFile();
 	//     console.timeEnd(`Time investors-save-file ${id5}`);
 	//     console.time(`Time investors-save-db ${++id6}`);
-	    // await convertAndSaveInvestorsToDB(id6);
+	//     await convertAndSaveInvestorsToDB(id6);
 	// }, TEN_MINUTES_SECONDS);
 	// transactions
 	// setInterval(async () => {
@@ -87,7 +87,7 @@ const scripts = async () => {
 	//     console.time(`Time transactions ${++id7}`);
 	//     await dropDBMainCollection("transactions");
 	//     console.time(`Time transactions-save-db ${++id8}`);
-	await saveConvertedTransactionsToFile();
+	//	   await saveConvertedTransactionsToFile();
 	// 	   await saveConvertedTransactionsToDB();
 	//     console.timeEnd(`Time transactions-save-db ${id8}`);
 	//     console.timeEnd(`Time transactions ${id7}`);
