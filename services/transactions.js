@@ -7,6 +7,7 @@ import {
 	getPriceWithDaily,
 	getValueFromPromise
 } from "./coins.js";
+import investors_ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
@@ -15,7 +16,8 @@ export const handleEachTransaction = async ({
 	transaction,
 	investorId,
 	id,
-	transactionId
+	transactionId,
+	walletAddress
 }) => {
 	let numberOfTokens =
 		Number(transaction["value"]) / 10 ** Number(transaction["tokenDecimal"]);
@@ -70,7 +72,8 @@ export const handleEachTransaction = async ({
 		timeStamp: parseInt(transaction.timeStamp),
 		investorId: investorId,
 		id: id,
-		transactionId: transactionId
+		transactionId: transactionId,
+		walletAddress: walletAddress
 	});
 
 	return transaction;
@@ -80,13 +83,15 @@ export const convertTransactions = async () => {
 	let transactionList = [],
 		id = 1;
 
-	for (let i = 0; i < investors.length; i++) {
+	for (let i = 0; i < 20; i++) {
+		// for (let i = 0; i < investors.length; i++) {
 		let promises = await investors[i].TXs?.map(async (transaction) => {
 			return handleEachTransaction({
 				transaction: transaction,
 				investorId: i + 1,
 				id: id,
-				transactionId: id++
+				transactionId: id++,
+				walletAddress: investors_ids[i].id
 			});
 		});
 
@@ -101,7 +106,7 @@ export const saveConvertedTransactionsToFile = async () => {
 	const datas = await convertTransactions();
 
 	await fs.writeFileAsync(
-		`./databases/DB_Crawl/transactions-converted.json`,
+		`./databases/DB_Crawl/transactions-converted1.json`,
 		JSON.stringify(datas),
 		(error) => {
 			if (error) {

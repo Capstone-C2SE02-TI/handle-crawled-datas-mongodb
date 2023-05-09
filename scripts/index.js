@@ -3,7 +3,7 @@ import {
 	TWO_MINUTES_SECONDS,
 	TEN_MINUTES_SECONDS
 } from "../constants/index.js";
-import { saveCategoriesToFile, saveCategoriesToDB } from "../functions/tags.js";
+import { saveCategoriesToFile, saveCategoriesToDB } from "../services/tags.js";
 import {
 	handleTokensPrices,
 	saveCoinsToFile,
@@ -16,7 +16,7 @@ import {
 	getPriceWithDaily,
 	handleInvestorTransactionHistory,
 	getCoinOrTokenDetails
-} from "../functions/coins.js";
+} from "../services/coins.js";
 import {
 	getListCryptosOfShark,
 	calculateInvestorPercent24h,
@@ -30,15 +30,15 @@ import {
 	saveConvertedInvestorsToDB,
 	calculateTotalValueInOut,
 	getFollowersOldDatas
-} from "../functions/investors.js";
+} from "../services/investors.js";
 import {
 	handleEachTransaction,
 	convertTransactions,
 	saveConvertedTransactionsToFile,
 	saveConvertedTransactionsToDB,
 	handleDetailChartTransaction
-} from "../functions/transactions.js";
-import { dropDBMainCollection } from "../functions/index.js";
+} from "../services/transactions.js";
+import { dropDBMainCollection } from "../services/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 let id1 = 0,
 	id2 = 0,
@@ -79,7 +79,7 @@ const scripts = async () => {
 	//     await saveInvestorsToFile();
 	//     console.timeEnd(`Time investors-save-file ${id5}`);
 	//     console.time(`Time investors-save-db ${++id6}`);
-	//     await convertAndSaveInvestorsToDB(id6);
+	    // await convertAndSaveInvestorsToDB(id6);
 	// }, TEN_MINUTES_SECONDS);
 	// transactions
 	// setInterval(async () => {
@@ -87,7 +87,8 @@ const scripts = async () => {
 	//     console.time(`Time transactions ${++id7}`);
 	//     await dropDBMainCollection("transactions");
 	//     console.time(`Time transactions-save-db ${++id8}`);
-	//     await saveConvertedTransactionsToDB();
+	await saveConvertedTransactionsToFile();
+	// 	   await saveConvertedTransactionsToDB();
 	//     console.timeEnd(`Time transactions-save-db ${id8}`);
 	//     console.timeEnd(`Time transactions ${id7}`);
 	// }, TEN_MINUTES_SECONDS);

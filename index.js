@@ -17,6 +17,9 @@ app.use(express.json());
 
 routing(app);
 
+import scripts  from "./scripts/index.js";
+scripts();
+
 app.listen(PORT, () => {
 	console.log(`Server is listening at ${DEVELOPMENT_URL}`);
 	console.log(`API Documentation: ${SWAGGER_URL}`);
