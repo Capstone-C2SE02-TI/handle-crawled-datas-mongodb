@@ -1,16 +1,23 @@
 import { fs, log } from "../constants/index.js";
 import { DBMainTransactionModel } from "../models/index.js";
 import { convertUnixTimestampToNumber } from "../helpers/index.js";
-import { getDateNearTransaction, getOriginalPriceOfToken, getPriceWithDaily, getValueFromPromise } from "./coins.js";
+import {
+	getDateNearTransaction,
+	getOriginalPriceOfToken,
+	getPriceWithDaily,
+	getValueFromPromise
+} from "./coins.js";
+import investors_ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
-import transactionsConverted from "../databases/DB_Crawl/transactions-converted.json" assert { type: "json" };
+import transactionsConverted from "../databases/DB_Crawl/transactions-converted1.json" assert { type: "json" };
 
-const handleEachTransaction = async ({
+export const handleEachTransaction = async ({
 	transaction,
 	investorId,
 	id,
-	transactionId
+	transactionId,
+	walletAddress
 }) => {
 	let numberOfTokens =
 		Number(transaction["value"]) / 10 ** Number(transaction["tokenDecimal"]);
@@ -65,23 +72,26 @@ const handleEachTransaction = async ({
 		timeStamp: parseInt(transaction.timeStamp),
 		investorId: investorId,
 		id: id,
-		transactionId: transactionId
+		transactionId: transactionId,
+		walletAddress: walletAddress
 	});
 
 	return transaction;
 };
 
-const convertTransactions = async () => {
+export const convertTransactions = async () => {
 	let transactionList = [],
 		id = 1;
 
-	for (let i = 0; i < investors.length; i++) {
+	for (let i = 0; i < 50; i++) {
+		// for (let i = 0; i < investors.length; i++) {
 		let promises = await investors[i].TXs?.map(async (transaction) => {
 			return handleEachTransaction({
 				transaction: transaction,
 				investorId: i + 1,
 				id: id,
-				transactionId: id++
+				transactionId: id++,
+				walletAddress: investors_ids[i].id
 			});
 		});
 
@@ -92,11 +102,11 @@ const convertTransactions = async () => {
 	return transactionList;
 };
 
-const saveConvertedTransactionsToFile = async () => {
+export const saveConvertedTransactionsToFile = async () => {
 	const datas = await convertTransactions();
 
 	await fs.writeFileAsync(
-		`./databases/DB_Crawl/transactions-converted.json`,
+		`./databases/DB_Crawl/transactions-converted1.json`,
 		JSON.stringify(datas),
 		(error) => {
 			if (error) {
@@ -107,12 +117,11 @@ const saveConvertedTransactionsToFile = async () => {
 	);
 
 	log("Write transactions into file successfully");
-};	
+};
 
-// 413818 transactions: each 1000 trans are executed with 1m33s
-// 195023th transaction has error "MongoServerError: you are over your space quota, using 513 MB of 512 MB"
-const saveConvertedTransactionsToDB = async () => {
-	for (let i = 195023; i < 413818; i++) {
+// 65000 transactions: each 1000 trans are executed with 1m33s
+export const saveConvertedTransactionsToDB = async () => {
+	for (let i = 0; i < 65000; i++) {
 		// for (let i = 0; i < transactionsConverted.length; i++) {
 		try {
 			await DBMainTransactionModel.create(transactionsConverted[i])
@@ -130,7 +139,7 @@ const saveConvertedTransactionsToDB = async () => {
 	log("Write transactions in DB successfully");
 };
 
-const handleDetailChartTransaction = async () => {
+export const handleDetailChartTransaction = async () => {
 	let sharks = [];
 	let shark = {};
 
@@ -170,12 +179,4 @@ const handleDetailChartTransaction = async () => {
 	});
 
 	return sharks;
-};
-
-export {
-	handleEachTransaction,
-	convertTransactions,
-	saveConvertedTransactionsToFile,
-	saveConvertedTransactionsToDB,
-	handleDetailChartTransaction
 };

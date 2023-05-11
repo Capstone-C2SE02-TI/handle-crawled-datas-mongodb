@@ -3,13 +3,17 @@ import { log } from "console";
 import BigNumber from "bignumber.js";
 import Promise from "bluebird";
 import fsModule from "fs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const fs = Promise.promisifyAll(fsModule);
 const ObjectId = Types.ObjectId;
-
 const TWO_MINUTES_SECONDS = 2 * 60 * 1000;
 const TEN_MINUTES_SECONDS = 10 * 60 * 1000;
-
+const PORT = process.env.PORT || 8000;
+const DEVELOPMENT_URL = `http://localhost:${PORT}/`;
+const SWAGGER_URL = `http://localhost:${PORT}/api-docs/`;
 const DEFAULT_USER_AVATARS = [
 	"https://firebasestorage.googleapis.com/v0/b/ego-project-e6a03.appspot.com/o/TI-default-avatars%2F1.png?alt=media&token=d892f937-d3c3-4de4-a0ed-a16cd0e98fc7",
 	"https://firebasestorage.googleapis.com/v0/b/ego-project-e6a03.appspot.com/o/TI-default-avatars%2F2.png?alt=media&token=93ed3bf1-67aa-45ae-a7d7-b5a96e6a06d5",
@@ -40,5 +44,8 @@ export {
 	ObjectId,
 	TWO_MINUTES_SECONDS,
 	TEN_MINUTES_SECONDS,
+	PORT,
+	DEVELOPMENT_URL,
+	SWAGGER_URL,
 	DEFAULT_USER_AVATARS
 };

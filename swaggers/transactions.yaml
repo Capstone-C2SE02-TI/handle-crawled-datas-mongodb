@@ -1,0 +1,10 @@
+/transactions/update:
+    post:
+        summary: Update transactions data
+        tags:
+            - Transactions
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed

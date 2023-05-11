@@ -1,0 +1,10 @@
+/coins/update:
+    post:
+        summary: Update coins data
+        tags:
+            - Coins
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed

@@ -1,0 +1,10 @@
+/investors/update:
+    post:
+        summary: Update investors data
+        tags:
+            - Investors
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed

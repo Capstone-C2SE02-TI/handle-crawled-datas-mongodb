@@ -12,7 +12,7 @@ import coins from "../databases/DB_Crawl/coins.json" assert { type: "json" };
 import coinsConverted from "../databases/DB_Crawl/coins-converted.json" assert { type: "json" };
 
 // [Need comment-uncomment 4 below function calls]
-const handleTokensPrices = (coinsPrices) => {
+export const handleTokensPrices = (coinsPrices) => {
 	if (!coinsPrices)
 		return {
 			day: null,
@@ -107,7 +107,7 @@ const handleTokensPrices = (coinsPrices) => {
 	};
 };
 
-const saveCoinsToFile = async () => {
+export const saveCoinsToFile = async () => {
 	const datas = await DBCrawlCoinModel.find({}).lean();
 
 	await fs.writeFileAsync(
@@ -124,7 +124,7 @@ const saveCoinsToFile = async () => {
 	log("Write coins into file successfully");
 };
 
-const convertCoinsCollection = async () => {
+export const convertCoinsCollection = async () => {
 	let coinsList = [];
 
 	for (let i = 0; i < coins.length; i++) {
@@ -175,7 +175,7 @@ const convertCoinsCollection = async () => {
 	return coinsList;
 };
 
-const saveConvertedCoinCollectionToFile = async () => {
+export const saveConvertedCoinCollectionToFile = async () => {
 	const datas = await convertCoinsCollection();
 
 	await fs.writeFileAsync(
@@ -192,29 +192,29 @@ const saveConvertedCoinCollectionToFile = async () => {
 	log("Write coins into file successfully");
 };
 
-const handleUpdateCoin = (start, end, isLog, id4) => {
+export const handleUpdateCoin = (start, end, isLog, id4) => {
 	for (let i = start; i < end; i++) {
 		try {
-			// DBMainCoinModel.findOneAndUpdate(
-			// 	{ coinId: i + 1 },
-			// 	{ ...coinsConverted[i], updateDate: new Date().toString() }
-			// )
-			// 	.lean()
-			// 	.then()
-			// 	.catch((error) => {
-			// 		log(`Update coin ${i + 1} in DB failed`);
-			// 		throw new Error(error);
-			// 	});
-
-			DBMainCoinModel.create({
-				...coinsConverted[i],
-				updateDate: new Date().toString()
-			})
+			DBMainCoinModel.findOneAndUpdate(
+				{ coinId: i + 1 },
+				{ ...coinsConverted[i], updateDate: new Date().toString() }
+			)
+				.lean()
 				.then()
 				.catch((error) => {
 					log(`Update coin ${i + 1} in DB failed`);
 					throw new Error(error);
 				});
+
+			// DBMainCoinModel.create({
+			// 	...coinsConverted[i],
+			// 	updateDate: new Date().toString()
+			// })
+			// 	.then()
+			// 	.catch((error) => {
+			// 		log(`Update coin ${i + 1} in DB failed`);
+			// 		throw new Error(error);
+			// 	});
 
 			if (isLog && i == end - 1) console.timeEnd(`Time coins-save-db ${id4}`);
 		} catch (error) {
@@ -225,7 +225,7 @@ const handleUpdateCoin = (start, end, isLog, id4) => {
 };
 
 // [Number of threads: 186 docs / 10 = 18 threads]
-const saveConvertedCoinCollectionToDB = (id4) => {
+export const saveConvertedCoinCollectionToDB = (id4) => {
 	let len = coinsConverted.length,
 		limit = Math.floor(len / 10),
 		jump = 10,
@@ -245,11 +245,11 @@ const saveConvertedCoinCollectionToDB = (id4) => {
 	log("Update coins in DB successfully");
 };
 
-const getValueFromPromise = async (promiseValue) => {
+export const getValueFromPromise = async (promiseValue) => {
 	return await Promise.all(promiseValue);
 };
 
-const getOriginalPriceOfToken = async (tokenSymbol) => {
+export const getOriginalPriceOfToken = async (tokenSymbol) => {
 	const token = await DBMainCoinModel.findOne({
 		symbol: tokenSymbol.toLowerCase()
 	})
@@ -259,7 +259,7 @@ const getOriginalPriceOfToken = async (tokenSymbol) => {
 	return token?.originalPrices || null;
 };
 
-const getDateNearTransaction = (dateList, dateTransaction) => {
+export const getDateNearTransaction = (dateList, dateTransaction) => {
 	let datePricesTokenCut = dateList.map((date) => {
 		return date["date"].slice(0, 10);
 	});
@@ -309,7 +309,7 @@ const getDateNearTransaction = (dateList, dateTransaction) => {
 		: dateList[positionDate + 1];
 };
 
-const getPriceWithDaily = (dailyPrice, dateTransaction) => {
+export const getPriceWithDaily = (dailyPrice, dateTransaction) => {
 	if (typeof dailyPrice !== "undefined") {
 		dailyPrice = Object.keys(dailyPrice).map((unixDate) => {
 			let date = convertUnixTimestampToNumber(unixDate);
@@ -334,7 +334,7 @@ const getPriceWithDaily = (dailyPrice, dateTransaction) => {
 	return { date: "none", value: 0 };
 };
 
-const handleInvestorTransactionHistory = async (transactions) => {
+export const handleInvestorTransactionHistory = async (transactions) => {
 	let promises = await transactions.map(async (transaction) => {
 		let numberOfTokens =
 			Number(transaction["value"]) / 10 ** Number(transaction["tokenDecimal"]);
@@ -397,7 +397,7 @@ const handleInvestorTransactionHistory = async (transactions) => {
 	return await getValueFromPromise(promises);
 };
 
-const getCoinOrTokenDetails = async (coinSymbol) => {
+export const getCoinOrTokenDetails = async (coinSymbol) => {
 	const coinOrToken = await DBMainCoinModel.findOne({
 		symbol: coinSymbol.toLowerCase()
 	})
@@ -405,18 +405,4 @@ const getCoinOrTokenDetails = async (coinSymbol) => {
 		.lean();
 
 	return coinOrToken || {};
-};
-
-export {
-	handleTokensPrices,
-	saveCoinsToFile,
-	convertCoinsCollection,
-	saveConvertedCoinCollectionToFile,
-	saveConvertedCoinCollectionToDB,
-	getValueFromPromise,
-	getOriginalPriceOfToken,
-	getDateNearTransaction,
-	getPriceWithDaily,
-	handleInvestorTransactionHistory,
-	getCoinOrTokenDetails
 };

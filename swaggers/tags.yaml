@@ -1,0 +1,10 @@
+/tags/update:
+    post:
+        summary: Update tags data
+        tags:
+            - Tags
+        responses:
+            200:
+                description: Successfully
+            400:
+                description: Failed
