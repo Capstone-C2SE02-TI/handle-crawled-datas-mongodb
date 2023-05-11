@@ -18,7 +18,8 @@ import { getNearest7Days, getThisMonthYear } from "../helpers/index.js";
 import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors-converted.json" assert { type: "json" };
-import investorsDB from "../databases/BACKUP/investors.json" assert { type: "json" };
+import investorsDB from "../databases/BACKUP/investors_latest.json" assert { type: "json" };
+import investorsConverted0 from "../databases/DB_Main/investors-converted0.json" assert { type: "json" };
 
 export const getListCryptosOfShark = async (coins) => {
 	if (!coins) return { cryptos: null, totalAssets: "" };
@@ -424,23 +425,23 @@ export const saveConvertedInvestorsToDB = async () => {
 
 export const updateTransactionsHistorySharkId = async () => {
 	let investorList = [];
-	for (let i = 0; i < 1; i++) {
-		// for (let i = 0; i < investorsDB.length; i++) {
-		let transactionHistory = [];
+
+	for (let i = 0; i < investorsDB.length; i++) {
+		let transactionsHistory = [];
 		for (let j = 0; j < investorsDB[i].transactionsHistory.length; j++) {
-			transactionHistory.push({
-				...investorsDB[i].transactionsHistory[j],
-				sharkId: investorsDB[i].sharkId
-			});
+			investorsDB[i].transactionsHistory[j]["sharkId"] = investorsDB[i].sharkId;
+			transactionsHistory.push(investorsDB[i].transactionsHistory[j]);
 		}
-		investorList.push({ ...investorsDB[0], transactionHistory });
+		investorsDB[i]["transactionsHistory"] = transactionsHistory;
+		investorList.push(investorsDB[i]);
 	}
+
 	await fs.writeFileAsync(
-		`./databases/DB_Main/investors-converted_latest.json`,
+		`./databases/DB_Main/investors-converted.json`,
 		JSON.stringify(investorList),
 		(error) => {
 			if (error) {
-				log(`Write file investors-converted_latest.json error`);
+				log(`Write file investors-converted.json error`);
 				throw new Error(error);
 			}
 		}
