@@ -18,6 +18,7 @@ import { getNearest7Days, getThisMonthYear } from "../helpers/index.js";
 import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors-converted.json" assert { type: "json" };
+import investorsDB from "../databases/BACKUP/investors.json" assert { type: "json" };
 
 export const getListCryptosOfShark = async (coins) => {
 	if (!coins) return { cryptos: null, totalAssets: "" };
@@ -94,7 +95,10 @@ export const calculateInvestorPercent24h = (snapshots) => {
 	return result || 0;
 };
 
-export const calculateTotalValueInOut = async (transactionsHistory, walletAddress) => {
+export const calculateTotalValueInOut = async (
+	transactionsHistory,
+	walletAddress
+) => {
 	let totalValueIn = new BigNumber(0);
 	let totalValueOut = new BigNumber(0);
 
@@ -333,38 +337,37 @@ export const handleUpdateInvestor = (i, investor) => {
 export const handleConvertInvestor = async (start, end, isLog, id6) => {
 	const _followers = await getFollowersOldDatas();
 
-    for (let i = start; i < end; i++) {
-        const transactionsHistory = await handleInvestorTransactionHistory(
-            investors[i]?.TXs || []
-        );
-        const { cryptos, totalAssets } = await getListCryptosOfShark(
-            investors[i]?.coins
-        );
-        const followers =
-            _followers.find((follower) => follower.sharkId == i + 1)
-                ?.followers || [];
-        const percent24h = calculateInvestorPercent24h(investors[i]?.snapshots);
-        const firstTransactionDate =
-            calculateFirstTransactionDate(transactionsHistory);
-        const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
-            transactionsHistory,
-            _ids[i]._id
-        );
+	for (let i = start; i < end; i++) {
+		const transactionsHistory = await handleInvestorTransactionHistory(
+			investors[i]?.TXs || []
+		);
+		const { cryptos, totalAssets } = await getListCryptosOfShark(
+			investors[i]?.coins
+		);
+		const followers =
+			_followers.find((follower) => follower.sharkId == i + 1)?.followers || [];
+		const percent24h = calculateInvestorPercent24h(investors[i]?.snapshots);
+		const firstTransactionDate =
+			calculateFirstTransactionDate(transactionsHistory);
+		const { totalValueIn, totalValueOut } = await calculateTotalValueInOut(
+			transactionsHistory,
+			_ids[i]._id
+		);
 
-        const investor = {
-            sharkId: i + 1,
-            isShark: investors[i]?.is_shark,
-            coins: investors[i]?.coins?.[0] || {},
-            walletAddress: _ids[i]._id,
-            transactionsHistory: transactionsHistory,
-            followers: followers,
-            cryptos: cryptos,
-            totalAssets: totalAssets,
-            percent24h: percent24h || 0,
-            firstTransactionDate: firstTransactionDate,
-            totalValueIn: totalValueIn,
-            totalValueOut: totalValueOut
-        };
+		const investor = {
+			sharkId: i + 1,
+			isShark: investors[i]?.is_shark,
+			coins: investors[i]?.coins?.[0] || {},
+			walletAddress: _ids[i]._id,
+			transactionsHistory: transactionsHistory,
+			followers: followers,
+			cryptos: cryptos,
+			totalAssets: totalAssets,
+			percent24h: percent24h || 0,
+			firstTransactionDate: firstTransactionDate,
+			totalValueIn: totalValueIn,
+			totalValueOut: totalValueOut
+		};
 
 		handleUpdateInvestor(i, investor);
 
@@ -417,4 +420,29 @@ export const saveConvertedInvestorsToDB = async () => {
 	}
 
 	log("Write investors in DB successfully");
+};
+
+export const updateTransactionsHistorySharkId = async () => {
+	let investorList = [];
+	for (let i = 0; i < 1; i++) {
+		// for (let i = 0; i < investorsDB.length; i++) {
+		let transactionHistory = [];
+		for (let j = 0; j < investorsDB[i].transactionsHistory.length; j++) {
+			transactionHistory.push({
+				...investorsDB[i].transactionsHistory[j],
+				sharkId: investorsDB[i].sharkId
+			});
+		}
+		investorList.push({ ...investorsDB[0], transactionHistory });
+	}
+	await fs.writeFileAsync(
+		`./databases/DB_Main/investors-converted_latest.json`,
+		JSON.stringify(investorList),
+		(error) => {
+			if (error) {
+				log(`Write file investors-converted_latest.json error`);
+				throw new Error(error);
+			}
+		}
+	);
 };

@@ -1,4 +1,5 @@
 import {
+	fs,
 	log,
 	TWO_MINUTES_SECONDS,
 	TEN_MINUTES_SECONDS
@@ -29,7 +30,8 @@ import {
 	convertAndSaveInvestorsToDB,
 	saveConvertedInvestorsToDB,
 	calculateTotalValueInOut,
-	getFollowersOldDatas
+	getFollowersOldDatas,
+	updateTransactionsHistorySharkId
 } from "../services/investors.js";
 import {
 	handleEachTransaction,
@@ -39,7 +41,10 @@ import {
 	handleDetailChartTransaction
 } from "../services/transactions.js";
 import { dropDBMainCollection } from "../services/index.js";
-import { DBMainTransactionModel } from "../models/index.js";
+import {
+	DBMainTransactionModel,
+	DBMainInvestorModel
+} from "../models/index.js";
 let id1 = 0,
 	id2 = 0,
 	id3 = 0,
@@ -92,6 +97,8 @@ const scripts = async () => {
 	//     console.timeEnd(`Time transactions-save-db ${id8}`);
 	//     console.timeEnd(`Time transactions ${id7}`);
 	// }, TEN_MINUTES_SECONDS);
+
+	await updateTransactionsHistorySharkId();
 };
 
 export default scripts;
