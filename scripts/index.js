@@ -97,6 +97,8 @@ const scripts = async () => {
 	//     console.timeEnd(`Time transactions-save-db ${id8}`);
 	//     console.timeEnd(`Time transactions ${id7}`);
 	// }, TEN_MINUTES_SECONDS);
+
+	await saveConvertedTransactionsToFile();
 };
 
 export default scripts;

@@ -10,11 +10,13 @@ import {
 import investors_ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json" };
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
+import investorsConverted0 from "../databases/DB_Main/investors-converted0.json" assert { type: "json" };
 import transactionsConverted from "../databases/DB_Crawl/transactions-converted1.json" assert { type: "json" };
+import transactionsConverted2 from "../databases/DB_Crawl/transactions-converted2.json" assert { type: "json" };
 
 export const handleEachTransaction = async ({
 	transaction,
-	investorId,
+	sharkId,
 	id,
 	transactionId,
 	walletAddress
@@ -70,7 +72,7 @@ export const handleEachTransaction = async ({
 		presentDate: presentDate,
 		presentPrice: presentPrice,
 		timeStamp: parseInt(transaction.timeStamp),
-		investorId: investorId,
+		sharkId: sharkId,
 		id: id,
 		transactionId: transactionId,
 		walletAddress: walletAddress
@@ -88,10 +90,10 @@ export const convertTransactions = async () => {
 		let promises = await investors[i].TXs?.map(async (transaction) => {
 			return handleEachTransaction({
 				transaction: transaction,
-				investorId: i + 1,
+				sharkId: investorsConverted0[i].sharkId,
 				id: id,
 				transactionId: id++,
-				walletAddress: investors_ids[i].id
+				walletAddress: investorsConverted0[i].walletAddress
 			});
 		});
 
@@ -106,7 +108,7 @@ export const saveConvertedTransactionsToFile = async () => {
 	const datas = await convertTransactions();
 
 	await fs.writeFileAsync(
-		`./databases/DB_Crawl/transactions-converted1.json`,
+		`./databases/DB_Crawl/transactions-converted2.json`,
 		JSON.stringify(datas),
 		(error) => {
 			if (error) {
@@ -117,6 +119,10 @@ export const saveConvertedTransactionsToFile = async () => {
 	);
 
 	log("Write transactions into file successfully");
+
+	// log(transactionsConverted2.length);
+	// log(transactionsConverted2[0].sharkId);
+	// log(transactionsConverted2[1].sharkId);
 };
 
 // 65000 transactions: each 1000 trans are executed with 1m33s
