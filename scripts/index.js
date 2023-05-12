@@ -99,6 +99,10 @@ const scripts = async () => {
 	// }, TEN_MINUTES_SECONDS);
 
 	await saveConvertedTransactionsToFile();
+
+	// for (i = 0; i < 65359; i++) {
+	// 	await DBMainTransactionModel.update({transactionId: i+1}, {sharkId: i})
+	// }
 };
 
 export default scripts;

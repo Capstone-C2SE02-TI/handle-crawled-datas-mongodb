@@ -12,6 +12,9 @@ const TransactionSchema = new mongoose.Schema(
 		sharkId: {
 			type: Number
 		},
+		investorId: {
+			type: Number
+		},
 		walletAddress: {
 			type: String
 		},

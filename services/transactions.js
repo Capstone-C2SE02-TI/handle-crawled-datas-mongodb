@@ -12,7 +12,7 @@ import investors from "../databases/DB_Crawl/investors.json" assert { type: "jso
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted0 from "../databases/DB_Main/investors-converted0.json" assert { type: "json" };
 import transactionsConverted from "../databases/DB_Crawl/transactions-converted1.json" assert { type: "json" };
-import transactionsConverted2 from "../databases/DB_Crawl/transactions-converted2.json" assert { type: "json" };
+import transactionsConverted4 from "../databases/DB_Crawl/transactions-converted4.json" assert { type: "json" };
 
 export const handleEachTransaction = async ({
 	transaction,
@@ -85,7 +85,7 @@ export const convertTransactions = async () => {
 	let transactionList = [],
 		id = 1;
 
-	for (let i = 0; i < 50; i++) {
+	for (let i = 60; i < 70; i++) {
 		// for (let i = 0; i < investors.length; i++) {
 		let promises = await investors[i].TXs?.map(async (transaction) => {
 			return handleEachTransaction({
@@ -108,7 +108,7 @@ export const saveConvertedTransactionsToFile = async () => {
 	const datas = await convertTransactions();
 
 	await fs.writeFileAsync(
-		`./databases/DB_Crawl/transactions-converted2.json`,
+		`./databases/DB_Crawl/transactions-converted4.json`,
 		JSON.stringify(datas),
 		(error) => {
 			if (error) {
@@ -120,9 +120,9 @@ export const saveConvertedTransactionsToFile = async () => {
 
 	log("Write transactions into file successfully");
 
-	// log(transactionsConverted2.length);
-	// log(transactionsConverted2[0].sharkId);
-	// log(transactionsConverted2[1].sharkId);
+	// log(transactionsConverted4.length);
+	// log(transactionsConverted4[0].sharkId);
+	// log(transactionsConverted4[1].sharkId);
 };
 
 // 65000 transactions: each 1000 trans are executed with 1m33s
