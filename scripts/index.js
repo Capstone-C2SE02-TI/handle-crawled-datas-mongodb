@@ -98,7 +98,7 @@ const scripts = async () => {
 	//     console.timeEnd(`Time transactions ${id7}`);
 	// }, TEN_MINUTES_SECONDS);
 
-	await saveConvertedTransactionsToFile();
+	// await saveConvertedTransactionsToFile();
 
 	// for (i = 0; i < 65359; i++) {
 	// 	await DBMainTransactionModel.update({transactionId: i+1}, {sharkId: i})
