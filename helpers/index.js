@@ -83,7 +83,9 @@ const getNearest7Days = () => {
 
 const getNearest12Months = () => {
 	var dates = [];
-	(d = new Date()), (y = d.getFullYear()), (m = d.getMonth());
+	var d = new Date();
+	var y = d.getFullYear();
+	var m = d.getMonth();
 
 	function padMonth(month) {
 		if (month < 10) return "0" + month;

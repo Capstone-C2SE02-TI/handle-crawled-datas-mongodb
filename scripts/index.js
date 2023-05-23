@@ -4,6 +4,12 @@ import {
 	TWO_MINUTES_SECONDS,
 	TEN_MINUTES_SECONDS
 } from "../constants/index.js";
+import {
+	getTodayDay,
+	getNearest7Days,
+	getThisMonthYear,
+	getNearest12Months
+} from "../helpers/index.js";
 import { saveCategoriesToFile, saveCategoriesToDB } from "../services/tags.js";
 import {
 	handleTokensPrices,
@@ -61,9 +67,9 @@ const scripts = async () => {
 	//     log("Run tags ...");
 	//     console.time(`Time tags ${++id1}`);
 	//     await saveCategoriesToFile();
-	//     await dropDBMainCollection("tags");
+	// await dropDBMainCollection("tags");
 	//     console.time(`Time tags-save-db ${++id2}`);
-	//     await saveCategoriesToDB();
+	// await saveCategoriesToDB();
 	//     console.timeEnd(`Time tags-save-db ${id2}`);
 	//     console.timeEnd(`Time tags ${id1}`);
 	// }, TEN_MINUTES_SECONDS);
@@ -71,7 +77,7 @@ const scripts = async () => {
 	// setInterval(async () => {
 	//     log("Run coins ...");
 	//     console.time(`Time coins ${++id3}`);
-	//     await saveCoinsToFile();
+	await saveCoinsToFile();
 	//     await saveConvertedCoinCollectionToFile();
 	//     console.time(`Time coins-save-db ${++id4}`);
 	//     saveConvertedCoinCollectionToDB(id4);
@@ -97,12 +103,7 @@ const scripts = async () => {
 	//     console.timeEnd(`Time transactions-save-db ${id8}`);
 	//     console.timeEnd(`Time transactions ${id7}`);
 	// }, TEN_MINUTES_SECONDS);
-
 	// await saveConvertedTransactionsToFile();
-
-	// for (i = 0; i < 65359; i++) {
-	// 	await DBMainTransactionModel.update({transactionId: i+1}, {sharkId: i})
-	// }
 };
 
 export default scripts;

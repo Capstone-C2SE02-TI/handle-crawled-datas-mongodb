@@ -85,7 +85,7 @@ export const convertTransactions = async () => {
 	let transactionList = [],
 		id = 1;
 
-	for (let i = 60; i < 70; i++) {
+	for (let i = 0; i < 50; i++) {
 		// for (let i = 0; i < investors.length; i++) {
 		let promises = await investors[i].TXs?.map(async (transaction) => {
 			return handleEachTransaction({
