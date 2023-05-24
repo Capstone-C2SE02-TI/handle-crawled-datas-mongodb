@@ -12,7 +12,7 @@ import investors from "../databases/DB_Crawl/investors.json" assert { type: "jso
 import investorsConverted from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted0 from "../databases/DB_Main/investors-converted0.json" assert { type: "json" };
 import transactionsConverted from "../databases/DB_Crawl/transactions-converted1.json" assert { type: "json" };
-import transactionsConverted4 from "../databases/DB_Crawl/transactions-converted4.json" assert { type: "json" };
+// import transactionsConverted4 from "../databases/DB_Crawl/transactions-converted4.json" assert { type: "json" };
 
 export const handleEachTransaction = async ({
 	transaction,

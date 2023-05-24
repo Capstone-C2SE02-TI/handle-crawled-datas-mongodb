@@ -19,7 +19,7 @@ import _ids from "../databases/DB_Crawl/investors_ids.json" assert { type: "json
 import investors from "../databases/DB_Crawl/investors.json" assert { type: "json" };
 import investorsConverted from "../databases/DB_Crawl/investors-converted.json" assert { type: "json" };
 import investorsDB from "../databases/BACKUP/investors_latest.json" assert { type: "json" };
-import investorsConverted0 from "../databases/DB_Main/investors-converted0.json" assert { type: "json" };
+// import investorsConverted0 from "../databases/DB_Main/investors-converted0.json" assert { type: "json" };
 
 export const getListCryptosOfShark = async (coins) => {
 	if (!coins) return { cryptos: null, totalAssets: "" };
@@ -290,7 +290,7 @@ export const updateInvestorHistoryDatasTest = async () => {
 export const saveInvestorsToFile = async () => {
 	const investors = await DBCrawlInvestorModel.find({
 		is_shark: true
-	});
+	}).maxTimeMS(30000);
 
 	await fs.writeFileAsync(
 		`./databases/DB_Crawl/investors.json`,

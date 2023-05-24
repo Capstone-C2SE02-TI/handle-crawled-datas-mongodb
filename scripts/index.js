@@ -60,8 +60,12 @@ let id1 = 0,
 	id7 = 0,
 	id8 = 0,
 	id9 = 0;
+import coinsConverted from "../databases/DB_Crawl/coins-converted.json" assert { type: "json" };
 
 const scripts = async () => {
+	// console.log(coinsConverted.length);
+	// console.log(coinsConverted[0].prices.week);
+	// console.log(coinsConverted[0].prices.month);
 	// tags
 	// setInterval(async () => {
 	//     log("Run tags ...");
@@ -77,8 +81,8 @@ const scripts = async () => {
 	// setInterval(async () => {
 	//     log("Run coins ...");
 	//     console.time(`Time coins ${++id3}`);
-	await saveCoinsToFile();
-	//     await saveConvertedCoinCollectionToFile();
+	// await saveCoinsToFile();
+	// await saveConvertedCoinCollectionToFile();
 	//     console.time(`Time coins-save-db ${++id4}`);
 	//     saveConvertedCoinCollectionToDB(id4);
 	//     console.timeEnd(`Time coins ${id3}`);
@@ -87,10 +91,10 @@ const scripts = async () => {
 	// setInterval(async () => {
 	//     log("Run investors ...");
 	//     console.time(`Time investors-save-file ${++id5}`);
-	//     await saveInvestorsToFile();
+	// await saveInvestorsToFile();
 	//     console.timeEnd(`Time investors-save-file ${id5}`);
 	//     console.time(`Time investors-save-db ${++id6}`);
-	//     await convertAndSaveInvestorsToDB(id6);
+	// await convertAndSaveInvestorsToDB(id6);
 	// }, TEN_MINUTES_SECONDS);
 	// transactions
 	// setInterval(async () => {

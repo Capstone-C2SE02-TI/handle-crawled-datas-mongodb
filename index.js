@@ -17,7 +17,7 @@ app.use(express.json());
 
 routing(app);
 
-import scripts  from "./scripts/index.js";
+import scripts from "./scripts/index.js";
 scripts();
 
 app.listen(PORT, () => {

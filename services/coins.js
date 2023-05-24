@@ -8,7 +8,8 @@ import {
 } from "../helpers/index.js";
 import { DBCrawlCoinModel, DBMainCoinModel } from "../models/index.js";
 import ids from "../databases/DB_Crawl/ids.json" assert { type: "json" };
-import coins from "../databases/DB_Crawl/coins.json" assert { type: "json" };
+// import coins from "../databases/DB_Crawl/coins.json" assert { type: "json" };
+import coins from "../databases/DB_Crawl/output2.json" assert { type: "json" };
 import coinsConverted from "../databases/DB_Crawl/coins-converted.json" assert { type: "json" };
 
 // [Need comment-uncomment 4 below function calls]
@@ -25,7 +26,7 @@ export const handleTokensPrices = (coinsPrices) => {
 
 	// 1. DAY
 	let days = {};
-	let currentDay = 20230507;
+	let currentDay = 20230523;
 	// let currentDay = getTodayDay();
 
 	if (hourly) {
@@ -42,7 +43,7 @@ export const handleTokensPrices = (coinsPrices) => {
 	// 2. WEEK
 	let weeks = {};
 	let currentDays = [
-		20230501, 20230502, 20230503, 20230504, 20230505, 20230506, 20230507
+		20230517, 20230518, 20230519, 20230520, 20230521, 20230522, 20230523
 	];
 	// let currentDays = getNearest7Days();
 
@@ -59,7 +60,7 @@ export const handleTokensPrices = (coinsPrices) => {
 
 	// 3. MONTH
 	let months = {};
-	let currentMonthYear = 202304;
+	let currentMonthYear = 202305;
 	// let currentMonthYear = getThisMonthYear();
 
 	if (daily) {
@@ -76,8 +77,8 @@ export const handleTokensPrices = (coinsPrices) => {
 	// 4. YEAR
 	let years = {};
 	const currentMonthYears = [
-		202205, 202206, 202207, 202208, 202209, 202210, 202211, 202212, 202301,
-		202302, 202303, 202304
+		202206, 202207, 202208, 202209, 202210, 202211, 202212, 202301, 202302,
+		202303, 202304, 202305
 	];
 	// const currentMonthYears = getNearest12Months();
 
@@ -111,7 +112,7 @@ export const saveCoinsToFile = async () => {
 	const datas = await DBCrawlCoinModel.find({}).lean();
 
 	await fs.writeFileAsync(
-		`./databases/DB_Crawl/coins.json`,
+		`./databases/DB_Crawl/coins0.json`,
 		JSON.stringify(datas),
 		(error) => {
 			if (error) {
